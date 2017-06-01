@@ -11,7 +11,7 @@ class Camera(object):
 
     def grab_image(self, rgb, depth):
        im_rgb = ds.getColourMap()
-       cv2.imwrite(rgb, im_rgb)       
+       cv2.imwrite(rgb, im_rgb)
        im_depth = ds.getDepthMap()
        cv2.imwrite(depth, im_depth)   
 

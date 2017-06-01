@@ -37,4 +37,9 @@ class Robot(object):
     def get_position(self):
        return {'x': self.cnc.x, 'y': self.cnc.y, 'z': self.cnc.z, 'pan': self.bracket.pan, 'tilt': self.bracket.tilt }
 
+    def xyz_clamp(self, x, y, z):
+       return ut.clamp(x, self.cnc.x_lims), ut.clamp(y, self.cnc.y_lims), ut.clamp(z, self.cnc.z_lims)
+
+    def pantilt_clamp(self, pan, tilt):
+       return ut.clamp(pan, self.bracket.pan_lims), ut.clamp(tilt, self.bracket.tilt_lims)
 

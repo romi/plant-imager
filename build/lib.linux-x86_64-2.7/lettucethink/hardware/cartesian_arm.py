@@ -2,7 +2,6 @@
 import serial
 import time
 import numpy as np
-import ../utils as ut
 
 class CNC(object):
     '''
@@ -42,5 +41,3 @@ class CNC(object):
         print(' : ' + grbl_out.strip())
         return grbl_out
 
-    def clamp(self, x, y, z):
-       return ut.clamp(x, self.x_lims), ut.clamp(y, self.y_lims), ut.clamp(z, self.z_lims)

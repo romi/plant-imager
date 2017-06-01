@@ -11,27 +11,28 @@ class Robot(object):
         self.scandir = scandir
         self.files   = [] #not sure it belongs there  
 
-    def scanAt(self, x, y, z, pan, tilt, i, dt=2):
+    def scanAt(self, x, y, z, pan, tilt, i, files):
         cnc.move_to(x, y, z)
         bracket.move_to(pan, tilt)
-        time.sleep(dt)
-        camera.grab_data(self.scandir, i)
+        time.sleep(2)
+        rgb = "rgb-%03d.png"%i
+        depth = "depth-%03d.png"%i
+        grab_images(scandir + rgb,
+                    scandir + depth)
+        self.files.append({"href": "scan/" + rgb,
+                      "name": rgb})
+        self.files.append({"href": "scan/" + depth,
+                      "name": depth})
         return
 
-    def circularscan(self, xc, yc, zc, r, nc, svg="all.zip"):
-       self.files = []
-       traj=[]
+    def circularscan(self, xc, yc, zc, r, nc):
+       self.files = []    
        x, y, pan = scanpath.circle(xc, yc, r, nc)
        for i in range(0, nc):
-         xi, yi, zi = self.xyz_clamp(x[i], y[i], zc)
-         pi, ti  = self.pantilt_clamp(pan[i], self.bracket.tilt)
-         traj.append([xi,yi,zi,pi,ti])
-         self.scanAt(x, y, z, pi, ti, i)
-       
-       self.cnc.move_to(x[0], y[0], zc)
-       self.bracket.move_to(0, self.bracket.tilt)
-       np.save(np.asarray(traj),scandir+"traj")
-       ut.createArchive(scandir, svg)
+         self.scanAt(x[i], y[i], zc, pan[i], self.bracket.tilt, i)
+       cnc.move_to(x[0], y[0], zc)
+       bracket.move_to(0, selftilt)
+       self.files.append(ut.createArchive(self.files))
        
     def get_position(self):
        return {'x': self.cnc.x, 'y': self.cnc.y, 'z': self.cnc.z, 'pan': self.bracket.pan, 'tilt': self.bracket.tilt }
