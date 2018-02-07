@@ -1,7 +1,11 @@
-README.txt
+README.md
 setup.py
 lettucethink/__init__.py
-lettucethink/cnc_control.py
+lettucethink/bracket.py
+lettucethink/cam_ds.py
+lettucethink/cnc.py
+lettucethink/robot.py
+lettucethink/utils.py
 lettucethink/version.py
 lettucethink.egg-info/PKG-INFO
 lettucethink.egg-info/SOURCES.txt
