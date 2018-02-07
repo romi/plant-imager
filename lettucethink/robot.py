@@ -1,6 +1,6 @@
 #!/usr/bin/python
-from .hardware import cartesian_arm, rotation_unit, camera
-from .motion_planning import scanpath  
+from hardware import cartesian_arm, rotation_unit, camera
+from motion_planning import scanpath  
 import utils as ut
 
 class Robot(object):

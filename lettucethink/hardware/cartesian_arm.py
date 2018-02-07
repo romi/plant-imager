@@ -2,7 +2,7 @@
 import serial
 import time
 import numpy as np
-import utils as ut
+import ../utils as ut
 
 class CNC(object):
     '''
