@@ -12,7 +12,7 @@ opts = dict(name=NAME,
             classifiers=CLASSIFIERS,
             platforms=PLATFORMS,
             version=VERSION,
-            packages=['lettucethink',]
+            packages=find_packages()
            )
 
 if __name__ == '__main__':

@@ -1,0 +1,28 @@
+Metadata-Version: 1.1
+Name: lettucethink
+Version: 0.1.dev0
+Summary: lettucethink: controllers and tools for agribots 
+Home-page: UNKNOWN
+Author: UNKNOWN
+Author-email: UNKNOWN
+License: L-GPL-3
+Description-Content-Type: UNKNOWN
+Description: 
+        lettucethink
+        =================
+        
+        `lettucethink` is a Python module, it gathers low-level control the LettuceThink robot and tools for the related applications.
+        
+        # LettuceScan
+        
+        In the LettuceScan application, the useful functions are controlling:
+        
+        - the RGBD camera,
+        - the CNC for the xyz motion of the arn,
+        - the bracket for pan and tilt motion.
+        Please read the repository README_ on Github or our documentation
+        
+Platform: OS Independent
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering
