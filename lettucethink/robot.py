@@ -1,14 +1,13 @@
 #!/usr/bin/python
-import cnc
-import bracket
-import cam_ds
+from hardwaren import cartesian_arm, rotation_unit, camera
+from motion_planning import scanpath  
 import utils as ut
 
 class Robot(object):
     def __init__(self, scandir, x=0, y=0, z=0, pan=0, tilt=0):
-        self.cnc     = cnc.CNC(x, y, z, homing=True)
-        self.bracket = bracket.Bracket(pan, tilt)
-        self.cam     = cam_ds.Camera()
+        self.cnc     = cartesian_arm.CNC(x, y, z, homing=True)
+        self.bracket = rotation_unit.Bracket(pan, tilt)
+        self.cam     = camera.Camera()
         self.scandir = scandir
         self.files   = [] #not sure it belongs there  
 
@@ -28,7 +27,7 @@ class Robot(object):
 
     def circularscan(self, xc, yc, zc, r, nc):
        self.files = []    
-       x, y, pan = ut.circular_coordinates(xc, yc, r, nc)
+       x, y, pan = scanpath.circle(xc, yc, r, nc)
        for i in range(0, nc):
          self.scanAt(x[i], y[i], zc, pan[i], self.bracket.tilt, i)
        cnc.move_to(x[0], y[0], zc)

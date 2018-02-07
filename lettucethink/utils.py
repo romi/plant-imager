@@ -13,15 +13,5 @@ def createArchive(files, scandir='static/scan/'):
         zf.close()
         return {"href": scandir+"all.zip", "name": "all.zip"}
 
-def circular_coordinates(cx, cy, R, N):
-   alpha = np.linspace(0, 2 * np.pi, N + 1)
-   pan = np.linspace(0, -360.0, N + 1)
-   x = cx + R * np.cos(alpha)
-   y = cy + R * np.sin(alpha)
-   return x, y, pan
-
-def squarescan(xs, ys, zs, d, ns):
-    return []
-
 def clamp(value, lims, scale=1):
     return int(scale*np.clip(value, lims[0], lims[1]))
