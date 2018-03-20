@@ -1,41 +1,31 @@
 #!/usr/bin/python
 import pydepthsense as ds
 import cv2
+import numpy as np
+
+grab_data={"sync"  : ds.getSyncMap,
+          "uv"    : ds.getUVMap,
+          "conf"  : ds.getConfidenceMap,
+          "vertFP": ds.getVerticesFP,
+          "rgb"   : ds.getColorMap,
+          "vert"  : ds.getVertices,
+          "depth" : ds.getDepthMap}
 
 class Camera(object):
     '''
-    DepthSense camera
+    DepthSense camera-suffix is usually index coded on 3 digits
     ''' 
     def __init__(self):
        ds.start()
 
-    def grab_image(self, rgb, depth):
-       im_rgb = ds.getColourMap()
-       cv2.imwrite(rgb, im_rgb)       
-       im_depth = ds.getDepthMap()
-       cv2.imwrite(depth, im_depth)   
-
-    def grab_data(self, svg, i=0,
-                  datas=["sync", "uv", "conf", "vertFP",
-                         "rgb", "vert","depth"]):
-       if "sync" in datas:
-          im=ds.getSyncMap()
-          np.save(svg+"sync-%03d.png"%i,im)
-       if "uv" in datas:
-          im=ds.getUVMap()
-          np.save(svg+"uv-%03d.png"%i,im)
-       if "conf" in datas:
-          im=ds.getConfidenceMap()
-          np.save(svg+"conf-%03d.png"%i,im)
-       if "vertFP" in datas:
-          im=ds.getVerticesFP()
-          np.save(svg+"vertFP-%03d.png"%i,im)
-       if "rgb" in datas:
-          im=ds.getColourMap()
-          np.save(svg+"rgb-%03d.png"%i,im)
-       if "vert" in datas:
-          im=ds.getVertices()
-          np.save(svg+"vert-%03d.png"%i,im)
-       if "depth" in datas:
-          im=ds.getDepthMap()
-          np.save(svg+"depth-%03d.png"%i,im)
+    def grab_datas(self, svg, suffix=0,
+                   datas=["sync", "uv", "conf", "vertFP",
+                          "rgb", "vert","depth"], pics=True):
+       for d in datas:
+          res=grab_data[d]()
+          if d in ["sync", "rgb"]:
+              cv2.imwrite(svg+"%s-%03d.png"%(d,suffix), res.astype(np.uint8))
+          elif d in ["conf", "depth", "vert"]:
+              cv2.imwrite(svg+"%s-%03d.png"%(d,suffix), res.astype(np.uint16))
+          else:
+              np.save(svg+"%s-%03d"%(d,suffix), res)

@@ -4,22 +4,23 @@ import time
 import numpy as np
 
 "Should be renamed Active sensor"
-class RotatingUnit:
-    def __init__(self, port="/dev/ttyACM0", pan=0, tilt=0, pan_lims=[-360,360],tilt_lims=[-90,90]):
+class RotationUnit:
+    def __init__(self, port="/dev/ttyACM0", pan=0, tilt=0, pan_lims=[-360,360],tilt_lims=[-90,90],homing=True):
         self.port = port
         self.serial_port = serial.Serial(self.port, 9600)
         time.sleep(2)
         self.serial_port.flushInput()
         self.pan=pan 
-        self.pan=tilt
+        self.tilt=tilt
         self.pan_lims=pan_lims
         self.tilt_lims=tilt_lims
         self.set_acc(50)
         self.set_speed(50)
         self.set_mode(1)
+        if homing: self.moveto(0,0)
 
-    def move_to(self, pan, tilt):
-        self.send_cmd("p%s;t%s"%(int(pan), int(tilt)))
+    def moveto(self, pan, tilt):
+        self.send_cmd("p%s;t%s"%(int(10*pan), int(10*tilt)))
         self.pan  = pan
         self.tilt = tilt
 

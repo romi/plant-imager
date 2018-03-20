@@ -31,7 +31,7 @@ class CNC(object):
         self.send_cmd("g92 x0 y0 z0")
 
     def moveto(self, x, y, z):
-        self.send_cmd("g0 x%s y%s z%s"%(int(x), int(y), int(z)))
+        self.send_cmd("g0 x%s y%s z%s"%(int(10*x), int(10*y), int(10*z)))
         self.send_cmd("g4 p1")
 
     def send_cmd(self, cmd):
@@ -40,4 +40,3 @@ class CNC(object):
         grbl_out = self.serial_port.readline()
         print(' : ' + grbl_out.strip())
         return grbl_out
-
