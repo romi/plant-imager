@@ -1,18 +1,18 @@
 #!/usr/bin/python
 import pydepthsense as ds
-import cv2
 import numpy as np
+import tifffile
 from enum import Enum
 
 class DSCameraData(Enum):
-    sync = 1
-    uv = 2
-    confidence = 3
-    float_vertices = 4
-    vertices = 4
-    color = 5
-    depth = 6
-    color_hd = 7
+    sync = "sync"
+    uv = "uv"
+    confidence = "confidence"
+    float_vertices = "vertices_fp"
+    vertices = "vertices"
+    color = "rgb"
+    depth = "depth"
+    color_hd = "rgb_hd"
 
 
 class DSCameraMode(Enum):
@@ -34,6 +34,9 @@ class DSCamera():
     ''' 
 
     def __init__(self, mode=DSCameraMode.depth):
+        """
+        Constructor. Must call start() before use
+        """
         if not isinstance(mode, DSCameraMode):
             raise TypeError(data)
         self.mode = mode
@@ -52,6 +55,8 @@ class DSCamera():
         self.is_started = False
 
     def start(self):
+        if self.is_started:
+            return
         if (self.mode == DSCameraMode.depth):
             ds.start()
         elif (self.mode == DSCameraMode.depth):
@@ -64,7 +69,30 @@ class DSCamera():
         ds.stop()
         self.is_started = False
 
+    def grab_write_all(self, suffix, data=None):
+        """
+        Grabs all data in data and writes it to x${suffix}.tif
+        where x in the data name (see DSCameraData)
+        """
+        if data is None:
+            data = self.available_data
+        for x in data:
+            grab_write(self, x + suffix + ".tif", x)
+
+    def grab_write(self, target, data=None):
+        """
+        Writes result as a tif image
+        """
+        if data is None:
+            data = self.default_data
+        res = self.grab(data)
+        tifffile.imwrite("target", res)
+
     def grab(self, data=None):
+        """
+        Grabs a single frame of data in a numpy array
+        """
+        assert(self.is_started)
         if data is None:
             data = self.default_data
         if not isinstance(data, DSCameraData):
@@ -79,6 +107,8 @@ class DSCamera():
         elif data == DSCameraData.confidence:
             return ds.getConfidenceMap()
         elif data == DSCameraData.float_vertices:
+            return ds.getVerticesFP()
+        elif data == DSCameraData.vertices:
             return ds.getVertices()
         elif data == DSCameraData.color:
             return ds.getColorMap()
