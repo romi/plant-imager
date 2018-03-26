@@ -55,6 +55,12 @@ class XL430:
        self.pan.set_goal_position(p)
        self.tilt.set_goal_position(t)
 
+   def get_pan(self):
+      return self.pan.get_present_position()
+
+   def get_tilt(self):
+      return self.tilt.get_present_position()
+
    def set_acc(self, acc):
         return ""
 
