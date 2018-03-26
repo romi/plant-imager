@@ -86,7 +86,7 @@ class DSCamera():
         if data is None:
             data = self.default_data
         res = self.grab(data)
-        tifffile.imwrite("target", res)
+        tifffile.imsave(target, res)
 
     def grab(self, data=None):
         """
