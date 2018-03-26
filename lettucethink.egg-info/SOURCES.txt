@@ -8,6 +8,7 @@ lettucethink.egg-info/PKG-INFO
 lettucethink.egg-info/SOURCES.txt
 lettucethink.egg-info/dependency_links.txt
 lettucethink.egg-info/top_level.txt
+lettucethink/hardware/XL430_gimbal.py
 lettucethink/hardware/__init__.py
 lettucethink/hardware/camera.py
 lettucethink/hardware/cartesian_arm.py

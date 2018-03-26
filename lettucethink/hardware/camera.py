@@ -17,9 +17,20 @@ class Camera(object):
     DepthSense camera-suffix is usually index coded on 3 digits
     ''' 
     def __init__(self, mode="depth"):
-       if   mode=="depth": ds.start()
-       elif mode=="HD"   : ds.start_HD()
+       self.mode=mode  
+       if   self.mode=="depth": ds.start()
+       elif self.mode=="HD"   : ds.start_HD()
 
+    def stop(self):
+        ds.stop()
+
+    def setMode(self, mode):
+        if self.mode!=mode:
+            ds.stop()
+            if   mode=="depth": ds.start()
+            elif mode=="HD"   : ds.start_HD()
+            self.mode=mode
+       
     def grab_datas(self, svg, suffix=0,
                    datas=["sync", "uv", "conf", "vertFP",
                           "rgb", "vert","depth"], pics=True):
