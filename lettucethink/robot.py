@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 from hardware import cartesian_arm, rotation_unit, camera
 from motion_planning import scanpath  
 import utils as ut
