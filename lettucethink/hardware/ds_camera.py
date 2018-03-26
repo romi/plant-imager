@@ -73,10 +73,14 @@ class DSCamera():
         Grabs all data in data and writes it to x${suffix}.tif
         where x in the data name (see DSCameraData)
         """
+        res = []
         if data is None:
             data = self.available_data
         for x in data:
-            grab_write(self, x + suffix + ".tif", x)
+            fname = x + suffix + ".tif"
+            res.append(fname)
+            grab_write(fname, x)
+        return res
 
     def grab_write(self, target, data=None):
         """
@@ -86,6 +90,7 @@ class DSCamera():
             data = self.default_data
         res = self.grab(data)
         tifffile.imsave(target, res)
+        return target
 
     def grab(self, data=None):
         """

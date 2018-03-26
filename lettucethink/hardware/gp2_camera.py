@@ -33,3 +33,4 @@ class GP2Camera():
         file_path = self.camera.capture(0)
         camera_file = self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
         gp.check_result(gp.gp_file_save(camera_file, target))
+        return target
