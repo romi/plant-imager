@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import pydepthsense as ds
-import numpy as np
 import tifffile
 from enum import Enum
 
