@@ -1,4 +1,4 @@
-#!/usr/bin.env python3
+#!/usr/bin/env python3
 import pydepthsense as ds
 import tifffile
 from enum import Enum
