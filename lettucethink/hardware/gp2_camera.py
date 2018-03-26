@@ -25,11 +25,11 @@ class GP2Camera():
         self.is_started = False
 
     def grab(self):
-        self.write_to_file("/tmp/frame.jpg")
+        self.grab_write("/tmp/frame.jpg")
         return cv2.imread("/tmp/frame.jpg")
 
 
-    def write_to_file(self, target):
+    def grab_write(self, target):
         file_path = self.camera.capture(0)
         camera_file = self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
         gp.check_result(gp.gp_file_save(camera_file, target))
