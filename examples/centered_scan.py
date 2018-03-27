@@ -42,15 +42,15 @@ if __name__ == '__main__':
         elif opt == "-r":
             pars["r"] = int(arg)
 
-t0=time.time()
+    t0=time.time()
 
-json.dump(pars,open(scandir+"pars.json","w"))
-lscan=Robot(scandir,homing=False,cnc_port=cnc_port,gimbal_port=gimbal_port)
-#pds.start()
+    json.dump(pars,open(scandir+"pars.json","w"))
+    lscan=Robot(scandir,homing=False,cnc_port=cnc_port,gimbal_port=gimbal_port)
+    #pds.start()
 
-lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
+    lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
 
-pds.close()
-t=time.time()-t0
+    pds.close()
+    t=time.time()-t0
 
-print("it took", t," s")
+    print("it took", t," s")
