@@ -28,6 +28,9 @@ class GP2Camera():
         self.grab_write("/tmp/frame.jpg")
         return cv2.imread("/tmp/frame.jpg")
 
+    def grab_write_all(self, folder, sufix):
+        return [self.grab_write(folder + "/rgb" + suffix ".jpg")]
+
 
     def grab_write(self, target):
         file_path = self.camera.capture(0)
