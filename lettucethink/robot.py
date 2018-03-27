@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from hardware import grbl_cnc, XL430_gimbal, ds_camera
-from motion_planning import scanpath  
+from lettucethink.hardware import grbl_cnc, XL430_gimbal, ds_camera
+from lettucethink.motion_planning import scanpath  
 import utils as ut
 import time
 import numpy as np
@@ -10,52 +10,52 @@ class Robot(object):
     @staticmethod
     def create_robot_grbl_ds_xl430(cnc_port="/dev/ttyUSB0",
                                    gimbal_port="/dev/ttyUSB1",
-				   homing=True):
-	"""
-	Creates a robot with:
-	- GRBL CNC
-	- DepthSense Camera
-	- XL430 Gimbal
-	:param cnc_port: CNC Port (/dev/ttyUSB0 by default)
-	:param gimbal_port: CNC Port (/dev/ttyUSB1 by default)
-	:param homing: whether to perform homing or not on the CNC
-	"""
+                   homing=True):
+        """
+        Creates a robot with:
+        - GRBL CNC
+        - DepthSense Camera
+        - XL430 Gimbal
+        :param cnc_port: CNC Port (/dev/ttyUSB0 by default)
+        :param gimbal_port: CNC Port (/dev/ttyUSB1 by default)
+        :param homing: whether to perform homing or not on the CNC
+        """
         robot = Robot()
         self.cnc     = grbl_cnc.GrblCNC(cnc_port, homing=homing)
         self.bracket = XL430_gimbal.XL430(gimbal_port)
         self.cam     = ds_camera.DSCamera()
-	return robot
+        return robot
 
     @staticmethod
     def create_robot_grbl_gp2_xl430(cnc_port="/dev/ttyUSB0",
                                    gimbal_port="/dev/ttyUSB1",
-				   homing=True):
-	"""
-	Creates a robot with:
-	- GRBL CNC
-	- Gphoto2 Camera
-	- XL430 Gimbal
-	:param cnc_port: CNC Port (/dev/ttyUSB0 by default)
-	:param gimbal_port: CNC Port (/dev/ttyUSB1 by default)
-	:param homing: whether to perform homing or not on the CNC
-	"""
+                   homing=True):
+        """
+        Creates a robot with:
+        - GRBL CNC
+        - Gphoto2 Camera
+        - XL430 Gimbal
+        :param cnc_port: CNC Port (/dev/ttyUSB0 by default)
+        :param gimbal_port: CNC Port (/dev/ttyUSB1 by default)
+        :param homing: whether to perform homing or not on the CNC
+        """
         robot = Robot()
         self.cnc     = grbl_cnc.GrblCNC(cnc_port, homing=homing)
         self.bracket = XL430_gimbal.XL430(gimbal_port)
         self.cam     = gp2_camera.GP2Camera()
-	return robot
+        return robot
 
     def __init__(self):
-	self.cnc = None
-	self.bracket = None
-	self.cam = None
-	self.has_started = False
+        self.cnc = None
+        self.bracket = None
+        self.cam = None
+        self.has_started = False
 
     def start(self):
         """
         Starts the scanner, by starting cnc, bracket and camera.
         """
-	if cnc is None:
+        if cnc is None:
             raise ValueError("CNC is not defined")
         if bracket is None:
             raise ValueError("Bracket is not defined")
@@ -96,10 +96,10 @@ class Robot(object):
         """
         self.bracket.start()
         self.files = []
-        scan_file = open(self.scandir + "/scan.csv", “w”) 
+        scan_file = open(self.scandir + "/scan.csv", mode = 'w') 
         header_string = "x\ty\tz\tpan\ttilt\t"
         for data in cam.available_data:
-            header_string = header_string + data + "\t")
+            header_string = header_string + data + "\t"
         header_string = header_string[:-1] #Remove last tab
         scan_file.write(header_string)
         x, y, pan = scanpath.circle(xc, yc, r, nc)
