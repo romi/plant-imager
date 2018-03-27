@@ -28,6 +28,28 @@ class Robot(object):
         return robot
 
     @staticmethod
+    def create_robot_grbl_dshd_xl430(cnc_port="/dev/ttyUSB0",
+                                   gimbal_port="/dev/ttyUSB1",
+                   homing=True, scan_dir="scan"):
+        """
+        Creates a robot with:
+        - GRBL CNC
+        - DepthSense Camera in HD mode
+        - XL430 Gimbal
+        :param cnc_port: CNC Port (/dev/ttyUSB0 by default)
+        :param gimbal_port: CNC Port (/dev/ttyUSB1 by default)
+        :param homing: whether to perform homing or not on the CNC
+        """
+        robot = Robot()
+        robot.cnc     = grbl_cnc.GrblCNC(cnc_port, homing=homing)
+        robot.bracket = XL430_gimbal.XL430(gimbal_port)
+        robot.cam     = ds_camera.DSCamera("hd")
+        robot.scan_dir = scan_dir
+        return robot
+
+
+    
+    @staticmethod
     def create_robot_grbl_gp2_xl430(cnc_port="/dev/ttyUSB0",
                                    gimbal_port="/dev/ttyUSB1",
                                    scan_dir="scan",
@@ -88,7 +110,7 @@ class Robot(object):
         time.sleep(wait_time)
         return self.cam.grab_write_all(self.scan_dir, suffix)
 
-    def circular_scan(self, xc, yc, zc, r, nc, output_archive="all.zip"):
+    def circular_scan(self, xc, yc, zc, r, nc, output_archive="all.zip", output_gif=None):
         """
         Scans along a circular path
         :param xc: center x
@@ -126,7 +148,9 @@ class Robot(object):
         self.bracket.move_to(0, self.t0)
         self.cnc.move_to(x[0], y[0], zc)
 
-        ut.createArchive(self.files, output_archive)
+        if output_archive: ut.createArchive(self.files, output_archive)
+        if output_gif: ut.createGif(self.files, "rgb", output_gif)
+	return self.files
  
     def get_position(self):
         return {'x': self.cnc.x,

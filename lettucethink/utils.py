@@ -14,7 +14,7 @@ def createArchive(files, output_archive="all.zip"):
         zf.close()
     return {"href": output_archive, "name": output_archive}
 
-def createGif(files, data="rgb", output_gif):
+def createGif(files, data="rgb", output_gif="rgb.gif"):
     with imageio.get_writer(output_gif, mode='I',duration=1) as writer:
           for f in files:
               if f[:len(data)]==data: writer.append_data(imageio.imread(f))
