@@ -13,15 +13,17 @@ pars={"xc": 40,
       "yc": 40,
       "zc":  0,
       "r" : 35,
-      "nc": 60
+      "nc": 6
      }
 
 t0=time.time()
 
 json.dump(pars,open(scandir+"pars.json","w"))
-lscan=Robot(scandir,homing=True)
+lscan=Robot(scandir,homing=False)
 #pds.start()
-lscan.circularscan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
+
+lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
+
 pds.close()
 t=time.time()-t0
 
