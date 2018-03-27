@@ -20,13 +20,14 @@ class GrblCNC(object):
         self.x_lims=x_lims
         self.y_lims=y_lims
         self.z_lims=z_lims
-
+        self.serial_port=None
+        
     def start(self):
         self.serial_port = serial.Serial(self.port, self.baud_rate)
         self.serial_port.write("\r\n\r\n")
         time.sleep(2)
         self.serial_port.flushInput()
-        if homing:
+        if self.homing:
             self.home()
             self.send_cmd("g90")
             self.send_cmd("g21")
