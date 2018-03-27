@@ -50,7 +50,7 @@ if __name__ == '__main__':
     json.dump(pars,open(scandir+"pars.json","w"))
     lscan=Robot(scandir=scandir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
     #pds.start()
-
+    lscan.start()
     lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
 
     pds.close()

@@ -33,7 +33,7 @@ class DSCamera():
             raise ValueError("Incorrect mode")
         self.mode = mode
         if (self.mode == "depth"):
-            self.available_data = {"sync"
+            self.available_data = {"sync",
                     "uv",
                     "confidence",
                     "vertices_fp",
@@ -82,6 +82,7 @@ class DSCamera():
         if data is None:
             data = self.default_data
         res = self.grab(data)
+        print(data)
         tifffile.imsave(target, res)
         return target
 
