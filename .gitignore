@@ -1,5 +1,5 @@
 ./build
 ./dist
-*.egg.info
+*.egg-info
 *.pyc
 ./examples/scan/
