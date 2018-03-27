@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from lettucethink.robot import Robot
 import lettucethink.utils as ut
 import lettucethink as lt

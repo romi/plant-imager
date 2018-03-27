@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pyxl430 as xl
 
 com=xl.USB2Dynamixel("/dev/ttyUSB1")
