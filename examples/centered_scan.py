@@ -18,10 +18,10 @@ cnc_port = "/dev/ttyUSB0"
 gimbal_port = "/dev/ttyUSB1"
 homing = False
 
-pars={"xc": 40,
-      "yc": 40,
+pars={"xc": 400,
+      "yc": 400,
       "zc":  0,
-      "r" : 35,
+      "r" : 350,
       "nc": 6
      }
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     for opt, arg in opts:
         print(opt)
         if opt == '-h':
-            print('centered_scan.py [-H<homing>]-c <cnc_port=/dev/ttyUSB0> -g <gimbal_port=/dev/ttyUSB1> -d <directory=./scan/> -n <num_points=10> -r <radius=35>')
+            print('centered_scan.py [-H<homing>] -c <cnc_port=/dev/ttyUSB0> -g <gimbal_port=/dev/ttyUSB1> -d <directory=./scan/> -n <num_points=10> -r <radius=35>')
             sys.exit()
         if opt == '-H':
             homing = True
