@@ -7,7 +7,7 @@ import pyxl430 as xl
 class XL430:
    def __init__(self, port="/dev/ttyUSB1", tilt_zero=-1024, pan_zero=0, tilt_idx=1, pan_idx=2, pan_lims=[-360,360],tilt_lims=[-90,90], pan_homing_offset=-1024, tilt_homing_offset=-2048, N=4096):
         self.port = port
-        self.serial_port=xl.USB2Dynamixel("/dev/ttyUSB1")
+        self.serial_port=xl.USB2Dynamixel(self.port)
         self.pan=None
         self.tilt=None
         self.pan_idx=pan_idx 
@@ -50,7 +50,7 @@ class XL430:
         self.pan.set_goal_position(p0) 
         self.tilt.set_goal_position(t0)
         
-   def moveto(self, pan, tilt):
+   def move_to(self, pan, tilt):
        p=self.pan_angle2steps(pan)
        t=self.tilt_angle2steps(tilt)
        self.pan.set_goal_position(p)

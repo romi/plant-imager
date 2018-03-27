@@ -61,16 +61,16 @@ class DSCamera():
         ds.stop()
         self.is_started = False
 
-    def grab_write_all(self, suffix, data=None):
+    def grab_write_all(self, folder, suffix, data=None):
         """
-        Grabs all data in data and writes it to x${suffix}.tif
+        Grabs all data in data and writes it to folder/x${suffix}.tif
         where x is the data name (in available_data) 
         """
         res = []
         if data is None:
             data = self.available_data
         for x in data:
-            fname = x + suffix + ".tif"
+            fname = folder +"/" + x + suffix + ".tif"
             res.append(fname)
             self.grab_write(fname, x)
         return res

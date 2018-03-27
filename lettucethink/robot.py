@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from hardware import cartesian_arm, rotation_unit, camera
+from hardware import grbl_cnc, XL430_gimbal, ds_camera
 from motion_planning import scanpath  
 import utils as ut
 import time
@@ -7,18 +7,22 @@ import numpy as np
 import os
 
 class Robot(object):
-    def __init__(self, scandir, x=0, y=0, z=0, pan=0, tilt=0, homing=True):
-        self.cnc     = cartesian_arm.CNC(port="/dev/ttyUSB0",x=x, y=y, z=z,homing=homing)
-        self.bracket = XL430_gimbal.XL430()
-        self.cam     = camera.Camera()
+    def __init__(self, cnc_port="/dev/ttyUSB1", gimbal_port="/dev/ttyUSB0", scandir=".", x=0, y=0, z=0, pan=0, tilt=0, homing=True):
+        self.cnc     = grbl_cnc.GrblCNC(cnc_port,x=x, y=y, z=z,homing=homing)
+        self.bracket = XL430_gimbal.XL430(gimbal_port)
+        self.cam     = ds_camera.DSCamera()
         self.scandir = scandir
         self.t0      = tilt
 
+    def start(self):
+        self.cnc.start()
+        self.bracket.start()        
+        
     def scan_at(self, x, y, z, pan, tilt, i, dt=2):
-        self.bracket.moveto(pan, tilt)
-        self.cnc.moveto(x, y, z)
+        self.bracket.move_to(pan, tilt)
+        self.cnc.move_to(x, y, z)
         time.sleep(dt)
-        self.cam.grab_datas(self.scandir, i)
+        self.cam.grab_write_all(self.scandir, str(i).zfill(3))
         return
 
     def circular_scan(self, xc, yc, zc, r, nc, svg="all.zip"):
@@ -26,18 +30,20 @@ class Robot(object):
         self.files = []
         traj=[]
         x, y, pan = scanpath.circle(xc, yc, r, nc)
-        pan=360-pan
+        x=x[::-1]
+        y=y[::-1]
+        pan=pan
         
         for i in range(0, nc):
            xi, yi, zi = self.xyz_clamp(x[i], y[i], zc)
            #pi, ti  = self.pantilt_clamp(pan[i], self.t0)
            pi,ti=pan[i], self.t0
-           print pi 
+           #print(pi)
            traj.append([xi,yi,zi,pi,ti])
            self.scan_at(xi, yi, zi, pi, ti, i)
        
-        self.cnc.moveto(x[0], y[0], zc)
-        self.bracket.moveto(0, self.t0)
+        self.cnc.move_to(x[0], y[0], zc)
+        self.bracket.move_to(0, self.t0)
         np.save(self.scandir+"traj", np.asarray(traj))
         ut.createArchive(self.scandir, svg)
  
