@@ -1,5 +1,5 @@
-#!/usr/bin/python
-from hardware import cartesian_arm, XL430_gimbal, camera
+#!/usr/bin/env python3
+from hardware import cartesian_arm, rotation_unit, camera
 from motion_planning import scanpath  
 import utils as ut
 import time
