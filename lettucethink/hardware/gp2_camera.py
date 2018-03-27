@@ -29,7 +29,7 @@ class GP2Camera():
         self.grab_write("/tmp/frame.jpg")
         return cv2.imread("/tmp/frame.jpg")
 
-    def grab_write_all(self, folder, sufix):
+    def grab_write_all(self, folder, suffix=""):
         return [self.grab_write(folder + "/rgb" + suffix + ".jpg")]
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from lettucethink.hardware import grbl_cnc, XL430_gimbal, ds_camera
+from lettucethink.hardware import grbl_cnc, XL430_gimbal, ds_camera, gp2_camera
 from lettucethink.motion_planning import scanpath  
 import utils as ut
 import time
@@ -30,6 +30,7 @@ class Robot(object):
     @staticmethod
     def create_robot_grbl_gp2_xl430(cnc_port="/dev/ttyUSB0",
                                    gimbal_port="/dev/ttyUSB1",
+                                   scan_dir="scan",
                    homing=True):
         """
         Creates a robot with:
@@ -41,10 +42,10 @@ class Robot(object):
         :param homing: whether to perform homing or not on the CNC
         """
         robot = Robot()
-        self.cnc     = grbl_cnc.GrblCNC(cnc_port, homing=homing)
-        self.bracket = XL430_gimbal.XL430(gimbal_port)
-        self.cam     = gp2_camera.GP2Camera()
-        self.scan_dir = scan_dir
+        robot.cnc     = grbl_cnc.GrblCNC(cnc_port, homing=homing)
+        robot.bracket = XL430_gimbal.XL430(gimbal_port)
+        robot.cam     = gp2_camera.GP2Camera()
+        robot.scan_dir = scan_dir
         return robot
 
     def __init__(self):
