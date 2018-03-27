@@ -72,7 +72,7 @@ class DSCamera():
         for x in data:
             fname = x + suffix + ".tif"
             res.append(fname)
-            grab_write(fname, x)
+            self.grab_write(fname, x)
         return res
 
     def grab_write(self, target, data=None):
