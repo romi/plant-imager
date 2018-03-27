@@ -3,3 +3,4 @@
 *.egg-info
 *.pyc
 ./examples/scan/
+./examples/*.zip

@@ -17,6 +17,7 @@ class Robot(object):
     def start(self):
         self.cnc.start()
         self.bracket.start()        
+        self.cam.start()
         
     def scan_at(self, x, y, z, pan, tilt, i, dt=2):
         self.bracket.move_to(pan, tilt)
