@@ -2,4 +2,4 @@
 ./dist
 *.egg.info
 *.pyc
-./examples/test/
+./examples/scan/
