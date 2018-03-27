@@ -12,7 +12,7 @@ import json
 import pydepthsense as pds
 
 
-scandir = "scan/"
+scan_dir = "scan"
 
 cnc_port = "/dev/ttyUSB0"
 gimbal_port = "/dev/ttyUSB1"
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         elif opt == "-g":
             gimbal_port = arg
         elif opt == "-d":
-            scandir = arg
+            scan_dir = arg
         elif opt == "-n":
             pars["nc"] = int(arg)
         elif opt == "-r":
@@ -47,13 +47,11 @@ if __name__ == '__main__':
 
     t0=time.time()
 
-    json.dump(pars,open(scandir+"pars.json","w"))
-    lscan=Robot(scandir=scandir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
-    #pds.start()
+    json.dump(pars,open(scan_dir+"pars.json","w"))
+    lscan=Robot.create_robot_grbl_ds_xl430(scan_dir=scan_dir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
     lscan.start()
     lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
 
-    pds.close()
     t=time.time()-t0
 
     print("it took", t," s")

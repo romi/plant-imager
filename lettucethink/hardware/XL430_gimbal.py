@@ -64,7 +64,7 @@ class XL430:
       return self.pan_step2angle(self.pan.get_present_position())
 
    def get_tilt(self):
-      return self.tilt_step2angle(tilt.get_present_position())
+      return self.tilt_step2angle(self.tilt.get_present_position())
 
    def set_acc(self, acc): #TODO
         return ""
