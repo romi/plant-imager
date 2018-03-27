@@ -16,6 +16,7 @@ scandir = "scan/"
 
 cnc_port = "/dev/ttyUSB0"
 gimbal_port = "/dev/ttyUSB1"
+homing = False
 
 pars={"xc": 40,
       "yc": 40,
@@ -25,12 +26,14 @@ pars={"xc": 40,
      }
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(argv[1:], "hc:g:d:n:r:")
+    opts, args = getopt.getopt(argv[1:], "hHc:g:d:n:r:")
     for opt, arg in opts:
         print(opt)
         if opt == '-h':
-            print('centered_scan.py -c <cnc_port=/dev/ttyUSB0> -g <gimbal_port=/dev/ttyUSB1> -d <directory=./scan/> -n <num_points=10> -r <radius=35>')
+            print('centered_scan.py [-H<homing>]-c <cnc_port=/dev/ttyUSB0> -g <gimbal_port=/dev/ttyUSB1> -d <directory=./scan/> -n <num_points=10> -r <radius=35>')
             sys.exit()
+        if opt == '-H':
+            homing = True
         elif opt == "-c":
             cnc_port = arg
         elif opt == "-g":
@@ -45,7 +48,7 @@ if __name__ == '__main__':
     t0=time.time()
 
     json.dump(pars,open(scandir+"pars.json","w"))
-    lscan=Robot(scandir,homing=False,cnc_port=cnc_port,gimbal_port=gimbal_port)
+    lscan=Robot(scandir=scandir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
     #pds.start()
 
     lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
