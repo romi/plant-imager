@@ -11,6 +11,7 @@ class GP2Camera():
 
     def __init__(self):
         self.camera = gp.Camera()
+        self.available_data = {"rgb"}
         self.is_started = False
 
     def start(self):

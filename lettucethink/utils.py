@@ -7,7 +7,7 @@ def createArchive(files, output_archive="all.zip"):
     zf = zipfile.ZipFile(svg, mode = 'w')
     try:    
         for f in files:
-           print "adding", f
+           print("adding", f)
            zf.write(scandir+f)
     finally:
         zf.close()
