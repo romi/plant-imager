@@ -2,10 +2,11 @@
 import serial
 import time
 import numpy as np
+from math import pi
 import pyxl430 as xl
 
 class XL430:
-   def __init__(self, port="/dev/ttyUSB1", tilt_zero=-1024, pan_zero=0, tilt_idx=1, pan_idx=2, pan_lims=[-360,360],tilt_lims=[-90,90], pan_homing_offset=-1024, tilt_homing_offset=-2048, N=4096):
+   def __init__(self, port="/dev/ttyUSB1", tilt_zero=-1024, pan_zero=0, tilt_idx=1, pan_idx=2, pan_lims=[0, pi],tilt_lims=[-pi/2,pi/2], pan_homing_offset=-1024, tilt_homing_offset=-2048, N=4096):
         self.port = port
         self.serial_port=xl.USB2Dynamixel(self.port)
         self.pan=None
@@ -21,16 +22,16 @@ class XL430:
         self.tilt_zero=tilt_zero
 
    def pan_angle2steps(self,angle):
-      return int((angle*self.n_steps/360.)-self.pan_zero)
+      return int((angle*self.n_steps/2/pi)-self.pan_zero)
 
    def tilt_angle2steps(self,angle):
-      return int(-(angle*self.n_steps/360.)-self.tilt_zero)
+      return int(-(angle*self.n_steps/2/pi)-self.tilt_zero)
 
    def pan_step2angle(self, steps):
-      return (steps+self.pan_zero)*360./self.n_steps
+      return (steps+self.pan_zero)*2*pi/self.n_steps
 
    def tilt_step2angle(self, steps):
-      return (steps+self.tilt_zero)*360./self.n_steps
+      return (steps+self.tilt_zero)*2*pi/self.n_steps
 
    def start(self):    
         self.serial_port.start()
@@ -51,25 +52,28 @@ class XL430:
         self.tilt.set_goal_position(t0)
         
    def move_to(self, pan, tilt):
+       """
+       Move to given angles (in radian)
+       """
        p=self.pan_angle2steps(pan)
        t=self.tilt_angle2steps(tilt)
        self.pan.set_goal_position(p)
        self.tilt.set_goal_position(t)
 
    def get_pan(self):
-      return self.pan.get_present_position()
+      return self.pan_step2angle(self.pan.get_present_position())
 
    def get_tilt(self):
-      return self.tilt.get_present_position()
+      return self.tilt_step2angle(tilt.get_present_position())
 
-   def set_acc(self, acc):
+   def set_acc(self, acc): #TODO
         return ""
 
-   def set_speed(self, speed):
+   def set_speed(self, speed): #TODO
         return ""
 
-   def set_mode(self, mode):
+   def set_mode(self, mode): #TODO
         return ""
 
-   def send_cmd(self, cmd):
+   def send_cmd(self, cmd): #TODO
         return ""
