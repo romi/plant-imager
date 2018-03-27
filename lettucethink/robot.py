@@ -127,6 +127,7 @@ class Robot(object):
         self.cnc.move_to(x[0], y[0], zc)
 
         ut.createArchive(self.files, output_archive)
+        return self.files
  
     def get_position(self):
         return {'x': self.cnc.x,
