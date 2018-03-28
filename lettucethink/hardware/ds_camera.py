@@ -82,6 +82,8 @@ class DSCamera():
         if data is None:
             data = self.default_data
         res = self.grab(data)
+        if data in ["rgb", "rgb_hd", "sync"]:
+            res = res[:,:,::-1]
         imageio.imsave(target, res)
         return target
 
