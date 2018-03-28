@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import gphoto2 as gp
 import os
-import cv2
+import imageio
 
 
 class GP2Camera():
@@ -27,7 +27,7 @@ class GP2Camera():
 
     def grab(self):
         self.grab_write("/tmp/frame.jpg")
-        return cv2.imread("/tmp/frame.jpg")
+        return imageio.imread("/tmp/frame.jpg")
 
     def grab_write_all(self, folder, suffix=""):
         return [self.grab_write(folder + "/rgb" + suffix + ".jpg")]

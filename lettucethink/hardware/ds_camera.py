@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import pydepthsense as ds
-import tifffile
+import imageio
 from enum import Enum
 
 
@@ -82,7 +82,7 @@ class DSCamera():
         if data is None:
             data = self.default_data
         res = self.grab(data)
-        tifffile.imsave(target, res)
+        imageio.imsave(target, res)
         return target
 
     def grab(self, data=None):
