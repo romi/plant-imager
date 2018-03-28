@@ -148,9 +148,14 @@ class Robot(object):
         self.bracket.move_to(0, self.t0)
         self.cnc.move_to(x[0], y[0], zc)
 
+<<<<<<< HEAD
         if output_archive: ut.createArchive(self.files, output_archive)
         if output_gif: ut.createGif(self.files, "rgb", output_gif)
 	return self.files
+=======
+        ut.createArchive(self.files, output_archive)
+        return self.files
+>>>>>>> 08b4258b3a84e4adc7267ab24196d7b13d0d4bde
  
     def get_position(self):
         return {'x': self.cnc.x,
