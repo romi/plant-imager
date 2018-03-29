@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import pydepthsense as ds
 import imageio
+import tifffile
 from enum import Enum
 
 
 class DSCameraMode(Enum):
     depth = 1
     hd = 2
-
-
 
 def singleton(class_):
     instances = {}
@@ -84,7 +83,9 @@ class DSCamera():
         res = self.grab(data)
         if data in ["rgb", "rgb_hd", "sync"]:
             res = res[:,:,::-1]
-        imageio.imsave(target, res)
+        tifffile.imsave(target, res)
+        
+        #imageio.imsave(target, res)
         return target
 
     def grab(self, data=None):

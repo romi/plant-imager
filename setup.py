@@ -13,6 +13,7 @@ opts = dict(name=NAME,
             platforms=PLATFORMS,
             version=VERSION,
             packages=find_packages(),
+
             install_requires=[
                 'imageio',
                 'gphoto2'

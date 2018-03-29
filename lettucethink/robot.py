@@ -149,7 +149,7 @@ class Robot(object):
             line_string = line_string[:-1] + "\n"
             scan_file.write(line_string)
             self.files.extend(res)
-
+        scan_file.close()
         self.files.append(self.scan_dir + "/scan.csv")
 
        
