@@ -91,6 +91,14 @@ class Robot(object):
         self.bracket.start()        
         self.cam.start()
         self.has_started = True
+
+    def stop(self):
+        print("stopping cnc.")
+        self.cnc.stop()
+        print("stopping bracket.")
+        self.bracket.stop()
+        print("stopping cam.")
+        self.cam.stop()
         
     def scan_at(self, x, y, z, pan, tilt, suffix="", wait_time=2):
         """

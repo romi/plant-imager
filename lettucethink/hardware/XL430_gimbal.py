@@ -38,6 +38,9 @@ class XL430:
         self.tilt.set_torque_enable(1)
         self.move_to(0, 0)
 
+    def stop(self):
+        self.serial_port.stop()
+
     def move_to(self, pan, tilt):
         """
         Move to given angles (in radian)

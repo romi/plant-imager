@@ -34,7 +34,7 @@ class GrblCNC(object):
             self.send_cmd("g21")
 
     def stop(self):
-        serial.close()
+        self.serial_port.close()
 
     def home(self):
         self.send_cmd("$H")

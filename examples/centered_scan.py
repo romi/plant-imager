@@ -48,11 +48,16 @@ if __name__ == '__main__':
     t0=time.time()
 
     json.dump(pars,open(scan_dir+"pars.json","w"))
-    #lscan=Robot.create_robot_grbl_gp2_xl430(scan_dir=scan_dir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
-    lscan=Robot.create_robot_grbl_dshd_xl430(scan_dir=scan_dir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
-    lscan.start()
-    lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
+    lscan=Robot.create_robot_grbl_gp2_xl430(scan_dir=scan_dir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
+    #lscan=Robot.create_robot_grbl_dshd_xl430(scan_dir=scan_dir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
+    try:
+        lscan.start()
+        lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
 
-    t=time.time()-t0
+        t=time.time()-t0
 
-    print("it took", t," s")
+        print("it took", t," s")
+    except Exception as e:
+        print(e)
+    finally:
+        lscan.stop()
