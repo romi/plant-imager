@@ -12,8 +12,12 @@ opts = dict(name=NAME,
             classifiers=CLASSIFIERS,
             platforms=PLATFORMS,
             version=VERSION,
-            packages=find_packages()
-           )
+            packages=find_packages(),
+            install_requires=[
+                'imageio',
+                'gphoto2'
+                ],
+            )
 
 if __name__ == '__main__':
     setup(**opts)
