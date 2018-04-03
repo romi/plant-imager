@@ -25,6 +25,7 @@ class GrblCNC(object):
         
     def start(self):
         self.serial_port = serial.Serial(self.port, self.baud_rate)
+        self.has_started = True
         self.serial_port.write("\r\n\r\n")
         time.sleep(2)
         self.serial_port.flushInput()
@@ -34,7 +35,8 @@ class GrblCNC(object):
             self.send_cmd("g21")
 
     def stop(self):
-        self.serial_port.close()
+        if (self.has_started):
+            self.serial_port.close()
 
     def home(self):
         self.send_cmd("$H")
