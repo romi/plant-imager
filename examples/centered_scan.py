@@ -52,7 +52,7 @@ if __name__ == '__main__':
     lscan=Robot.create_robot_grbl_ds_xl430(scan_dir=scan_dir,homing=homing,cnc_port=cnc_port,gimbal_port=gimbal_port)
     try:
         lscan.start()
-        lscan.circular_scan(pars["xc"],pars["yc"],pars["zc"],pars["r"],pars["nc"])
+        lscan.circular_scan(pars["xc"],pars["yc"],pars["r"],pars["nc"])
 
         t=time.time()-t0
 

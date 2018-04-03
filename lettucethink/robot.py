@@ -3,7 +3,6 @@ from lettucethink.hardware import grbl_cnc, XL430_gimbal, ds_camera, gp2_camera
 from lettucethink.motion_planning import scanpath  
 import utils as ut
 import time
-import numpy as np
 import os
 
 class Robot(object):
@@ -122,17 +121,14 @@ class Robot(object):
         self.is_busy = False
         return self.cam.grab_write_all(self.scan_dir, suffix)
 
-    def circular_scan(self, xc, yc, zc, r, nc, output_archive="all.zip", output_gif=None):
+    def scan(self, path, output_archive="all.zip", output_gif=None):
         """
-        Scans along a circular path
-        :param xc: center x
-        :param yc: center y
-        :param zc: center z
-        :param r: radius
-        :param nc: number of points
+        Scans along a given path 
+        :param path: list of 5-tuples (x,y,z,pan,tilt)
         :param output_archive: where to save zip file scan
+        :param output_gif: (optional) save scan to gif file
         """
-        self.bracket.start()
+        nc = len(path)
         self.files = []
         scan_file = open(self.scan_dir + "/scan.csv", mode = 'w') 
         header_string = "x\ty\tz\tpan\ttilt\t"
@@ -140,12 +136,11 @@ class Robot(object):
             header_string = header_string + data + "\t"
         header_string = header_string[:-1] + "\n" #Remove last tab
         scan_file.write(header_string)
-        x, y, pan = scanpath.circle(xc, yc, r, nc)
-        
-        for i in range(0, nc):
-            xi, yi, zi = self.xyz_clamp(x[i], y[i], zc)
-            pi, ti = pan[i], self.t0
-            res = self.scan_at(xi, yi, zi, pi, ti, str(i).zfill(3))
+
+        for i in range(nc):
+            (x, y, z, pan, tilt) = path[i]
+            x, y, z = self.xyz_clamp(x, y, z)
+            res = self.scan_at(x, y, z, pan, tilt, str(i).zfill(3))
             d = self.get_position()
             line_string = str(d['x']) + "\t" + str(d['y']) + "\t" + str(d['z']) + '\t' + str(d['pan']) + '\t' + str(d['tilt']) + '\t'
             for re in res:
@@ -153,16 +148,26 @@ class Robot(object):
             line_string = line_string[:-1] + "\n"
             scan_file.write(line_string)
             self.files.extend(res)
+
         scan_file.close()
         self.files.append(self.scan_dir + "/scan.csv")
 
-       
-        self.bracket.move_to(0, self.t0)
-        self.cnc.move_to(x[0], y[0], zc)
+        self.bracket.move_to(0, 0)
+        self.cnc.move_to(path[0], y[0], zc)
 
-        if output_archive: ut.createArchive(self.files, output_archive)
-        if output_gif: ut.createGif(self.files, "rgb", output_gif)
-	return self.files
+        if output_archive:
+            ut.createArchive(self.files, output_archive)
+        if output_gif:
+            ut.createGif(self.files, "rgb", output_gif)
+        return self.files
+
+    def circular_scan(self, center_x, center_y, radius, num_points, z=None, tilt=None, output_archive="all.zip", output_gif=None):
+        if z is None:
+            z = self.cnc.z
+        if tilt is None:
+            tilt = self.bracket.get_tilt()
+        circle = scanpath.circle(center_x, center_y, z, tilt, radius, num_points)
+        return self.scan(circle, output_archive, output_gif)
  
     def get_position(self):
         return {'x': self.cnc.x,

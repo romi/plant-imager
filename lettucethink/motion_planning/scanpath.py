@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-import numpy as np
+import math
 
-def circle(cx, cy, R, N):
-   alpha = np.linspace(0, 2 * np.pi, N + 1)
-   x = cx - R * np.cos(alpha)
-   y = cy - R * np.sin(alpha)
-   return x, y, alpha
-
-def square(xs, ys, zs, d, ns):
-    return []
+def circle(center_x, center_y, z, tilt, radius, num_points):
+   res = []
+   for i in range(num_points):
+       angle = 2*i*math.pi / num_points
+       x = center_x - radius * math.cos(angle)
+       y = center_y - radius * math.sin(angle)
+       res.append((x, y, z, angle, tilt))
+   return res
