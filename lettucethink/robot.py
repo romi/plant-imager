@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from lettucethink.hardware import grbl_cnc, XL430_gimbal, ds_camera, gp2_camera
 from lettucethink.motion_planning import scanpath  
+from threading import Lock
 import utils as ut
 import time
 import numpy as np
@@ -76,6 +77,8 @@ class Robot(object):
         self.cam = None
         self.has_started = False
         self.t0 = 0
+        self.action_lock = Lock()
+        self.is_busy = False
 
     def start(self):
         """
@@ -113,9 +116,15 @@ class Robot(object):
         """
         if not self.has_started:
             raise RuntimeError("You must call self.start() before scanning")
+        if not self.lock.acquire(False):
+            raise RuntimeError("Scanner is busy")
+        self.is_busy = True
         self.bracket.move_to(pan, tilt)
         self.cnc.move_to(x, y, z)
         time.sleep(wait_time)
+        result = self.cam.grab_write_all(self.scan_dir, suffix)
+        self.is_busy = False
+        self.action_lock.release()
         return self.cam.grab_write_all(self.scan_dir, suffix)
 
     def circular_scan(self, xc, yc, zc, r, nc, output_archive="all.zip", output_gif=None):

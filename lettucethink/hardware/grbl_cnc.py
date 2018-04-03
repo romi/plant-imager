@@ -22,6 +22,8 @@ class GrblCNC(object):
         self.x=0
         self.y=0
         self.z=0
+
+        self.has_started = False
         
     def start(self):
         self.serial_port = serial.Serial(self.port, self.baud_rate)
