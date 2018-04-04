@@ -153,7 +153,7 @@ class Robot(object):
         self.files.append(self.scan_dir + "/scan.csv")
 
         self.bracket.move_to(0, self.t0)
-        self.cnc.move_to(path[0], y[0], zc)
+        self.cnc.move_to(*path[0][0:3])
 
         if output_archive:
             ut.createArchive(self.files, output_archive)
