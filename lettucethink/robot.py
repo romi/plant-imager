@@ -152,7 +152,7 @@ class Robot(object):
         scan_file.close()
         self.files.append(self.scan_dir + "/scan.csv")
 
-        self.bracket.move_to(0, 0)
+        self.bracket.move_to(0, self.t0)
         self.cnc.move_to(path[0], y[0], zc)
 
         if output_archive:
@@ -165,7 +165,7 @@ class Robot(object):
         if z is None:
             z = self.cnc.z
         if tilt is None:
-            tilt = self.bracket.get_tilt()
+            tilt = self.t0
         circle = scanpath.circle(center_x, center_y, z, tilt, radius, num_points)
         return self.scan(circle, output_archive, output_gif)
  
