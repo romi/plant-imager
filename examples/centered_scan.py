@@ -21,13 +21,13 @@ pars={"xc": 400,
       "yc": 400,
       "zc":  0,
       "r" : 350,
-      "nc": 6
+      "nc": 6,
+      "t" :0
      }
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(argv[1:], "hHc:g:d:n:r:")
     for opt, arg in opts:
-        print(opt)
         if opt == '-h':
             print('centered_scan.py [-H<homing>] -c <cnc_port=/dev/ttyUSB0> -g <gimbal_port=/dev/ttyUSB1> -d <directory=./scan/> -n <num_points=10> -r <radius=35> -z <cnc_z=0 > -t <gimbal_tilt=0>')
             sys.exit()
@@ -45,7 +45,7 @@ if __name__ == '__main__':
             pars["r"] = int(arg)
         elif opt == "-z":
             pars["z"] = int(arg)
-        elif opt == "-":
+        elif opt == "-t":
             pars["t"] = int(arg)
             
     t0=time.time()
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     try:
         lscan.start()
         lscan.t0=pars["t"]
-        lscan.circular_scan(pars["xc"],pars["yc"],pars["r"],pars["nc"],z=pars["zc"],tilt=pas["t"])
+        lscan.circular_scan(pars["xc"],pars["yc"],pars["r"],pars["nc"],z=pars["zc"],tilt=pars["t"])
 
         t=time.time()-t0
 
