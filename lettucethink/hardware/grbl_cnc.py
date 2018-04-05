@@ -9,7 +9,7 @@ class GrblCNC(object):
     TODO: enable workspace origin offset, motor seed configuration,...
     ''' 
     def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=False, 
-                       x_lims=[0,800], y_lims=[0,800], z_lims=[0,100]):
+                       x_lims=[0,800], y_lims=[0,800], z_lims=[-100,0]):
         self.port = port
         self.baud_rate = baud_rate
         self.homing = homing
