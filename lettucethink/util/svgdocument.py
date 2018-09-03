@@ -1,6 +1,4 @@
-
-
-class Document(object):
+class SVGDocument(object):
     def __init__(self, path, width, height):
         self.path = path
         self.printHeader(width, height)
@@ -26,6 +24,3 @@ class Document(object):
     def printFooter(self):
         with open(self.path, "a") as f:
             f.write("</svg>\n")
-
-
-   
