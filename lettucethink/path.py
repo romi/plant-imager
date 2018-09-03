@@ -98,21 +98,23 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
    toolPath = rdp(toolPath.T, 1)
 
    if logger:
-      printPath(mask, toolPath.T, workspace, logger)
+      renderPath(mask, toolPath.T, logger.makePath("toolpath"))
 
    return toolPath.T
 
    
 
-
-def printPath(mask, path, workspace, logger):
-   #1
+def renderPath(mask, path, filepath):
    stp = np.round(path.T, 0).reshape((-1,1,2)).astype(np.int32)
    cv2.polylines(mask, [stp], False, [145,235,229],8)
-   logger.storeImage("toolpath", mask)
-   #2
-   doc = svg.SVGDocument(logger.makePath("toolpath", "svg"), workspace.width, workspace.height)
-   doc.addImage(logger.getPath("cropped"), 0, 0, workspace.width, workspace.height)
+   cv2.imwrite(filepath, mask)
+
+
+def saveToSVG(mask, path, filepath):
+   height = mask.shape[0]
+   width = mask.shape[1]
+   doc = svg.SVGDocument(filepath, width, height)
+   doc.addImage(logger.getPath("cropped"), 0, 0, width, height)
    if len(path[0]) > 1:
       doc.addPath(path[0], path[1])
    doc.close()
