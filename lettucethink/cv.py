@@ -10,7 +10,7 @@ def grabImage(url, logger):
    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
    image = cv2.imdecode(arr, -1)
    #image = cv2.resize(image, (820, 616))
-   logger.storeImage("topcam", image)
+   if logger: logger.storeImage("topcam", image)
    return image
 
 
@@ -18,22 +18,22 @@ def rotateAndCropImage(image, workspace, logger):
    (ih, iw) = image.shape[:2]
    M = cv2.getRotationMatrix2D((workspace.x0, ih-workspace.y0), workspace.theta, 1)
    rotated = cv2.warpAffine(image, M, (iw, ih))
-   logger.storeImage("rotated", rotated)
+   if logger: logger.storeImage("rotated", rotated)
 
    cropped = image[ih - workspace.y0 - workspace.height:ih-workspace.y0,
                 workspace.x0:workspace.x0 + workspace.width]
-   logger.storeImage("cropped", cropped)
+   if logger: logger.storeImage("cropped", cropped)
    return cropped
    
 def generateMaskFile(image, outfile, logger):
    image = cv2.imread(infile)
-   mask = calculatePlantMask(image, 180, logger, morpho_it=[5, 2]) #try 50 for tool size
+   mask = calculatePlantMask(image, 180, logger, morpho_it=[20, 2]) #try 50 for tool size
    cv2.imwrite(outfile, mask)
    return mask
 
 
 # Calculates the plantmask of the image given as input.
-def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[5, 5]):
+def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[10, 5]):
 
    ExG = calculateExcessGreen(image)
    M = ExG.max()
@@ -45,15 +45,15 @@ def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[5, 
    # Smooth the image using a bilateral filter
    ExGNorm = cv2.bilateralFilter(ExGNorm, bilf[0], bilf[1], bilf[2])
 
-   logger.storeImage("exgnorm", ExGNorm)
+   if logger: logger.storeImage("exgnorm", ExGNorm)
         
    # Calculte the mask using Otsu's method (see
    # https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_thresholding/py_thresholding.html)
    th, mask = cv2.threshold(ExGNorm, 0, 255, cv2.THRESH_OTSU)
 
-   logger.storeImage("mask1", mask)
+   if logger: logger.storeImage("mask1", mask)
 
-   if logger.isLogging():
+   if logger:
       plt.subplot(1, 5, 1), plt.imshow(image)
       plt.title("image"), plt.xticks([]), plt.yticks([])
         
@@ -78,12 +78,16 @@ def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[5, 
    kernel = np.ones((3, 3)).astype(np.uint8)
    kernel[[0, 0, 2, 2], [0, 2, 2, 0]] = 0
 
+   # Reduce the surfaces, to filter small one out.
    # See https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html
-   mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=morpho_it[0])
-   logger.storeImage("mask2", mask)
+   print("morphologyEx: %d" % morpho_it[0])
+   #mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=morpho_it[0])
+   mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=20)
+   if logger: logger.storeImage("mask2", mask)
 
+   # Increase the remaining surfaces.
    mask = cv2.dilate(mask, kernel=kernel, iterations=morpho_it[1])
-   logger.storeImage("mask3", mask)
+   if logger: logger.storeImage("mask3", mask)
 
    # Invert the mask and calculate the distance to the closest black pixel.  
    # See https://docs.opencv.org/2.4.8/modules/imgproc/doc/miscellaneous_transformations.html#distancetransform
@@ -94,7 +98,7 @@ def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[5, 
    # toolsize away from a white (=plant) pixel
    mask = 255 * (1 - (dist > toolsize/2)).astype(np.uint8)
 
-   logger.storeImage("mask", mask)
+   if logger: logger.storeImage("mask", mask)
          
    return mask
 

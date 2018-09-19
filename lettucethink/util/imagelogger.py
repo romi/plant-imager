@@ -31,9 +31,14 @@ class ImageLogger(object):
 
     def setRoot(self, root):
         self.root = root
+        if root and not os.path.exists(root):
+            os.mkdir(root)
 
     def reset(self):
-        this.index = 0
+        self.index = 0
 
+    def setIndex(self, i):
+        self.index = i
+        
     def incrementIndex(self):
-        this.index += 1
+        self.index += 1

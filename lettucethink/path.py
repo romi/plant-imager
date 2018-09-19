@@ -95,7 +95,7 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
          toolPath = np.hstack([toolPath, dense_boustro[:,indexes[2*k+1]:indexes[2*k+2]]])
 
    toolPath = np.hstack([toolPath, dense_boustro[:,indexes[2*k+1]:]])
-   toolPath = rdp(toolPath.T, 1)
+   toolPath = rdp(toolPath.T, eps_toolpath)
 
    if logger:
       renderPath(mask, toolPath.T, logger.makePath("toolpath"))
@@ -110,11 +110,9 @@ def renderPath(mask, path, filepath):
    cv2.imwrite(filepath, mask)
 
 
-def saveToSVG(mask, path, filepath):
-   height = mask.shape[0]
-   width = mask.shape[1]
+def saveToSVG(path, backgroundImage, width, height, filepath):
    doc = svg.SVGDocument(filepath, width, height)
-   doc.addImage(logger.getPath("cropped"), 0, 0, width, height)
+   doc.addImage(backgroundImage, 0, 0, width, height)
    if len(path[0]) > 1:
       doc.addPath(path[0], path[1])
    doc.close()
