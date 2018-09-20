@@ -32,7 +32,7 @@ class Workspace(object):
    # Converts a point in the topcam image (the original image, not the
    # cropped and rotated image) to the coordinate in the CNC's
    # workspace in millimeters.
-   def convertImagePoint(self, x, y):
+   def convert_image_point(self, x, y):
       x -= self.x0
       y -= self.y0
       x = self.px2mm(self.c * x - self.s * y)

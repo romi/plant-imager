@@ -3,7 +3,7 @@ import zipfile
 import imageio
 import numpy as np
 
-def createArchive(files, output_archive="all.zip"):
+def create_archive(files, output_archive="all.zip"):
     zf = zipfile.ZipFile(output_archive, mode = 'w')
     try:    
         for f in files:
@@ -14,7 +14,7 @@ def createArchive(files, output_archive="all.zip"):
     return {"href": output_archive, "name": output_archive}
 
 
-def createGif(files, data="rgb", output_gif="rgb.gif"):
+def create_gif(files, data="rgb", output_gif="rgb.gif"):
     with imageio.get_writer(output_gif, mode='I',duration=1) as writer:
           for f in files:
               if f[:len(data)]==data: writer.append_data(imageio.imread(f))

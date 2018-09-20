@@ -1,6 +1,6 @@
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 0
-_version_minor = 1
+_version_minor = 2
 _version_micro = ''  # use '' for first of series, number for 1 and above
 _version_extra = 'dev'
 # _version_extra = ''  # Uncomment this for full releases
@@ -28,14 +28,6 @@ lettucethink
 
 `lettucethink` is a Python module, it gathers low-level control the LettuceThink robot and tools for the related applications.
 
-# LettuceScan
-
-In the LettuceScan application, the useful functions are controlling:
-
-- the RGBD camera,
-- the CNC for the xyz motion of the arn,
-- the bracket for pan and tilt motion.
-Please read the repository README_ on Github or our documentation
 """
 
 NAME = "lettucethink"

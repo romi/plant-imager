@@ -1,7 +1,19 @@
+import math
 import cv2
 import numpy as np
-import lettucethink.util.svgdocument as svg
+from lettucethink import svg
 import lettucethink.cv as lcv
+
+
+def circle(center_x, center_y, z, tilt, radius, num_points):
+   res = []
+   for i in range(num_points):
+       angle = 2*i*math.pi / num_points
+       x = center_x - radius * math.cos(angle)
+       y = center_y - radius * math.sin(angle)
+       res.append((x, y, z, angle, tilt))
+   return res
+
 
 # Make a boustrophedon. The path goes up and down along the y-axis,
 # and slowly moves forward in the x-direction.

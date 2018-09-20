@@ -5,7 +5,7 @@ import sys
 import urllib
 
 
-def grabImage(url, logger):
+def grab_image(url, logger):
    req = urllib.request.urlopen(url)
    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
    image = cv2.imdecode(arr, -1)
@@ -14,7 +14,7 @@ def grabImage(url, logger):
    return image
 
 
-def rotateAndCropImage(image, workspace, logger):
+def rotate_and_crop(image, workspace, logger):
    (ih, iw) = image.shape[:2]
    M = cv2.getRotationMatrix2D((workspace.x0, ih-workspace.y0), workspace.theta, 1)
    rotated = cv2.warpAffine(image, M, (iw, ih))
@@ -25,17 +25,17 @@ def rotateAndCropImage(image, workspace, logger):
    if logger: logger.storeImage("cropped", cropped)
    return cropped
    
-def generateMaskFile(image, outfile, logger):
+def save_plant_mask(image, outfile, logger):
    image = cv2.imread(infile)
-   mask = calculatePlantMask(image, 180, logger, morpho_it=[20, 2]) #try 50 for tool size
+   mask = calculate_plant_mask(image, 180, logger, morpho_it=[20, 2]) #try 50 for tool size
    cv2.imwrite(outfile, mask)
    return mask
 
 
 # Calculates the plantmask of the image given as input.
-def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[10, 5]):
+def calculate_plant_mask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[10, 5]):
 
-   ExG = calculateExcessGreen(image)
+   ExG = calculate_excess_green(image)
    M = ExG.max()
    m = ExG.min()
         
@@ -103,7 +103,7 @@ def calculatePlantMask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[10,
    return mask
 
 
-def calculateExcessGreen(colorImage):
+def calculate_excess_green(colorImage):
    # ExcessGreen (ExG) is defined for a given pixel as
    #   ExG=2g-r-b
    # with r, g, b the normalized red, green and blue components:
@@ -146,7 +146,7 @@ def calculateExcessGreen(colorImage):
    return ExG
 
 
-def plantContours(mask):
+def get_plant_contours(mask):
    # See https://docs.opencv.org/3.0.0/d4/d73/tutorial_py_contours_begin.html
    im, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
    # Reorganise the arrays + remove contours with less than 10 points???
