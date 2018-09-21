@@ -59,6 +59,16 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
    # Detect i/o points of paths passing through plants
    dense_boustro = fillWithPoints(boustro, numFillPoints)
    pathValues = mask[(dense_boustro[1]).astype(int), (dense_boustro[0]).astype(int)]
+   
+   contours=lcv.plantcont(mask.copy(), {})
+
+   #MultiMask is like mask but with multiple labels 
+   mm=np.zeros_like(mask)
+   multiMask=np.zeros_like(mask).astype(np.float64)
+   for i in range(len(contours)): 
+      multiMask+=cv2.fillPoly(mm, contours[:i], [255,255,255]).astype(np.float64)/255
+
+   pathValues_multi=multiMask[(dense_boustro[1]).astype(int),(dense_boustro[0]).astype(int)]
 
    blackPoints = np.where(pathValues==0)[0]
    if len(blackPoints) == 0:
@@ -69,18 +79,16 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
       if len(fpath) > 0:
          dense_boustro = dense_boustro[:,fpath[0]:]
          pathValues = pathValues[fpath[0]:]
-      
+         pathValues_multi=pathValues_multi[fpath[0]:]
    if pathValues[-1]: 
       fpath = np.where(pathValues==0)[0]  
       if len(fpath) > 0:
          dense_boustro = dense_boustro[:,:fpath[-1]]
          pathValues = pathValues[:fpath[-1]]
+         pathValues_multi=pathValues_multi[:fpath[-1]]
 
    indexes = np.where(np.diff(pathValues) > 0)[0]
    io_points = dense_boustro[:, indexes]
-
-   # Extract plant contours 
-   contours = lcv.plantContours(mask.copy())
 
    # Downsample and compute center of plant contours    
    s_tr = []
@@ -100,7 +108,8 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
    for k in range(int(len(io_points[0])//2)):
       pi = io_points[:,2*k]   #in point
       po = io_points[:,2*k+1] #out point
-      plant = ((.5*(pi+po)-trc)**2).sum(axis=1).argmin() #plant attached to i/o points
+      #plant = ((.5*(pi+po)-trc)**2).sum(axis=1).argmin() #plant attached to i/o points
+      plant=len(conts)-int(io_points_ids[2*k])-1
       cor_path = correctedPath(pi, po, s_tr[plant])      
       toolPath = np.hstack([toolPath,cor_path])
       if k < (len(io_points[0])/2-1):
@@ -113,7 +122,6 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
       renderPath(mask, toolPath.T, logger.makePath("toolpath"))
 
    return toolPath.T
-
    
 
 def renderPath(mask, path, filepath):
