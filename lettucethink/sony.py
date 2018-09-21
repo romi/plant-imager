@@ -3,6 +3,7 @@ import os
 import imageio
 import requests
 import json
+from io import BytesIO
 from lettucethink import hal, error
 
 class Camera(hal.Camera):
@@ -12,7 +13,7 @@ class Camera(hal.Camera):
 
     def __init__(self, api_url):
         self.available_data = {"rgb"}
-        self.api_url = api_url
+        self.api_url = api_url + "/sony/camera"
         self.start()
 
     def __api_start_rec_mode(self):
@@ -26,6 +27,7 @@ class Camera(hal.Camera):
             request_result = requests.post(self.api_url,
                               data=json.dumps({"method": "actTakePicture",
                               "params": [], "id":1, "version":"1.0"}))
+            print(request_result.content)
             result = json.loads(request_result.content)
             if 'result' in result:
                 break
@@ -36,7 +38,6 @@ class Camera(hal.Camera):
         
     def start(self):
         self.__api_start_rec_mode()
-
 
         
     def stop(self):

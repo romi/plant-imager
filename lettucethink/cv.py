@@ -2,38 +2,22 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import sys
-import urllib
+from lettucethink import log
 
-
-def grab_image(url, logger):
-   req = urllib.request.urlopen(url)
-   arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-   image = cv2.imdecode(arr, -1)
-   #image = cv2.resize(image, (820, 616))
-   if logger: logger.storeImage("topcam", image)
-   return image
-
-
-def rotate_and_crop(image, workspace, logger):
+def rotate_and_crop(image, workspace):
    (ih, iw) = image.shape[:2]
    M = cv2.getRotationMatrix2D((workspace.x0, ih-workspace.y0), workspace.theta, 1)
    rotated = cv2.warpAffine(image, M, (iw, ih))
-   if logger: logger.storeImage("rotated", rotated)
+   log.store_image("rotated", rotated)
 
    cropped = image[ih - workspace.y0 - workspace.height:ih-workspace.y0,
                 workspace.x0:workspace.x0 + workspace.width]
-   if logger: logger.storeImage("cropped", cropped)
+   log.store_image("cropped", cropped)
    return cropped
-   
-def save_plant_mask(image, outfile, logger):
-   image = cv2.imread(infile)
-   mask = calculate_plant_mask(image, 180, logger, morpho_it=[20, 2]) #try 50 for tool size
-   cv2.imwrite(outfile, mask)
-   return mask
 
 
 # Calculates the plantmask of the image given as input.
-def calculate_plant_mask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[10, 5]):
+def calculate_plant_mask(image, toolsize, bilf=[11, 5, 17], morpho_it=[10, 5]):
 
    ExG = calculate_excess_green(image)
    M = ExG.max()
@@ -45,15 +29,15 @@ def calculate_plant_mask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[1
    # Smooth the image using a bilateral filter
    ExGNorm = cv2.bilateralFilter(ExGNorm, bilf[0], bilf[1], bilf[2])
 
-   if logger: logger.storeImage("exgnorm", ExGNorm)
+   log.store_image("exgnorm", ExGNorm)
         
    # Calculte the mask using Otsu's method (see
    # https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_thresholding/py_thresholding.html)
    th, mask = cv2.threshold(ExGNorm, 0, 255, cv2.THRESH_OTSU)
 
-   if logger: logger.storeImage("mask1", mask)
+   log.store_image("mask1", mask)
 
-   if logger:
+   if log.is_enabled():
       plt.subplot(1, 5, 1), plt.imshow(image)
       plt.title("image"), plt.xticks([]), plt.yticks([])
         
@@ -69,7 +53,7 @@ def calculate_plant_mask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[1
       plt.subplot(1, 5, 5), plt.imshow(mask, 'gray')
       plt.title("mask"), plt.xticks([]), plt.yticks([])
       
-      plt.savefig(logger.makePath("plot"), dpi=300)
+      plt.savefig(log.make_image_path("plot"), dpi=300)
 
    # The kernel is a cross:
    #   0 1 0
@@ -83,11 +67,11 @@ def calculate_plant_mask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[1
    print("morphologyEx: %d" % morpho_it[0])
    #mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=morpho_it[0])
    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=20)
-   if logger: logger.storeImage("mask2", mask)
+   log.store_image("mask2", mask)
 
    # Increase the remaining surfaces.
    mask = cv2.dilate(mask, kernel=kernel, iterations=morpho_it[1])
-   if logger: logger.storeImage("mask3", mask)
+   log.store_image("mask3", mask)
 
    # Invert the mask and calculate the distance to the closest black pixel.  
    # See https://docs.opencv.org/2.4.8/modules/imgproc/doc/miscellaneous_transformations.html#distancetransform
@@ -98,7 +82,7 @@ def calculate_plant_mask(image, toolsize, logger, bilf=[11, 5, 17], morpho_it=[1
    # toolsize away from a white (=plant) pixel
    mask = 255 * (1 - (dist > toolsize/2)).astype(np.uint8)
 
-   if logger: logger.storeImage("mask", mask)
+   log.store_image("mask", mask)
          
    return mask
 

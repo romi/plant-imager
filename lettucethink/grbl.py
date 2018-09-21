@@ -72,7 +72,15 @@ class CNC(hal.CNC):
         self.y = int(y)
         self.z = int(z)
 
-        
+
+    def start_spindle(self):
+        self.send_cmd("M3 S12000")
+
+    
+    def stop_spindle(self):
+        self.send_cmd("M5")
+
+    
     def send_cmd(self, cmd):
         log.write("cnc", cmd)
         self.serial_port.write((cmd + "\n").encode())

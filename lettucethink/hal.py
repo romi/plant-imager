@@ -42,6 +42,12 @@ class CNC(object):
     def moveat(self, vx, vy, vz):
         raise NotImplmentedError
 
+    def start_spindle(self):
+        raise NotImplmentedError
+
+    def stop_spindle(self):
+        raise NotImplmentedError
+
 
 TOOL_NONE = 0
 TOOL_GIMBAL = 1

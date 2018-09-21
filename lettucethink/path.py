@@ -1,9 +1,8 @@
 import math
 import cv2
 import numpy as np
-from lettucethink import svg
+from lettucethink import svg, log
 import lettucethink.cv as lcv
-
 
 def circle(center_x, center_y, z, tilt, radius, num_points):
    res = []
@@ -27,7 +26,7 @@ def circle(center_x, center_y, z, tilt, radius, num_points):
 # forth between ystart and ystart+dy.
 #
 # xmax: the maximum value of x, at which the path should stop.
-def makeBoustrophedon(xstart, ystart, dx, dy, xmax):
+def make_boustrophedon(xstart, ystart, dx, dy, xmax):
    xoff = xstart
    x = [xstart]
    y = [ystart]
@@ -47,47 +46,47 @@ def makeBoustrophedon(xstart, ystart, dx, dy, xmax):
    return np.array([x,y])
 
 
-def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
-                                 eps_contours=5, eps_toolpath=5,
-                                 numFillPoints=5000):
+def compute_modified_boustrophedon(mask, toolsize, workspace,
+                                   eps_contours=5, eps_toolpath=5,
+                                   numFillPoints=5000):
 
    # Compute boustrophedon ignoring the plants. All coordinates are in
    # image pixels. The boustrophedon start at y=0 (top of image),
    # because that is where the CNC arm is when the image is taken.
-   boustro = makeBoustrophedon(0, 0, toolsize, workspace.height - 1, workspace.width)
+   boustro = make_boustrophedon(0, 0, toolsize, workspace.height - 1, workspace.width)
 
    # Detect i/o points of paths passing through plants
-   dense_boustro = fillWithPoints(boustro, numFillPoints)
-   pathValues = mask[(dense_boustro[1]).astype(int), (dense_boustro[0]).astype(int)]
+   dense_boustro = fill_with_points(boustro, numFillPoints)
+   path_values = mask[(dense_boustro[1]).astype(int), (dense_boustro[0]).astype(int)]
    
-   contours=lcv.plantcont(mask.copy(), {})
+   contours = lcv.get_plant_contours(mask.copy())
 
    #MultiMask is like mask but with multiple labels 
-   mm=np.zeros_like(mask)
-   multiMask=np.zeros_like(mask).astype(np.float64)
+   mm = np.zeros_like(mask)
+   multi_mask = np.zeros_like(mask).astype(np.float64)
    for i in range(len(contours)): 
-      multiMask+=cv2.fillPoly(mm, contours[:i], [255,255,255]).astype(np.float64)/255
+      multi_mask += cv2.fillPoly(mm, contours[:i], [255,255,255]).astype(np.float64)/255
 
-   pathValues_multi=multiMask[(dense_boustro[1]).astype(int),(dense_boustro[0]).astype(int)]
+   path_values_multi = multi_mask[(dense_boustro[1]).astype(int),(dense_boustro[0]).astype(int)]
 
-   blackPoints = np.where(pathValues==0)[0]
-   if len(blackPoints) == 0:
+   black_points = np.where(path_values==0)[0]
+   if len(black_points) == 0:
       return np.array([[], []])
       
-   if pathValues[0]: 
-      fpath = np.where(pathValues==0)[0]
+   if path_values[0]: 
+      fpath = np.where(path_values==0)[0]
       if len(fpath) > 0:
          dense_boustro = dense_boustro[:,fpath[0]:]
-         pathValues = pathValues[fpath[0]:]
-         pathValues_multi=pathValues_multi[fpath[0]:]
-   if pathValues[-1]: 
-      fpath = np.where(pathValues==0)[0]  
+         path_values = path_values[fpath[0]:]
+         path_values_multi = path_values_multi[fpath[0]:]
+   if path_values[-1]: 
+      fpath = np.where(path_values==0)[0]  
       if len(fpath) > 0:
          dense_boustro = dense_boustro[:,:fpath[-1]]
-         pathValues = pathValues[:fpath[-1]]
-         pathValues_multi=pathValues_multi[:fpath[-1]]
+         path_values = path_values[:fpath[-1]]
+         path_values_multi = path_values_multi[:fpath[-1]]
 
-   indexes = np.where(np.diff(pathValues) > 0)[0]
+   indexes = np.where(np.diff(path_values) > 0)[0]
    io_points = dense_boustro[:, indexes]
 
    # Downsample and compute center of plant contours    
@@ -102,43 +101,43 @@ def computeModifiedBoustrophedon(mask, toolsize, workspace, logger,
          trc = s_tr[-1].mean(axis=0)
 
    # Generate the mofified boustrophedon
-   toolPath = np.array([dense_boustro[:,0]]).T
-   toolPath = np.hstack([toolPath, dense_boustro[:,:indexes[0]]])
+   toolpath = np.array([dense_boustro[:,0]]).T
+   toolpath = np.hstack([toolpath, dense_boustro[:,:indexes[0]]])
    
    for k in range(int(len(io_points[0])//2)):
       pi = io_points[:,2*k]   #in point
       po = io_points[:,2*k+1] #out point
       #plant = ((.5*(pi+po)-trc)**2).sum(axis=1).argmin() #plant attached to i/o points
-      plant=len(conts)-int(io_points_ids[2*k])-1
-      cor_path = correctedPath(pi, po, s_tr[plant])      
-      toolPath = np.hstack([toolPath,cor_path])
+      plant = len(contours) - int(io_points_ids[2*k]) - 1
+      cor_path = corrected_path(pi, po, s_tr[plant])      
+      toolpath = np.hstack([toolpath,cor_path])
       if k < (len(io_points[0])/2-1):
-         toolPath = np.hstack([toolPath, dense_boustro[:,indexes[2*k+1]:indexes[2*k+2]]])
+         toolpath = np.hstack([toolpath, dense_boustro[:,indexes[2*k+1]:indexes[2*k+2]]])
 
-   toolPath = np.hstack([toolPath, dense_boustro[:,indexes[2*k+1]:]])
-   toolPath = rdp(toolPath.T, eps_toolpath)
+   toolpath = np.hstack([toolpath, dense_boustro[:,indexes[2*k+1]:]])
+   toolpath = rdp(toolpath.T, eps_toolpath)
 
    if logger:
-      renderPath(mask, toolPath.T, logger.makePath("toolpath"))
+      renderPath(mask, toolpath.T, logger.makePath("toolpath"))
 
-   return toolPath.T
-   
+   return toolpath.T
 
-def renderPath(mask, path, filepath):
+
+def render_path(mask, path, filepath):
    stp = np.round(path.T, 0).reshape((-1,1,2)).astype(np.int32)
    cv2.polylines(mask, [stp], False, [145,235,229],8)
    cv2.imwrite(filepath, mask)
 
 
-def saveToSVG(path, backgroundImage, width, height, filepath):
+def save_to_svg(path, bgimage, width, height, filepath):
    doc = svg.SVGDocument(filepath, width, height)
-   doc.addImage(backgroundImage, 0, 0, width, height)
+   doc.add_image(bgimage, 0, 0, width, height)
    if len(path[0]) > 1:
-      doc.addPath(path[0], path[1])
+      doc.add_path(path[0], path[1])
    doc.close()
 
    
-def fillWithPoints(xy, numberOfPoints):
+def fill_with_points(xy, numberOfPoints):
    ts = np.linspace(0, len(xy[0]), num=len(xy[0]), endpoint=True)
    nts = np.linspace(0, len(xy[0]), num=numberOfPoints, endpoint=True)
    fx = np.interp(nts, ts, xy[0])
@@ -146,7 +145,7 @@ def fillWithPoints(xy, numberOfPoints):
    return np.array([fx, fy])
 
 
-def pointLineDistance(point, start, end):
+def point_line_distance(point, start, end):
     if (start == end).all():
         return np.linalg.norm(point-start)
     else:
@@ -164,7 +163,7 @@ def rdp(points, epsilon):
     dmax = 0.0
     index = -1
     for i in range(1, len(points) - 1):
-        d = pointLineDistance(points[i], points[0], points[-1])
+        d = point_line_distance(points[i], points[0], points[-1])
         if d > dmax:
             index = i
             dmax = d
@@ -175,13 +174,12 @@ def rdp(points, epsilon):
     else:
         return np.vstack([points[0], points[-1]])
 
-
  
-def correctedPath(pi,po,tr,Nfp=200):
+def corrected_path(pi, po, tr, Nfp=200):
    """
    Substitute path passing through plants by shortest contour connecting i/o points 
    """
-   longtr = fillWithPoints(tr.T, Nfp) 
+   longtr = fill_with_points(tr.T, Nfp) 
    pi_idx = ((pi[:,np.newaxis]-longtr)**2).sum(axis=0).argmin()
    po_idx = ((po[:,np.newaxis]-longtr)**2).sum(axis=0).argmin()
 
