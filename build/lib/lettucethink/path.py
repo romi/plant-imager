@@ -119,8 +119,8 @@ def compute_modified_boustrophedon(mask, toolsize, workspace,
    toolpath = np.hstack([toolpath, dense_boustro[:,indexes[2*k+1]:]])
    toolpath = rdp(toolpath.T, eps_toolpath)
 
-   if log.is_enabled():
-      render_path(mask, toolpath.T, log.make_image_path("toolpath"))
+   if logger:
+      renderPath(mask, toolpath.T, logger.makePath("toolpath"))
 
    return toolpath.T
 
