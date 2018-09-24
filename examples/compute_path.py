@@ -1,7 +1,7 @@
 import cv2
 import sys
 import os
-from lettucethink import log, workspace, path, cv, urlcam
+from lettucethink import log, workspace, path as ltpath, cv, urlcam
 
 # main
 workspace = workspace.Workspace(-2.1, 958, 546, 1318, 1336, 660, 660)
@@ -31,7 +31,7 @@ else:
 # Here's the real processing: 
 cropped = cv.rotate_and_crop(image, workspace)
 mask = cv.calculate_plant_mask(cropped, 180, morpho_it=[5, 2])
-path = path.compute_modified_boustrophedon(mask, workspace.mm2px(80), workspace)
+path = ltpath.compute_modified_boustrophedon(mask, workspace.mm2px(80), workspace)
 
 
 # Output the results to an SVG file for further inspection
@@ -40,8 +40,8 @@ if len(path[0]) > 1:
    bgimage = log.get_last_path("cropped")
    height = mask.shape[0]
    width = mask.shape[1]
-   path.save_to_svg(path, bgimage, width, height, filepath)
-   print("Path saved in %s" % path)
+   ltpath.save_to_svg(path, bgimage, width, height, filepath)
+   print("Path saved in %s" % filepath)
 else:
    print("Empty path")
 
