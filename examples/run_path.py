@@ -15,9 +15,16 @@ def run_path(x, y):
    #if self.__moveto([0, 0, self.z1], [0, 0, -vz], delta_progress): return
 
    print("Starting boustrophedon");
-   for i in range(len(x)):
-      print("xi %d, yi %d" % (int(x[i]), int(y[i])));
-      cnc.moveto(int(x[i]), int(y[i]), 0, 50)
+   if cnc.async_enabled():
+      for i in range(len(x)):
+         print("xi %d, yi %d" % (int(x[i]), int(y[i])));
+         cnc.moveto_async(int(x[i]), int(y[i]), 0, 50)
+      cnc.wait()
+
+   else:
+      for i in range(len(x)):
+         print("xi %d, yi %d" % (int(x[i]), int(y[i])));
+         cnc.moveto(int(x[i]), int(y[i]), 0, 50)
       
    print("Stop spindle");
    cnc.stop_spindle()

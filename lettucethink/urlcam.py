@@ -1,6 +1,7 @@
 import urllib
 import cv2
 from lettucethink import hal, error
+import numpy as np
 
 class Camera(hal.Camera):
     def __init__(self, url):

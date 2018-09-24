@@ -48,7 +48,7 @@ class CNC(hal.CNC):
 
     
     def async_enabled(self):
-        return False
+        return True
 
     
     def has_velocity_control():
@@ -61,18 +61,23 @@ class CNC(hal.CNC):
         self.send_cmd("g92 x0 y0 z0")
 
                     
-    def wait(self):
-        pass # FIXME: ok? is moveto blocking?
-
-    
     def moveto(self, x, y, z):
+        self.moveto_async(x, y, z)
+        self.wait()
+
+        
+    def moveto_async(self, x, y, z):
         self.send_cmd("g0 x%s y%s z%s" % (int(x), int(y), int(z)))
-        self.send_cmd("g4 p1")
         self.x = int(x)
         self.y = int(y)
         self.z = int(z)
+        time.sleep(0.1) # Add a little sleep between calls
 
+        
+    def wait(self):
+        self.send_cmd("g4 p1")
 
+    
     def start_spindle(self):
         self.send_cmd("M3 S12000")
 
