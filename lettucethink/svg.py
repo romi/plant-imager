@@ -38,7 +38,7 @@ class SVGDocument(object):
             f.write("</svg>\n")
 
 
-def extract_path(file, name):
+def extract_path(file):
     tree = ET.parse(file)
     root = tree.getroot()
     path = root.find('{http://www.w3.org/2000/svg}path')
