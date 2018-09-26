@@ -115,9 +115,9 @@ def extract_path(file):
             elif state == "Z" or state == "z":
                 xi = x[0]
                 yi = y[0]
-                x.append(xi)
-                y.append(yi)
-            if state == -1:
-                print("An error occured")
+            x.append(xi)
+            y.append(yi)
+        if state == -1:
+            print("An error occured")
 
     return x, y
