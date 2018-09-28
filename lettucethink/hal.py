@@ -139,4 +139,20 @@ class GameController(object):
 
 
 
+class MotorController(object):
+    def __init__(self):
+        pass
+
+    def reset_encoders(self):
+        raise NotImplmentedError
+
+    def moveat(self, velocity):
+        raise NotImplmentedError
+
+    def set_wheel_velocity(self, wheel, velocity):
+        ''' wheel 0 is left, wheel 1 is right '''
+        raise NotImplmentedError
+
+
+
     
