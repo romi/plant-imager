@@ -12,7 +12,7 @@ STEPS_PER_TURN = 100
 def cmp(a, b):
     return (a > b) - (a < b)
 
-class BLGimbal(hal.CNC):
+class Gimbal(hal.CNC):
     def __init__(self, port="/dev/ttyUSB0"):
         self.port = port
         self.status = "idle"
