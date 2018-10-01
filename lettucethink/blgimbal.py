@@ -26,9 +26,9 @@ class Gimbal(hal.CNC):
         self.serial_port = serial.Serial(self.port, 115200)
         # TODO: read '#ready' ?
         while self.serial_port.in_waiting == 0:
-            time.sleep(0.1)   
-        # r = self.serial_port.readline() 
-        self.set_zero()
+            print(self.serial_port.in_waiting)
+            time.sleep(0.1)
+        self.serial_port.readline()
         self.update_status()
 
     def stop(self):
@@ -71,8 +71,8 @@ class Gimbal(hal.CNC):
 
         
     def set_target_pos(self, pan, tilt):
-        self.__send("X%d" % pan / 2 / math.pi * STEPS_PER_TURN)
-        self.__send("Y%d" % tilt / 2 / math.pi * STEPS_PER_TURN)
+        self.__send("X%d" % int(pan / 2 / math.pi * STEPS_PER_TURN))
+        self.__send("Y%d" % int(tilt / 2 / math.pi * STEPS_PER_TURN))
 
 
     def wait(self):
@@ -93,11 +93,14 @@ class Gimbal(hal.CNC):
        
             
     def update_status(self):
-        v = self.__send("v")
-        p = self.__send("p")
-        self.p = p.split(":")[-1].split(",")
-        self.v = v.split(":")[-1].split(",")
-        self.p = self.p / STEPS_PER_TURN * math.pi * 2
+        v = self.__send("v").decode('utf-8')
+        p = self.__send("p").decode('utf-8')
+        p = p.split(":")[-1].split(",")
+        v = v.split(":")[-1].split(",")
+        self.p[0] = float(p[0]) / STEPS_PER_TURN * math.pi * 2
+        self.p[1] = float(p[1]) / STEPS_PER_TURN * math.pi * 2
+        self.v[0] = int(v[0])
+        self.v[1] = int(v[1])
         if self.v[0] != 0 or self.v[1] != 0:
             self.status = "moving"
         else:
