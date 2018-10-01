@@ -26,7 +26,6 @@ class Gimbal(hal.CNC):
         self.serial_port = serial.Serial(self.port, 115200)
         # TODO: read '#ready' ?
         while self.serial_port.in_waiting == 0:
-            print(self.serial_port.in_waiting)
             time.sleep(0.1)
         self.serial_port.readline()
         self.update_status()
