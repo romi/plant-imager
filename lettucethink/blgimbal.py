@@ -19,10 +19,10 @@ class Gimbal(hal.CNC):
         self.p = [0, 0]
         self.v = [0, 0]
         self.serial_port = None
-        self.start(homing)
+        self.start()
 
         
-    def start(self, homing=True):
+    def start(self):
         self.serial_port = serial.Serial(self.port, 115200)
         # TODO: read '#ready' ?
         while self.serial_port.in_waiting == 0:
