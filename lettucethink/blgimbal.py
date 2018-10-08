@@ -6,7 +6,9 @@ import math
 import numpy as np
 from lettucethink import hal, error
 
-STEPS_PER_TURN = 100
+STEPS_PER_TURN = 50
+ZERO_PAN=0
+ZERO_TILT=2
 
 # cmp() is no longer defined in Python3 (silly)
 def cmp(a, b):
@@ -70,8 +72,8 @@ class Gimbal(hal.CNC):
 
         
     def set_target_pos(self, pan, tilt):
-        self.__send("X%d" % int(pan / 2 / math.pi * STEPS_PER_TURN))
-        self.__send("Y%d" % int(tilt / 2 / math.pi * STEPS_PER_TURN))
+        self.__send("X%d" % ZERO_PAN + int(pan / 2 / math.pi * STEPS_PER_TURN))
+        self.__send("Y%d" % ZERO_TILT + int(tilt / 2 / math.pi * STEPS_PER_TURN))
 
 
     def wait(self):
@@ -96,8 +98,10 @@ class Gimbal(hal.CNC):
         p = self.__send("p").decode('utf-8')
         p = p.split(":")[-1].split(",")
         v = v.split(":")[-1].split(",")
-        self.p[0] = float(p[0]) / STEPS_PER_TURN * math.pi * 2
-        self.p[1] = float(p[1]) / STEPS_PER_TURN * math.pi * 2
+        print(p)
+        self.p[0] = (int(p[0]) - ZERO_PAN) / STEPS_PER_TURN * math.pi * 2
+        self.p[1] = (int(p[1]) - ZERO_TILT) / STEPS_PER_TURN * math.pi * 2
+        print("p="+ str(self.p))
         self.v[0] = int(v[0])
         self.v[1] = int(v[1])
         if self.v[0] != 0 or self.v[1] != 0:
