@@ -6,7 +6,7 @@ import math
 import numpy as np
 from lettucethink import hal, error
 
-STEPS_PER_TURN = 50
+STEPS_PER_TURN = 360
 ZERO_PAN=0
 ZERO_TILT=2
 
