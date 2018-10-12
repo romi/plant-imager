@@ -72,8 +72,8 @@ class Gimbal(hal.CNC):
 
         
     def set_target_pos(self, pan, tilt):
-        self.__send("X%d" % ZERO_PAN + int(pan / 2 / math.pi * STEPS_PER_TURN))
-        self.__send("Y%d" % ZERO_TILT + int(tilt / 2 / math.pi * STEPS_PER_TURN))
+        self.__send("X%d" % (ZERO_PAN + int(pan / 2 / math.pi * STEPS_PER_TURN)))
+        self.__send("Y%d" % (ZERO_TILT + int(tilt / 2 / math.pi * STEPS_PER_TURN)))
 
 
     def wait(self):
