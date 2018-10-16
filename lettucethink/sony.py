@@ -1,4 +1,3 @@
-import gphoto2 as gp
 import os
 import imageio
 import requests
