@@ -14,13 +14,14 @@ def animate_scan(files, output="scan.gif"):
 
     
 class Scanner(object):
-    def __init__(self, cnc, gimbal, camera, scan_dir="scan"):
+    def __init__(self, cnc, gimbal, camera, scan_dir="scan", inverted=False):
         self.cnc = cnc
         self.gimbal = gimbal
         self.camera = camera
         self.set_scan_dir(scan_dir)
         self.reset_files()
         self.set_default_filetype("tif")
+        self.inverted=inverted
         
     def get_position(self):
         x, y, z = self.cnc.get_position()
@@ -105,6 +106,8 @@ class Scanner(object):
         :param suffix: will be added to the file name
         :param wait_time: time to wait after movement before taking the shot
         """
+        if self.inverted:
+            pan = (math.pi - pan) % (2*math.pi)
         self.is_busy = True
         if self.cnc.async_enabled():
             self.cnc.moveto_async(x, y, z)

@@ -58,7 +58,7 @@ class PositionModule(object):
 
     
     def update_wheel_odometry(self, x):
-        raise NotImplmentedError
+        raise NotImplementedError
 
 
     

@@ -7,7 +7,7 @@ import math
 def rad(a):
     return math.pi * a / 180
 
-dev = "/dev/ttyUSB1"
+dev = "/dev/ttyUSB0"
 
 print("Opening connection to gimbal on %s" % dev)
 gimbal = dynamixel.Gimbal(dev, mode = "position")

@@ -17,7 +17,7 @@ class Gimbal(hal.Gimbal):
         dev = "/dev/ttyUSB1", baud_rate=1000000,
         mode = "position", pan_id=1, tilt_id=2, pan0=0, tilt0=1024):
         self.baud_rate = baud_rate
-        self.dev = "/dev/ttyUSB1"
+        self.dev = dev
         self.mode = mode
         self.port = xl430.USB2Dynamixel(dev)
         self.port.start(baud_rate) #Start USB serial connection
@@ -39,7 +39,7 @@ class Gimbal(hal.Gimbal):
         self.port.stop()
 
         
-    def has_position_control():
+    def has_position_control(self):
         # TODO: easy to add
         return self.mode == "position"
 
@@ -90,7 +90,7 @@ class Gimbal(hal.Gimbal):
         self.tilt.set_torque_enable(True)
         
     
-    def has_velocity_control():
+    def has_velocity_control(self):
         return self.mode == "velocity"
 
     
@@ -119,22 +119,22 @@ class Gimbal(hal.Gimbal):
 
     
     
-def set_boud_rate(rate, dev = "/dev/ttyUSB1"):
+def set_baud_rate(rate, dev = "/dev/ttyUSB1"):
     usb = xl430.USB2Dynamixel(dev)
     usb.start() #Start USB serial connection
 
     pan = xl430.Actuator(usb, 1) # get the motor with id 1
     pan.set_torque_enable(False) # deactivate motor
     print("baud rate %d" % pan.get_baud_rate())
-    pan.set_baud_rate(v)
+    pan.set_baud_rate(rate)
 
     tilt = xl430.Actuator(usb, 2) # get the motor with id 2
     tilt.set_torque_enable(False) # deactivate motor
     print("baud rate %d" % tilt.get_baud_rate())
-    tilt.set_baud_rate(v)
+    tilt.set_baud_rate(rate)
 
     
-def get_boud_rate(rate, dev = "/dev/ttyUSB1"):
+def get_baud_rate(rate, dev = "/dev/ttyUSB1"):
     usb = xl430.USB2Dynamixel(dev)
     # Start USB serial connection
     #usb.start(0) 

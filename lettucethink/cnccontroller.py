@@ -24,8 +24,8 @@ class CNC(hal.CNC):
         self.serial_port = serial.Serial(self.port, 115200)
         # TODO: read '#ready' ?
         while self.serial_port.in_waiting == 0:
-            time.sleep(0.1)   
-        r = self.serial_port.readline() 
+            time.sleep(0.1)
+        r = self.serial_port.readline()
         if homing: self.home()
         self.set_zero()
         self.update_status()

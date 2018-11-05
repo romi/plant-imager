@@ -6,7 +6,9 @@ import math
 import numpy as np
 from lettucethink import hal, error
 
-STEPS_PER_TURN = 100
+STEPS_PER_TURN = 360
+ZERO_PAN=0
+ZERO_TILT=2
 
 # cmp() is no longer defined in Python3 (silly)
 def cmp(a, b):
@@ -26,9 +28,8 @@ class Gimbal(hal.CNC):
         self.serial_port = serial.Serial(self.port, 115200)
         # TODO: read '#ready' ?
         while self.serial_port.in_waiting == 0:
-            time.sleep(0.1)   
-        # r = self.serial_port.readline() 
-        self.set_zero()
+            time.sleep(0.1)
+        self.serial_port.readline()
         self.update_status()
 
     def stop(self):
@@ -71,8 +72,8 @@ class Gimbal(hal.CNC):
 
         
     def set_target_pos(self, pan, tilt):
-        self.__send("X%d" % pan / 2 / math.pi * STEPS_PER_TURN)
-        self.__send("Y%d" % tilt / 2 / math.pi * STEPS_PER_TURN)
+        self.__send("X%d" % (ZERO_PAN + int(pan / 2 / math.pi * STEPS_PER_TURN)))
+        self.__send("Y%d" % (ZERO_TILT + int(tilt / 2 / math.pi * STEPS_PER_TURN)))
 
 
     def wait(self):
@@ -93,11 +94,16 @@ class Gimbal(hal.CNC):
        
             
     def update_status(self):
-        v = self.__send("v")
-        p = self.__send("p")
-        self.p = p.split(":")[-1].split(",")
-        self.v = v.split(":")[-1].split(",")
-        self.p = self.p / STEPS_PER_TURN * math.pi * 2
+        v = self.__send("v").decode('utf-8')
+        p = self.__send("p").decode('utf-8')
+        p = p.split(":")[-1].split(",")
+        v = v.split(":")[-1].split(",")
+        print(p)
+        self.p[0] = (int(p[0]) - ZERO_PAN) / STEPS_PER_TURN * math.pi * 2
+        self.p[1] = (int(p[1]) - ZERO_TILT) / STEPS_PER_TURN * math.pi * 2
+        print("p="+ str(self.p))
+        self.v[0] = int(v[0])
+        self.v[1] = int(v[1])
         if self.v[0] != 0 or self.v[1] != 0:
             self.status = "moving"
         else:
