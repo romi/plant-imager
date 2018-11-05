@@ -13,11 +13,14 @@ import math
 STEPS_PER_TURN = 4096
 
 class Gimbal(hal.Gimbal):
-    def __init__(self, dev = "/dev/ttyUSB1", mode = "position", pan_id=1, tilt_id=2, pan0=0, tilt0=1024):
+    def __init__(self,
+        dev = "/dev/ttyUSB1", baud_rate=1000000,
+        mode = "position", pan_id=1, tilt_id=2, pan0=0, tilt0=1024):
+        self.baud_rate = baud_rate
         self.dev = "/dev/ttyUSB1"
         self.mode = mode
         self.port = xl430.USB2Dynamixel(dev)
-        self.port.start(1000000) #Start USB serial connection
+        self.port.start(baud_rate) #Start USB serial connection
         self.pan_zero = pan0
         self.tilt_zero = tilt0
         self.pan_id = pan_id
@@ -26,7 +29,7 @@ class Gimbal(hal.Gimbal):
 
 
     def start(self):    
-        self.port.start(1000000) #Start USB serial connection
+        self.port.start(self.baud_rate) #Start USB serial connection
         self.pan = xl430.Actuator(self.port, self.pan_id)
         self.tilt = xl430.Actuator(self.port, self.tilt_id)
         self.set_mode(self.mode)
