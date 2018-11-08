@@ -1,14 +1,10 @@
-from lettucethink import error
-#from lettucethink import db, error
-import db
-
 import os
 import sys
 import json
 import copy 
 import imageio 
-import datetime
 from shutil import copyfile
+from lettucethink import error, db
 
 #
 # Assuming the following file structure:
@@ -122,7 +118,7 @@ class Scan(db.Scan):
             raise error.Error("Invalid id")
         if self.get_fileset(id) != None:
             raise error.Error("Duplicate fileset name: %s" % id)
-        fileset = Fileset(scan.db, self, id)
+        fileset = Fileset(self.db, self, id)
         _make_fileset(fileset)
         self.filesets.append(fileset)
         self.store()
@@ -501,29 +497,3 @@ def _store_scan(scan):
 
 def _is_valid_id(id):
     return True # haha  (FIXME!)
-
-##################################################################
-
-db = DB(sys.argv[1])
-
-for scan in db.get_scans():
-    print("Scan '%s'" % scan.get_id())
-    for fileset in scan.get_filesets():
-        print("- Fileset '%s'" % fileset.get_id())
-        for file in fileset.get_files():
-            print("      File '%s'" % file.get_id())
-            file.set_metadata("foo", "bar")
-            print(file.get_metadata("foo"))
-            print(file.get_metadata("fox"))
-
-now = datetime.datetime.now()
-id =  now.strftime("%Y%m%d-%H%M%S")
-
-scan = db.create_scan(id)
-scan.set_metadata("hardware", {"version": "0.1", "camera": "RX0", "gimbal": "dynamixel"})
-scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
-fileset = scan.create_fileset("images")
-file = fileset.create_file("00001")
-file.write_text("jpg", "tada")
-
-
