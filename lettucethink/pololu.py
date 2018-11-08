@@ -29,10 +29,10 @@ class Gimbal(hal.CNC):
         return False
     
     def moveto_async(self, x, y, z):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def wait(self):
-        raise NotImplmentedError # TODO
+        raise NotImplementedError # TODO
 
     def moveto(self, pan, tilt):
         self.send_cmd("p%s;t%s"%(int(10*pan), int(10*tilt)))

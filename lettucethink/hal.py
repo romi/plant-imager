@@ -15,7 +15,7 @@ class CNC(object):
     def home(self):
         raise NotImplementedError
     
-    def has_position_control():
+    def has_position_control(self):
         raise NotImplementedError
     
     def get_position(self):
@@ -33,7 +33,7 @@ class CNC(object):
     def wait(self):
         raise NotImplementedError
 
-    def has_velocity_control():
+    def has_velocity_control(self):
         raise NotImplementedError
     
     def get_velocity(self):
@@ -57,7 +57,7 @@ class Tool(object):
     def __init__(self, type):
         self.type = type
     
-    def get_tooltype():
+    def get_tooltype(self):
         self.type
 
         
@@ -65,7 +65,7 @@ class Gimbal(Tool):
     def __init__(self):
         Tool.__init__(TOOL_GIMBAL)
     
-    def has_position_control():
+    def has_position_control(self):
         raise NotImplementedError
     
     def get_position(self):
@@ -83,7 +83,7 @@ class Gimbal(Tool):
     def wait(self):
         raise NotImplementedError
 
-    def has_velocity_control():
+    def has_velocity_control(self):
         raise NotImplementedError
     
     def get_velocity(self):
