@@ -7,46 +7,46 @@ class CNC(object):
         pass
 
     def start(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def stop(self):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def home(self):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def has_position_control():
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def get_position(self):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def moveto(self, x, y, z):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def async_enabled(self):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def moveto_async(self, x, y, z):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def wait(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def has_velocity_control():
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def get_velocity(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def moveat(self, vx, vy, vz):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def start_spindle(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def stop_spindle(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
 
 TOOL_NONE = 0
@@ -66,31 +66,31 @@ class Gimbal(Tool):
         Tool.__init__(TOOL_GIMBAL)
     
     def has_position_control():
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def get_position(self):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def moveto(self, pan, tilt):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def async_enabled(self, x, y, z):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def moveto_async(self, pan, tilt):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def wait(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def has_velocity_control():
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def get_velocity(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def moveat(self, vpan, vtilt):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     
 class Camera(object):
@@ -98,16 +98,16 @@ class Camera(object):
         pass
 
     def start(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def stop(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def grab(self, view=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def get_views(self):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     def store_views(self, dir, filetype, suffix=None):
         files = []
@@ -132,10 +132,10 @@ class GameController(object):
         pass
 
     def set_callback(self, name, callback):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def handle_events(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
 
 
@@ -144,15 +144,12 @@ class MotorController(object):
         pass
 
     def reset_encoders(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def moveat(self, velocity):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def set_wheel_velocity(self, wheel, velocity):
         ''' wheel 0 is left, wheel 1 is right '''
-        raise NotImplmentedError
+        raise NotImplementedError
 
-
-
-    
