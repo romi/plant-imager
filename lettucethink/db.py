@@ -3,19 +3,19 @@ class DB(object):
         pass
 
     def connect(self, login_data=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def disconnect(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def get_scans(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def get_scan(self, id):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def create_scan(self, id):
-        raise NotImplmentedError
+        raise NotImplementedError
 
 
 class Scan(object):
@@ -27,19 +27,19 @@ class Scan(object):
         return self.id
 
     def get_filesets(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def get_fileset(self, id):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def get_metadata(self, key=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def set_metadata(self, data, value=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def create_fileset(self, id):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     
 class Fileset(object):
@@ -58,16 +58,16 @@ class Fileset(object):
         return self.scan
 
     def get_files(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def get_metadata(self, key=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def set_metadata(self, data, value=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def create_file(self, id):
-        raise NotImplmentedError
+        raise NotImplementedError
     
     
 class File(object):
@@ -86,29 +86,29 @@ class File(object):
         return self.fileset
 
     def get_metadata(self, key=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def set_metadata(self, data, value=None):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def write_image(self, type, image):
-        raise NotImplmentedError
+        raise NotImplementedError
         
     def write_text(self, type, string):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def write_bytes(self, type, buffer):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def import_file(self, path):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def read_image(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def read_text(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
     def read_bytes(self):
-        raise NotImplmentedError
+        raise NotImplementedError
 
