@@ -125,6 +125,16 @@ class Camera(object):
             files.append(filepath)
         return files
 
+    def store_views_db(self, scan, filetype, suffix=None):
+        files = []
+        for view in self.get_views():
+            image = self.grab(view)
+            fileset = scan.get_fileset("images")
+            file = fileset.create_file("%s-%s" % (view, suffix))
+            file.write_image(filetype, image)
+            files.append(file)
+        return files
+
 
     
 class GameController(object):
