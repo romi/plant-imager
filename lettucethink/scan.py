@@ -18,9 +18,11 @@ class Scanner(object):
         self.cnc = cnc
         self.gimbal = gimbal
         self.camera = camera
-        self.scan=scan
+        self.scan_db =scan
         self.set_default_filetype("tif")
         self.inverted=inverted
+        self.scan_db.create_fileset("images")
+        self.scan_count = 0
 
 
     def get_position(self):
@@ -64,8 +66,6 @@ class Scanner(object):
         self.gimbal.moveto(0, 0) # FIXME
         self.cnc.moveto(*path[0][0:3])
         
-        return self.files
-
     
     def scan_at(self, x, y, z, pan, tilt, filetype=None, suffix=None, wait_time=1):
         """
@@ -98,7 +98,7 @@ class Scanner(object):
 
         time.sleep(wait_time)
 
-        filelist = self.camera.store_views_db(self.scan, filetype, suffix)
+        filelist = self.camera.store_views_db(self.scan_db, filetype, suffix)
         for file in filelist:
             file.set_metadata("pose", [x, y, z, pan, tilt])
 
