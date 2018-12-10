@@ -1,4 +1,46 @@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+#
+#       File author(s):
+#           Peter Hanappe <peter@hanappe.com>
+#
+#       File contributor(s):
+#           Peter Hanappe <peter@hanappe.com>
+#           Jonathan Legrand <jonathan.legrand@ens-lyon.fr>
+#
+#       File maintainer(s):
+#           Peter Hanappe <peter@hanappe.com>
+#
+#       Distributed under XXXXX license.
+#
+# ------------------------------------------------------------------------------
+
+
+"""
+API for the database module in the ROMI project.
+"""
+
+
 class DB(object):
+    """Class defining the database object `DB`.
+
+    Abstract class defining the API used to communicate with a database in the
+    ROMI project.
+
+    Methods
+    -------
+    connect:
+        connect to the database
+    disconnect:
+        disconnect from the database
+    get_scans:
+        get a list of scans save in the database
+    get_scan:
+        get a scan save in the database
+    create_scan:
+        create a new scan object in the database
+    """
+
     def __init__(self):
         pass
 
@@ -19,6 +61,22 @@ class DB(object):
 
 
 class Scan(object):
+    """Class defining the scan object `Scan`.
+
+    Abstract class defining the API used to represent a scan in the ROMI project.
+
+    Attributes
+    ----------
+    db : DB
+        database where to find the scan
+    id : int
+        id of the scan in the database `DB`
+
+    Methods
+    -------
+
+    """
+
     def __init__(self, db, id):
         self.db = db
         self.id = id
@@ -41,8 +99,27 @@ class Scan(object):
     def create_fileset(self, id):
         raise NotImplementedError
 
-    
+
 class Fileset(object):
+    """Class defining a set of files `Fileset` contained in a `Scan`.
+
+    Abstract class defining the API used to represent a set of files in the ROMI
+    project.
+
+    Attributes
+    ----------
+    db : DB
+        database where to find the scan
+    id : int
+        id of the scan in the database `DB`
+    scan : Scan
+        scan containing the set of files
+
+    Notes
+    -----
+    Files can be 2D images, RGB pictures, ...
+    """
+
     def __init__(self, db, scan, id):
         self.db = db
         self.scan = scan
@@ -68,9 +145,23 @@ class Fileset(object):
 
     def create_file(self, id):
         raise NotImplementedError
-    
-    
+
+
 class File(object):
+    """Class defining a file `File` contained in a `Fileset`.
+
+    Abstract class defining the API used to represent a file in the ROMI project.
+
+    Attributes
+    ----------
+    db : DB
+        database where to find the scan
+    id : int
+        id of the scan in the database `DB`
+    fileset : Fileset
+        set of file containing the file
+    """
+
     def __init__(self, db, fileset, id):
         self.db = db
         self.fileset = fileset
@@ -93,7 +184,7 @@ class File(object):
 
     def write_image(self, type, image):
         raise NotImplementedError
-        
+
     def write_text(self, type, string):
         raise NotImplementedError
 
@@ -111,4 +202,3 @@ class File(object):
 
     def read_bytes(self):
         raise NotImplementedError
-
