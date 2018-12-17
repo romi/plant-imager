@@ -139,6 +139,11 @@ class Fileset(db.Fileset):
     def get_files(self):
         return self.files
 
+    def get_file(self, id):
+        ids = [f.id for f in self.files]
+        if id not in ids:
+            return None
+        return self.files[ids.index(id)]
 
     def get_metadata(self, key):
         return _get_metadata(self.metadata, key)

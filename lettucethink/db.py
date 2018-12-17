@@ -60,6 +60,9 @@ class Fileset(object):
     def get_files(self):
         raise NotImplementedError
 
+    def get_file(self, id):
+        raise NotImplementedError
+
     def get_metadata(self, key=None):
         raise NotImplementedError
 
