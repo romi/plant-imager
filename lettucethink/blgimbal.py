@@ -6,30 +6,31 @@ import math
 import numpy as np
 from lettucethink import hal, error
 
-STEPS_PER_TURN = 360
-ZERO_PAN=0
-ZERO_TILT=2
 
 # cmp() is no longer defined in Python3 (silly)
 def cmp(a, b):
     return (a > b) - (a < b)
 
 class Gimbal(hal.CNC):
-    def __init__(self, port="/dev/ttyUSB0"):
+    def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=50, zero_pan=25, zero_tilt=0):
         self.port = port
         self.status = "idle"
         self.p = [0, 0]
         self.v = [0, 0]
         self.serial_port = None
+        self.zero_pan = zero_pan
+        self.zero_tilt = zero_tilt
+        self.has_tilt = has_tilt
+        self.steps_per_turn = steps_per_turn
         self.start()
 
         
     def start(self):
         self.serial_port = serial.Serial(self.port, 115200)
         # TODO: read '#ready' ?
-        while self.serial_port.in_waiting == 0:
-            time.sleep(0.1)
-        self.serial_port.readline()
+        # while self.serial_port.in_waiting == 0:
+            # time.sleep(0.1)
+        # self.serial_port.readline()
         self.update_status()
 
     def stop(self):
@@ -68,12 +69,14 @@ class Gimbal(hal.CNC):
     
     def moveat(self, vpan, vtilt):
         self.__send("x%d" % vpan)
-        self.__send("y%d" % vtilt)
+        if self.has_tilt:
+            self.__send("y%d" % vtilt)
 
         
     def set_target_pos(self, pan, tilt):
-        self.__send("X%d" % (ZERO_PAN + int(pan / 2 / math.pi * STEPS_PER_TURN)))
-        self.__send("Y%d" % (ZERO_TILT + int(tilt / 2 / math.pi * STEPS_PER_TURN)))
+        self.__send("X%d" % (self.zero_pan + int(pan / 2 / math.pi * self.steps_per_turn)))
+        if self.has_tilt:
+            self.__send("Y%d" % (ZERO_TILT + int(tilt / 2 / math.pi * self.steps_per_turn)))
 
 
     def wait(self):
@@ -98,10 +101,10 @@ class Gimbal(hal.CNC):
         p = self.__send("p").decode('utf-8')
         p = p.split(":")[-1].split(",")
         v = v.split(":")[-1].split(",")
-        print(p)
-        self.p[0] = (int(p[0]) - ZERO_PAN) / STEPS_PER_TURN * math.pi * 2
-        self.p[1] = (int(p[1]) - ZERO_TILT) / STEPS_PER_TURN * math.pi * 2
-        print("p="+ str(self.p))
+        # print(p)
+        self.p[0] = (int(p[0]) - self.zero_pan) / self.steps_per_turn * math.pi * 2
+        self.p[1] = (int(p[1]) - self.zero_tilt) / self.steps_per_turn * math.pi * 2
+        # print("p="+ str(self.p))
         self.v[0] = int(v[0])
         self.v[1] = int(v[1])
         if self.v[0] != 0 or self.v[1] != 0:
