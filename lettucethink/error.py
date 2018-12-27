@@ -1,6 +1,6 @@
 """
 
-    lettucethink-python - Python tools the LettuceThink robot
+    lettucethink-python - Python tools for the LettuceThink robot
 
     Copyright (C) 2018 Sony Computer Science Laboratories
     Authors: D. Colliaux, T. Wintz, P. Hanappe
@@ -22,7 +22,6 @@
     <https://www.gnu.org/licenses/>.
 
 """    
-
  
 class Error(Exception):
     """Base class for exceptions in this module."""
