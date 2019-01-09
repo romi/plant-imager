@@ -37,7 +37,7 @@ class Camera(hal.Camera):
     def stop(self):
         pass
     
-    def get_views(self):
+    def get_channels(self):
         return ["rgb"]
 
     def grab(self, view=0):

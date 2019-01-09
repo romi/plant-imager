@@ -88,7 +88,7 @@ class Camera(hal.Camera):
         self.is_started = False
 
         
-    def get_views(self, index):
+    def get_channels(self, index):
         return self.available_views
 
     

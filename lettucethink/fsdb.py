@@ -119,10 +119,12 @@ class Scan(db.Scan):
         return self.filesets # Copy?
 
     
-    def get_fileset(self, id):
+    def get_fileset(self, id, create=False):
         for fileset in self.filesets:
             if fileset.get_id() == id:
                 return fileset
+        if create:
+            return self.create_fileset(id)
         return None
 
 

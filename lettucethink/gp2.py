@@ -52,7 +52,7 @@ class Camera(hal.Camera):
         self.camera = None
 
         
-    def get_views(self):
+    def get_channels(self):
         return ["rgb"]
 
 
