@@ -143,6 +143,7 @@ class Gimbal(hal.CNC):
     def __send(self, s):
         if not self.serial_port:
             raise Error("CNC has not been started")
+        self.serial_port.reset_input_buffer()
         r = False
         try:
             self.serial_port.write(bytes('%s\n' % s, 'utf-8'))

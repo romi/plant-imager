@@ -27,6 +27,7 @@ import imageio
 import requests
 import time
 import json
+import subprocess
 from io import BytesIO
 from lettucethink import hal, error
 
@@ -38,8 +39,10 @@ class SonyCamError(Exception):
         self.message = message
 
 class SonyCamAPI(object):
-    def __init__(self, api_url, timeout=2):
-        self.api_url = api_url + '/sony/'
+    def __init__(self, device_ip, api_port, timeout=2):
+        self.device_ip = device_ip
+        self.api_port = api_port
+        self.api_url = 'http://' + device_ip + ':' + api_port + '/sony/'
         self.timeout = timeout
         method_types = self.get_method_types()
         self.supported_methods = [x[0] for x in method_types]
@@ -141,15 +144,39 @@ class SonyCamAPI(object):
         while not self.get_camera_status() == 'ContentsTransfer':
             continue
 
+    def adb_transfer_pictures(self, count=1):
+        """
+        Transfer the latest count pictures from the camera
+        ADB shell must be enabled on the camera
+        """
+        subprocess.run(['adb', 'connect', self.device_ip])
+        x = subprocess.run(['adb', 'shell', 'ls /sdcard/DCIM/100MSDCF'], capture_output=True)
+        files = x.stdout.split()
+        files = list(map(lambda x: x.decode(), files))
+        files.sort()
+        files = files[-count:]
+        images = []
+        for f in files:
+            subprocess.run(['adb', 'pull', '/sdcard/DCIM/100MSDCF/' + f, '/tmp/'])
+            im = imageio.imread('/tmp/' + f)
+            images.append(im)
+            print(f)
+        return images
+
 
 class Camera(hal.Camera):
     '''
     Sony Remote Control API.
     ''' 
 
-    def __init__(self, api_url, timeout=10, postview=False):
-        self.sony_cam = SonyCamAPI(api_url, timeout)
+    def __init__(self, device_ip,
+                api_port,
+                timeout=10,
+                postview=False,
+                use_adb=False):
+        self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
+        self.use_adb = use_adb
         self.data = []
         self.start()
           
@@ -184,24 +211,29 @@ class Camera(hal.Camera):
         return data_item
 
     def retrieve_original_images(self):
-        self.sony_cam.start_transfer_mode()
-        uri = self.sony_cam.get_source_list()[0]['source']
-        content_list = self.sony_cam.get_content_list(count=len(self.data), uri=uri)
-        for data_item in self.data:
-            file_found = False
-            filename = data_item['filename']
-            for content in content_list:
-                content = content['content']['original'][0]
-                if content['fileName'] == filename:
-                    url = content['url']
-                    img = imageio.imread(BytesIO(requests.get(url).content))
-                    data_item['data']['rgb'] = img
-                    file_found = True
-                    break
-            if not file_found:
-                raise Exception('Could not find file %s on camera'%filename)
+        if not self.use_adb:
+            self.sony_cam.start_transfer_mode()
+            uri = self.sony_cam.get_source_list()[0]['source']
+            content_list = self.sony_cam.get_content_list(count=len(self.data), uri=uri)
+            for data_item in self.data:
+                file_found = False
+                filename = data_item['filename']
+                for content in content_list:
+                    content = content['content']['original'][0]
+                    if content['fileName'] == filename:
+                        url = content['url']
+                        img = imageio.imread(BytesIO(requests.get(url).content))
+                        data_item['data']['rgb'] = img
+                        file_found = True
+                        break
+                if not file_found:
+                    raise Exception('Could not find file %s on camera'%filename)
 
-        self.sony_cam.start_shoot_mode()
+            self.sony_cam.start_shoot_mode()
+        else:
+            images = self.sony_cam.adb_transfer_pictures(count=len(self.data))
+            for i, data_item in enumerate(self.data):
+                data_item['data']['rgb'] = images[i]
         return self.data
 
     def get_data(self):
