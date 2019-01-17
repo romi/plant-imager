@@ -61,7 +61,8 @@ from shutil import copyfile
 
 import imageio
 
-from lettucethink import error, db
+from lettucethink import db
+from lettucethink import error
 
 
 class DB(db.DB):
@@ -615,7 +616,8 @@ if __name__ == '__main__':
 
     scan = db.create_scan(id)
     scan.set_metadata("hardware",
-                      {"version": "0.1", "camera": "RX0", "gimbal": "dynamixel"})
+                      {"version": "0.1", "camera": "RX0",
+                       "gimbal": "dynamixel"})
     scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
     fileset = scan.create_fileset("images")
     file = fileset.create_file("00001")
