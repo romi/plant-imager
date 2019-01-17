@@ -46,6 +46,7 @@ class DB(object):
         get a scan save in the database
     create_scan:
         create a new scan object in the database
+
     """
 
     def __init__(self):
@@ -154,6 +155,7 @@ class Fileset(object):
         set metadata associated to ``Fileset``
     create_file
         create a file in the given ``Fileset``
+
     """
 
     def __init__(self, db, scan, id):

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 #       File author(s):
-#           Jonathan Legrand <jonathan.legrand@ens-lyon.fr>
+#           Peter Hanappe <peter@hanappe.com>
 #
 #       File contributor(s):
 #           Peter Hanappe <peter@hanappe.com>
@@ -15,67 +15,155 @@
 #
 # ------------------------------------------------------------------------------
 
+"""Implementation of a database as a local file structure.
 
-"""
-OMERO CLI (Command Line Interface) implementation for the database module in
-the ROMI project.
+Assuming the following file structure:
 
-Notes
------
-Zeroc-Ice install for Python3 in conda env:
-``conda install -c bioconda zeroc-ice=3.6.3=py35_0``
+2018/
+2018/images/
+2018/images/rgb0001.jpg
+2018/images/rgb0002.jpg
 
-The CLI is currently bundled:
-  * with the OMERO.server including all functionalities of the CLI
-  * with the OMERO.python including all functionalities of the CLI except for the import functionality
+The 2018/files.json file then contains the following structure:
 
-Matching version of OMERO server & Zeroc-Ice installed:
-OMERO.server-5.4.9-ice36-b101
-https://downloads.openmicroscopy.org/omero/5.4.9/artifacts/OMERO.server-5.4.9-ice36-b101.zip
+{
+    "filesets": [
+        {
+            "id": "images",
+            "files": [
+                {
+                    "id": "rgb00001",
+                    "file": "rgb00001.jpg"
+                },
+                {
+                    "id": "rgb00002",
+                    "file": "rgb00002.jpg"
+                }
+            ]
+        }
+    ]
+}
 
-OMERO.py-5.4.9-ice36-b101
-https://downloads.openmicroscopy.org/omero/5.4.9/artifacts/OMERO.py-5.4.9-ice36-b101.zip
+The metadata of the scan, filesets, and images are stored all as
+json objects in a separate directory:
 
-Unzip one of them, and test connectivity:
-
-
+2018/metadata/
+2018/metadata/metadata.json
+2018/metadata/images.json
+2018/metadata/images/rgb0001.json
+2018/metadata/images/rgb0002.json
 """
 
 import copy
 import json
 import os
-import sys
 from shutil import copyfile
 
-from lettucethink import db
+import imageio
+
 from lettucethink import error
+from lettucethink.db import db_api as db
 
 
 class DB(db.DB):
+    """Class defining the database object `DB`.
 
-    def __init__(self, url, login=None, pwd=None, port=4064):
-        self.url = url
-        self.login = login
-        self.pwd = pwd
-        self.port = port
+    Implementation of a database as a simple file structure with:
+      * `images` folder containing image files
+      * `metadata` folder containing JSON metadata associated to image files
+
+    Attributes
+    ----------
+    basedir : str
+        path to the base directory containing the database
+    scans : list
+        list of `Scan` objects found in the database
+
+    Methods
+    -------
+    connect:
+        no connection required here
+    disconnect:
+        no connection required here
+    get_scans:
+        get the list of scans saved in the database
+    get_scan:
+        get a scan save in the database
+    create_scan:
+        create a new scan object in the database
+    """
+
+    def __init__(self, basedir):
+        """Database constructor.
+
+        Check given ``basedir`` directory exists and load accessible ``Scan``
+        objects.
+
+        Parameters
+        ----------
+        basedir : str
+            root directory of the database
+
+        Examples
+        --------
+        >>> from lettucethink.fsdb import DB
+        >>> db = DB('$HOME/example_path/')
+
+        """
+        if not os.path.isdir(basedir):
+            raise error.Error("Not a directory: %s" % basedir)
+        self.basedir = basedir
         self.scans = _load_scans(self)
 
     def connect(self, login_data=None):
+        """No need to connect to HDD."""
         pass
 
     def disconnect(self):
+        """No need to disconnect from HDD."""
         pass
 
     def get_scans(self):
+        """Get the list of scans saved in the database.
+
+        Returns
+        -------
+        scans : list
+            list of `Scan` objects found in the database
+        """
         return self.scans
 
     def get_scan(self, id):
+        """Get a scan saved in the database under given `id`.
+
+        Parameters
+        ----------
+        id : int
+            identifier of the scan to get
+
+        Returns
+        -------
+        scan : Scan
+            `Scan` object associated to given `id`
+        """
         for scan in self.scans:
             if scan.get_id() == id:
                 return scan
         return None
 
     def create_scan(self, id):
+        """Create a new scan object in the database.
+
+        Parameters
+        ----------
+        id : int
+            identifier of the scan to create
+
+        Returns
+        -------
+        scan: Scan
+            a new scan object from the database
+        """
         if not _is_valid_id(id):
             raise error.Error("Invalid id")
         if self.get_scan(id) != None:
@@ -87,6 +175,22 @@ class DB(db.DB):
 
 
 class Scan(db.Scan):
+    """Class defining the scan object `Scan`.
+
+    Implementation of a scan as a list of files with attached metadata.
+
+    Attributes
+    ----------
+    db : DB
+        database where to find the scan
+    id : int
+        id of the scan in the database `DB`
+    metadata : dict
+        dictionary of metadata attached to `Scan` object
+    filesets : list
+        list of `Fileset` attached to `Scan` object
+
+    """
 
     def __init__(self, db, id):
         super().__init__(db, id)
@@ -116,7 +220,7 @@ class Scan(db.Scan):
             raise error.Error("Invalid id")
         if self.get_fileset(id) != None:
             raise error.Error("Duplicate fileset name: %s" % id)
-        fileset = Fileset(scan.db, self, id)
+        fileset = Fileset(self.db, self, id)
         _make_fileset(fileset)
         self.filesets.append(fileset)
         self.store()
@@ -135,6 +239,12 @@ class Fileset(db.Fileset):
 
     def get_files(self):
         return self.files
+
+    def get_file(self, id):
+        ids = [f.id for f in self.files]
+        if id not in ids:
+            return None
+        return self.files[ids.index(id)]
 
     def get_metadata(self, key):
         return _get_metadata(self.metadata, key)
@@ -227,6 +337,10 @@ class File(db.File):
 # load the database
 
 def _load_scans(db):
+    """Load defined scans in given database object.
+
+    List sub-directories of ``db.basedir``
+    """
     scans = []
     names = os.listdir(db.basedir)
     for name in names:
@@ -486,26 +600,31 @@ def _is_valid_id(id):
 
 
 ##################################################################
+if __name__ == '__main__':
+    # Test
+    import sys
+    import datetime
 
-db = DB(sys.argv[1])
+    db = DB(sys.argv[1])
 
-for scan in db.get_scans():
-    print("Scan '%s'" % scan.get_id())
-    for fileset in scan.get_filesets():
-        print("- Fileset '%s'" % fileset.get_id())
-        for file in fileset.get_files():
-            print("      File '%s'" % file.get_id())
-            file.set_metadata("foo", "bar")
-            print(file.get_metadata("foo"))
-            print(file.get_metadata("fox"))
+    for scan in db.get_scans():
+        print("Scan '%s'" % scan.get_id())
+        for fileset in scan.get_filesets():
+            print("- Fileset '%s'" % fileset.get_id())
+            for file in fileset.get_files():
+                print("      File '%s'" % file.get_id())
+                file.set_metadata("foo", "bar")
+                print(file.get_metadata("foo"))
+                print(file.get_metadata("fox"))
 
-now = datetime.datetime.now()
-id = now.strftime("%Y%m%d-%H%M%S")
+    now = datetime.datetime.now()
+    id = now.strftime("%Y%m%d-%H%M%S")
 
-scan = db.create_scan(id)
-scan.set_metadata("hardware",
-                  {"version": "0.1", "camera": "RX0", "gimbal": "dynamixel"})
-scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
-fileset = scan.create_fileset("images")
-file = fileset.create_file("00001")
-file.write_text("jpg", "tada")
+    scan = db.create_scan(id)
+    scan.set_metadata("hardware",
+                      {"version": "0.1", "camera": "RX0",
+                       "gimbal": "dynamixel"})
+    scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
+    fileset = scan.create_fileset("images")
+    file = fileset.create_file("00001")
+    file.write_text("jpg", "tada")
