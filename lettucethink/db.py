@@ -18,6 +18,13 @@
 
 """
 API for the database module in the ROMI project.
+
+A database ``DB`` contains a list of scans ``Scan`` distinguishable by their id.
+A ``Scan`` can be made of several list of files ``Fileset``.
+A ``Fileset`` is made of a list of files ``Files``.
+A ``File`` can be an image, text of bytes.
+
+TODO: add ``store`` method ?
 """
 
 
@@ -34,7 +41,7 @@ class DB(object):
     disconnect:
         disconnect from the database
     get_scans:
-        get a list of scans save in the database
+        get the list of scans saved in the database
     get_scan:
         get a scan save in the database
     create_scan:
@@ -74,6 +81,18 @@ class Scan(object):
 
     Methods
     -------
+    get_id
+        get scan id
+    get_filesets
+        get all sets of files
+    get_fileset
+        get the set of files associated to scan id
+    get_metadata
+        get metadata associated to scan
+    set_metadata
+        set metadata associated to scan
+    create_fileset
+        create a set of files
 
     """
 
@@ -106,6 +125,10 @@ class Fileset(object):
     Abstract class defining the API used to represent a set of files in the ROMI
     project.
 
+    Notes
+    -----
+    Files can be 2D images, RGB pictures, text,...
+
     Attributes
     ----------
     db : DB
@@ -115,9 +138,22 @@ class Fileset(object):
     scan : Scan
         scan containing the set of files
 
-    Notes
-    -----
-    Files can be 2D images, RGB pictures, ...
+    Methods
+    -------
+    get_id
+        get scan id
+    get_db
+        get database object
+    get_scan
+        get scan object
+    get_files
+        get the list of files associated to scan
+    get_metadata
+        get metadata associated to ``Fileset``
+    set_metadata
+        set metadata associated to ``Fileset``
+    create_file
+        create a file in the given ``Fileset``
     """
 
     def __init__(self, db, scan, id):
@@ -156,10 +192,36 @@ class File(object):
     ----------
     db : DB
         database where to find the scan
-    id : int
-        id of the scan in the database `DB`
     fileset : Fileset
         set of file containing the file
+    id : int
+        id of the scan in the database `DB`
+
+    Methods
+    -------
+    get_id
+        get scan id
+    get_db
+        get database object
+    get_fileset
+        get list of files
+    get_metadata
+        get metadata associated to ``File``
+    set_metadata
+        set metadata associated to ``File``
+    write_image
+        method writing an image
+    write_text
+        method writing text
+    import_file
+        prepare file import from given path and add it to Fileset, use ``read_images``, ``read_text`` or ``read_bytes`` to actually import it!
+    read_images
+        read the file, given as ``path`` in ``import_file``, as an image
+    read_text
+        read the file, given as ``path`` in ``import_file``, as text
+    read_bytes
+        read the file, given as ``path`` in ``import_file``, as bytes
+
     """
 
     def __init__(self, db, fileset, id):

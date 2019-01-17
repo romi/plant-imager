@@ -17,14 +17,14 @@
 
 """Implementation of a database as a local file structure.
 
-Assuming the following file structure::
+Assuming the following file structure:
 
 2018/
 2018/images/
 2018/images/rgb0001.jpg
 2018/images/rgb0002.jpg
 
-The 2018/files.json file then contains the following structure::
+The 2018/files.json file then contains the following structure:
 
 {
     "filesets": [
@@ -45,7 +45,7 @@ The 2018/files.json file then contains the following structure::
 }
 
 The metadata of the scan, filesets, and images are stored all as
-json objects in a separate directory::
+json objects in a separate directory:
 
 2018/metadata/
 2018/metadata/metadata.json
@@ -93,15 +93,33 @@ class DB(db.DB):
     """
 
     def __init__(self, basedir):
+        """Database constructor.
+
+        Check given ``basedir`` directory exists and load accessible ``Scan``
+        objects.
+
+        Parameters
+        ----------
+        basedir : str
+            root directory of the database
+
+        Examples
+        --------
+        >>> from lettucethink.fsdb import DB
+        >>> db = DB('$HOME/example_path/')
+
+        """
         if not os.path.isdir(basedir):
             raise error.Error("Not a directory: %s" % basedir)
         self.basedir = basedir
         self.scans = _load_scans(self)
 
     def connect(self, login_data=None):
+        """No need to connect to HDD."""
         pass
 
     def disconnect(self):
+        """No need to disconnect from HDD."""
         pass
 
     def get_scans(self):
@@ -121,7 +139,6 @@ class DB(db.DB):
         ----------
         id : int
             identifier of the scan to get
-
 
         Returns
         -------
@@ -171,6 +188,7 @@ class Scan(db.Scan):
         dictionary of metadata attached to `Scan` object
     filesets : list
         list of `Fileset` attached to `Scan` object
+
     """
 
     def __init__(self, db, id):
@@ -312,6 +330,10 @@ class File(db.File):
 # load the database
 
 def _load_scans(db):
+    """Load defined scans in given database object.
+
+    List sub-directories of ``db.basedir``
+    """
     scans = []
     names = os.listdir(db.basedir)
     for name in names:
@@ -568,3 +590,33 @@ def _store_scan(scan):
 
 def _is_valid_id(id):
     return True  # haha  (FIXME!)
+
+
+##################################################################
+if __name__ == '__main__':
+    # Test
+    import sys
+    import datetime
+
+    db = DB(sys.argv[1])
+
+    for scan in db.get_scans():
+        print("Scan '%s'" % scan.get_id())
+        for fileset in scan.get_filesets():
+            print("- Fileset '%s'" % fileset.get_id())
+            for file in fileset.get_files():
+                print("      File '%s'" % file.get_id())
+                file.set_metadata("foo", "bar")
+                print(file.get_metadata("foo"))
+                print(file.get_metadata("fox"))
+
+    now = datetime.datetime.now()
+    id = now.strftime("%Y%m%d-%H%M%S")
+
+    scan = db.create_scan(id)
+    scan.set_metadata("hardware",
+                      {"version": "0.1", "camera": "RX0", "gimbal": "dynamixel"})
+    scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
+    fileset = scan.create_fileset("images")
+    file = fileset.create_file("00001")
+    file.write_text("jpg", "tada")
