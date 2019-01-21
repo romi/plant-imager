@@ -29,6 +29,7 @@ import time
 import json
 import subprocess
 from io import BytesIO
+from enum import Enum
 from lettucethink import hal, error
 
 CAMERA_FUNCTION_SHOOT = 'Remote Shooting'
@@ -163,13 +164,60 @@ class SonyCamAPI(object):
             print(f)
         return images
 
+class FlashAirAPIError(Exception):
+    def __init__(self, message):
+        self.message = message
+
 class FlashAirAPI(object):
     def __init__(self, host):
         self.host = host
+        self.commands_format = "http://%s/command.cgi?%s"
+        self.path_format = "http://%s%s"
+
+    def format_datetime(self, date, time):
+        return date+time #TODO
+
+    def format_attribute(self, attribute):
+        return attribute #TODO
+
+    def get_file_list(self, path):
+        res = requests.get(self.commands_format%(self.host, "op=100&DIR=%s"%path))
+        res = res.content.split()
+        print(res)
+        if res[0] != b'WLANSD_FILELIST':
+            raise FlashAirAPIError("Could not retrieve file list")
+
+        files = []
+        for i in range(1, len(res)):
+            directory, fname, size, attribute, date, time = res[i].decode().split(',')
+            datetime = self.format_datetime(date, time)
+            attribute = self.format_attribute(attribute)
+            files.append({
+                "directory" : directory,
+                "filename" : fname,
+                "size" : size,
+                "attribute": attribute,
+                "datetime" : datetime,
+            })
+        return files
 
     def transfer_latest_pictures(self, count=1):
-        pass
+        dir_list = self.get_file_list('/DCIM')
+        files = []
+        for x in dir_list:
+            files.extend(self.get_file_list('/DCIM/' + x['filename']))
 
+        files.sort(key = lambda x: x['filename'], reverse=True)
+        images = []
+        for i in range(count):
+            if i >= len(files):
+                break
+            path = '%s/%s'%(files[i]['directory'],files[i]['filename'])
+            url = self.path_format%(self.host, path)
+            print(url)
+            new_image = imageio.imread(BytesIO(requests.get(url).content), format='jpg')
+            images.append(new_image)
+        return images[::-1]
 
 class Camera(hal.Camera):
     '''
