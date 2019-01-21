@@ -163,6 +163,13 @@ class SonyCamAPI(object):
             print(f)
         return images
 
+class FlashAirAPI(object):
+    def __init__(self, host):
+        self.host = host
+
+    def transfer_latest_pictures(self, count=1):
+        pass
+
 
 class Camera(hal.Camera):
     '''

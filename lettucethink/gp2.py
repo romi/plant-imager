@@ -33,7 +33,6 @@ class Camera(hal.Camera):
     ''' 
 
     def __init__(self):
-        self.available_data = {"rgb"}
         self.camera = None
         self.start()
         
@@ -53,13 +52,22 @@ class Camera(hal.Camera):
 
         
     def get_channels(self):
-        return ["rgb"]
+        return {'rgb' : 'jpg'}
 
 
     # TODO: is there a way to avoid writing the file to disk?
-    def grab(self, view=None):
+    def grab(self, view=None, metadata=None):
         self.grab_write("/tmp/frame.jpg")
-        return imageio.imread("/tmp/frame.jpg")
+        data_item = {
+            'id' : id,
+            'filename' : filename,
+            'data' : {'rgb' : None },
+            'metadata' : metadata
+        }
+        data = imageio.imread("/tmp/frame.jpg")
+        data_item['data']['rgb'] = data
+        self.data.append(data_item)
+        return data_item
 
     
     def grab_write(self, target):
@@ -67,3 +75,6 @@ class Camera(hal.Camera):
         camera_file = self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
         gp.check_result(gp.gp_file_save(camera_file, target))
         return target
+
+    def get_data(self):
+        return self.data
