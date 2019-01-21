@@ -228,10 +228,19 @@ class Camera(hal.Camera):
                 api_port,
                 timeout=10,
                 postview=False,
-                use_adb=False):
+                use_adb=False,
+                use_flashair=False,
+                flashair_host=None):
         self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
+        self.use_flashair = use_flashair
         self.use_adb = use_adb
+        if use_flashair and use_adb:
+            raise SonyCamError("Cannot use both flashair and adb for transfer")
+        if use_flashair:
+            if flashair_host is None:
+                raise SonyCamError("Must provide flashair host IP")
+            self.flashair = FlashAirAPI(flashair_host)
         self.data = []
         self.start()
           
@@ -266,7 +275,15 @@ class Camera(hal.Camera):
         return data_item
 
     def retrieve_original_images(self):
-        if not self.use_adb:
+        if self.use_adb:
+            images = self.sony_cam.adb_transfer_pictures(count=len(self.data))
+            for i, data_item in enumerate(self.data):
+                data_item['data']['rgb'] = images[i]
+        elif self.use_flashair:
+            images = self.flashair.transfer_latest_pictures(count=len(self.data))
+            for i, data_item in enumerate(self.data):
+                data_item['data']['rgb'] = images[i]
+        else
             self.sony_cam.start_transfer_mode()
             uri = self.sony_cam.get_source_list()[0]['source']
             content_list = self.sony_cam.get_content_list(count=len(self.data), uri=uri)
@@ -285,10 +302,6 @@ class Camera(hal.Camera):
                     raise Exception('Could not find file %s on camera'%filename)
 
             self.sony_cam.start_shoot_mode()
-        else:
-            images = self.sony_cam.adb_transfer_pictures(count=len(self.data))
-            for i, data_item in enumerate(self.data):
-                data_item['data']['rgb'] = images[i]
         return self.data
 
     def get_data(self):
