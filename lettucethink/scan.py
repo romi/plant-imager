@@ -55,16 +55,16 @@ class Scanner(object):
                 'pan': pan, 'tilt': tilt}
                           
 
-    def do_circular_scan(self, xc, yc, radius, num_points, z=None, tilt=None):
+    def do_circular_scan(self, xc, yc, radius, num_points, z=None, tilt=None, metadata=None):
         if z is None:
             x, y, z = self.cnc.get_position()
         if tilt is None:
             pan, tilt = self.gimbal.get_position()
         circle = path.circle(xc, yc, z, tilt, radius, num_points)
-        return self.scan(circle)
+        return self.scan(circle, metadata=metadata)
 
         
-    def scan(self, path):
+    def scan(self, path, metadata=None):
         """
         Scans along a given path 
         :param path: list of 5-tuples (x,y,z,pan,tilt)
@@ -82,6 +82,8 @@ class Scanner(object):
 
         # Create scan only if successful
         scan = self.db.create_scan(self.scan_id)
+        if metadata is not None:
+            scan.set_metadata(metadata)
         self.camera.store_data(scan)
         return scan
         
