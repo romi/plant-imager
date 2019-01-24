@@ -173,6 +173,7 @@ class FlashAirAPI(object):
         self.host = host
         self.commands_format = "http://%s/command.cgi?%s"
         self.path_format = "http://%s%s"
+        requests.get(self.path_format%(self.host, "/"))
 
     def format_datetime(self, date, time):
         return date+time #TODO
@@ -205,9 +206,10 @@ class FlashAirAPI(object):
         dir_list = self.get_file_list('/DCIM')
         files = []
         for x in dir_list:
-            files.extend(self.get_file_list('/DCIM/' + x['filename']))
+            if x['filename'] != '100__TSB': #Ignore file from SD card
+                files.extend(self.get_file_list('/DCIM/' + x['filename']))
 
-        files.sort(key = lambda x: x['filename'], reverse=True)
+        files.sort(key = lambda x: x['filename'], reverse=True) #TODO: sort by date
         images = []
         for i in range(count):
             if i >= len(files):
@@ -283,7 +285,7 @@ class Camera(hal.Camera):
             images = self.flashair.transfer_latest_pictures(count=len(self.data))
             for i, data_item in enumerate(self.data):
                 data_item['data']['rgb'] = images[i]
-        else
+        else:
             self.sony_cam.start_transfer_mode()
             uri = self.sony_cam.get_source_list()[0]['source']
             content_list = self.sony_cam.get_content_list(count=len(self.data), uri=uri)
