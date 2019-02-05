@@ -170,7 +170,7 @@ class Fileset(db.Fileset):
         if id not in ids and not create:
             return None
         if id not in ids and create:
-            return self.create_fileset(id)
+            return self.create_file(id)
         return self.files[ids.index(id)]
 
     def get_metadata(self, key=None):
