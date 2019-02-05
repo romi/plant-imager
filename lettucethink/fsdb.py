@@ -169,7 +169,7 @@ class Fileset(db.Fileset):
         ids = [f.id for f in self.files]
         if id not in ids and not create:
             return None
-        if if not in ids and create:
+        if id not in ids and create:
             return self.create_fileset(id)
         return self.files[ids.index(id)]
 
