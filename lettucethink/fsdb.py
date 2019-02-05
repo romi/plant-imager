@@ -171,7 +171,7 @@ class Fileset(db.Fileset):
             return None
         return self.files[ids.index(id)]
 
-    def get_metadata(self, key):
+    def get_metadata(self, key=None):
         return _get_metadata(self.metadata, key)
 
         
@@ -202,7 +202,7 @@ class File(db.File):
         self.metadata = None
 
         
-    def get_metadata(self, key):
+    def get_metadata(self, key=None):
         return _get_metadata(self.metadata, key)
 
         
@@ -267,7 +267,7 @@ class File(db.File):
     def store(self):
         self.fileset.store()
 
-        
+      
 ##################################################################
 #
 # the ugly stuff...
