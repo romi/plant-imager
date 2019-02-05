@@ -165,10 +165,12 @@ class Fileset(db.Fileset):
     def get_files(self):
         return self.files
 
-    def get_file(self, id):
+    def get_file(self, id, create=False):
         ids = [f.id for f in self.files]
-        if id not in ids:
+        if id not in ids and not create:
             return None
+        if not in ids and create:
+            return self.create_fileset(id)
         return self.files[ids.index(id)]
 
     def get_metadata(self, key=None):
