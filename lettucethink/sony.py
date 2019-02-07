@@ -136,6 +136,21 @@ class SonyCamAPI(object):
         while not self.get_camera_status() == 'IDLE':
             continue
 
+    def setup_camera(self, params):
+        if 'FNumber' in params:
+            self.api_call('camera', 'setFNumber', [params['FNumber']])
+        if 'ShutterSpeed' in params:
+            self.api_call('camera', 'setShutterSpeed', [params['ShutterSpeed']])
+        if 'IsoSpeedRate' in params:
+            self.api_call('camera', 'setIsoSpeedRate', [params['IsoSpeedRate']])
+        if 'WhiteBalance' in params:
+            self.api_call('camera', 'setWhiteBalance', [params['WhiteBalance']])
+        if 'FlashMode' in params:
+            self.api_call('camera', 'setFlashMode', [params['FlashMode']])
+        if 'FocusMode' in params:
+            self.api_call('camera', 'setFocusMode', [params['FocusMode']])
+        
+
     def start_transfer_mode(self):
         if ('setCameraFunction' in self.supported_methods and
             'getCameraFunction' in self.supported_methods):
@@ -232,7 +247,8 @@ class Camera(hal.Camera):
                 postview=False,
                 use_adb=False,
                 use_flashair=False,
-                flashair_host=None):
+                flashair_host=None,
+                camera_params=None):
         self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
         self.use_flashair = use_flashair
@@ -244,10 +260,13 @@ class Camera(hal.Camera):
                 raise SonyCamError("Must provide flashair host IP")
             self.flashair = FlashAirAPI(flashair_host)
         self.data = []
+        self.camera_params = camera_params
         self.start()
           
     def start(self):
         self.sony_cam.start_shoot_mode()
+        if self.camera_params is not None:
+            self.sony_cam.setup_camera(self.camera_params)
         
     def stop(self):
         pass
