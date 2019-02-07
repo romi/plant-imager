@@ -165,13 +165,15 @@ class Fileset(db.Fileset):
     def get_files(self):
         return self.files
 
-    def get_file(self, id):
+    def get_file(self, id, create=False):
         ids = [f.id for f in self.files]
-        if id not in ids:
+        if id not in ids and not create:
             return None
+        if id not in ids and create:
+            return self.create_file(id)
         return self.files[ids.index(id)]
 
-    def get_metadata(self, key):
+    def get_metadata(self, key=None):
         return _get_metadata(self.metadata, key)
 
         
@@ -202,7 +204,7 @@ class File(db.File):
         self.metadata = None
 
         
-    def get_metadata(self, key):
+    def get_metadata(self, key=None):
         return _get_metadata(self.metadata, key)
 
         
@@ -267,7 +269,7 @@ class File(db.File):
     def store(self):
         self.fileset.store()
 
-        
+      
 ##################################################################
 #
 # the ugly stuff...
