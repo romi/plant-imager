@@ -29,6 +29,7 @@ import time
 import json
 import subprocess
 from io import BytesIO
+from enum import Enum
 from lettucethink import hal, error
 
 CAMERA_FUNCTION_SHOOT = 'Remote Shooting'
@@ -163,13 +164,62 @@ class SonyCamAPI(object):
             print(f)
         return images
 
+class FlashAirAPIError(Exception):
+    def __init__(self, message):
+        self.message = message
+
 class FlashAirAPI(object):
     def __init__(self, host):
         self.host = host
+        self.commands_format = "http://%s/command.cgi?%s"
+        self.path_format = "http://%s%s"
+        requests.get(self.path_format%(self.host, "/"))
+
+    def format_datetime(self, date, time):
+        return date+time #TODO
+
+    def format_attribute(self, attribute):
+        return attribute #TODO
+
+    def get_file_list(self, path):
+        res = requests.get(self.commands_format%(self.host, "op=100&DIR=%s"%path))
+        res = res.content.split()
+        print(res)
+        if res[0] != b'WLANSD_FILELIST':
+            raise FlashAirAPIError("Could not retrieve file list")
+
+        files = []
+        for i in range(1, len(res)):
+            directory, fname, size, attribute, date, time = res[i].decode().split(',')
+            datetime = self.format_datetime(date, time)
+            attribute = self.format_attribute(attribute)
+            files.append({
+                "directory" : directory,
+                "filename" : fname,
+                "size" : size,
+                "attribute": attribute,
+                "datetime" : datetime,
+            })
+        return files
 
     def transfer_latest_pictures(self, count=1):
-        pass
+        dir_list = self.get_file_list('/DCIM')
+        files = []
+        for x in dir_list:
+            if x['filename'] != '100__TSB': #Ignore file from SD card
+                files.extend(self.get_file_list('/DCIM/' + x['filename']))
 
+        files.sort(key = lambda x: x['filename'], reverse=True) #TODO: sort by date
+        images = []
+        for i in range(count):
+            if i >= len(files):
+                break
+            path = '%s/%s'%(files[i]['directory'],files[i]['filename'])
+            url = self.path_format%(self.host, path)
+            print(url)
+            new_image = imageio.imread(BytesIO(requests.get(url).content), format='jpg')
+            images.append(new_image)
+        return images[::-1]
 
 class Camera(hal.Camera):
     '''
@@ -180,10 +230,19 @@ class Camera(hal.Camera):
                 api_port,
                 timeout=10,
                 postview=False,
-                use_adb=False):
+                use_adb=False,
+                use_flashair=False,
+                flashair_host=None):
         self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
+        self.use_flashair = use_flashair
         self.use_adb = use_adb
+        if use_flashair and use_adb:
+            raise SonyCamError("Cannot use both flashair and adb for transfer")
+        if use_flashair:
+            if flashair_host is None:
+                raise SonyCamError("Must provide flashair host IP")
+            self.flashair = FlashAirAPI(flashair_host)
         self.data = []
         self.start()
           
@@ -218,7 +277,15 @@ class Camera(hal.Camera):
         return data_item
 
     def retrieve_original_images(self):
-        if not self.use_adb:
+        if self.use_adb:
+            images = self.sony_cam.adb_transfer_pictures(count=len(self.data))
+            for i, data_item in enumerate(self.data):
+                data_item['data']['rgb'] = images[i]
+        elif self.use_flashair:
+            images = self.flashair.transfer_latest_pictures(count=len(self.data))
+            for i, data_item in enumerate(self.data):
+                data_item['data']['rgb'] = images[i]
+        else:
             self.sony_cam.start_transfer_mode()
             uri = self.sony_cam.get_source_list()[0]['source']
             content_list = self.sony_cam.get_content_list(count=len(self.data), uri=uri)
@@ -237,10 +304,6 @@ class Camera(hal.Camera):
                     raise Exception('Could not find file %s on camera'%filename)
 
             self.sony_cam.start_shoot_mode()
-        else:
-            images = self.sony_cam.adb_transfer_pictures(count=len(self.data))
-            for i, data_item in enumerate(self.data):
-                data_item['data']['rgb'] = images[i]
         return self.data
 
     def get_data(self):
