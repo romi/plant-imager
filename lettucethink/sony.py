@@ -57,7 +57,7 @@ class SonyCamAPI(object):
                   'version': version
               }),
               timeout=self.timeout)
-        res = json.loads(request_result.content)
+        res = json.loads(request_result.content.decode('utf-8'))
         if 'error' in res:
             err = res['error']
             raise SonyCamError('''
