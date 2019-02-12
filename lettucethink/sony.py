@@ -43,7 +43,7 @@ class Camera(hal.Camera):
         request_result = requests.post(self.api_url,
                           data=json.dumps({"method": "startRecMode",
                           "params": [], "id":1, "version":"1.0"}), timeout=2)
-        return json.loads(request_result.content)
+        return json.loads(request_result.content.decode("utf-8"))
 
     def __api_take_picture(self):
         while True: #wait for availability
@@ -51,7 +51,7 @@ class Camera(hal.Camera):
                               data=json.dumps({"method": "actTakePicture",
                               "params": [], "id":1, "version":"1.0"}))
             print(request_result.content)
-            result = json.loads(request_result.content)
+            result = json.loads(request_result.content.decode("utf-8"))
             if 'result' in result:
                 break
         url = result['result'][0][0]

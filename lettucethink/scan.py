@@ -68,10 +68,13 @@ class Scanner(object):
         if z is None:
             x, y, z = self.cnc.get_position()
         if tilt is None:
-            pan, tilt = self.gimbal.get_position()
+            pan, tilt
         circle = path.circle(xc, yc, z, tilt, radius, num_points)
         return self.scan(circle, filetype=filetype)
 
+    def do_linear_scan(self, origin, y, z, length, num_points, filetype=None):
+        line = path.line(origin, y, z, length, num_points)
+        return self.scan(line, filetype=filetype)
         
     def scan(self, path, filetype=None):
         """

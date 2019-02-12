@@ -37,6 +37,12 @@ def circle(center_x, center_y, z, tilt, radius, num_points):
        res.append((x, y, z, angle, tilt))
    return res
 
+def line(origin, y, z, length, num_points):
+   res = []
+   for i in range(num_points):
+       x = origin+i* length/ num_points
+       res.append((x, 0, 0))
+   return res
 
 # Make a boustrophedon. The path goes up and down along the y-axis,
 # and slowly moves forward in the x-direction.
