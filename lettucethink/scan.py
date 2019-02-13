@@ -63,9 +63,9 @@ class Scanner(object):
         circle = path.circle(xc, yc, z, tilt, radius, num_points)
         return self.scan(circle, metadata=metadata)
 
-    def do_linear_scan(self, origin, y, z, length, num_points, filetype=None):
-        line = path.line(origin, y, z, length, num_points)
-        return self.scan(line, filetype=filetype)
+    def do_linear_scan(self, origin, y, z, pan, tilt, length, num_points, metadata=None):
+        line = path.line(origin, y, z, pan, tilt, length, num_points)
+        return self.scan(line, metadata)
         
     def scan(self, path, metadata=None):
         """
@@ -80,7 +80,7 @@ class Scanner(object):
             self.scan_at(x, y, z, pan, tilt)
             self.scan_count += 1
 
-        self.gimbal.moveto(0, 0) # FIXME
+        if self.gimbal: self.gimbal.moveto(0, 0) # FIXME
         self.cnc.moveto(*path[0][0:3])
 
         # Create scan only if successful
@@ -106,12 +106,12 @@ class Scanner(object):
             pan = (math.pi - pan) % (2*math.pi)
         if self.cnc.async_enabled():
             self.cnc.moveto_async(x, y, z)
-            self.gimbal.moveto_async(pan, tilt)
+            if self.gimbal: self.gimbal.moveto_async(pan, tilt)
             self.cnc.wait()
-            self.gimbal.wait()
+            if self.gimbal: self.gimbal.wait()
         else:
             self.cnc.moveto(x, y, z)
-            self.gimbal.moveto(pan, tilt)
+            if self.gimbal: self.gimbal.moveto(pan, tilt)
 
         time.sleep(wait_time)
         self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})

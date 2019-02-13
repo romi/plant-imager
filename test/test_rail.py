@@ -33,10 +33,10 @@ print("Opening connection to rail on %s" % dev)
 rail = rail.Rail(dev, homing=True)
 rail.start()
 
-rail.moveto(1, 0, 0)
+rail.moveto(1)
 
-print("Moving to 0, 0")
-rail.moveto(0, 0, 0)
+print("Moving to 0")
+rail.moveto(0)
 rail.stop()
 
 print("Done")

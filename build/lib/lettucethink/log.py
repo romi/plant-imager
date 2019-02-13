@@ -23,7 +23,7 @@
 
 """    
 import os
-import cv2
+import imageio
 
 _enabled = False
 _root = "."
@@ -52,7 +52,7 @@ def store_image(name, image):
     global _enabled, _root, _history
     if _enabled and _root:
         filepath = make_image_path(name)
-        cv2.imwrite(filepath, image) # TODO: use imageio?
+        imageio.imwrite(filepath, image) # TODO: use imageio?
         _history[name] = filepath
         print("Log: wrote %s" % filepath)
 

@@ -18,6 +18,7 @@ class Rail(hal.CNC):
         self.y = 0
         self.z = 0
         self.has_started = False
+        self.start()
         
     def start(self, homing=False):
         self.serial_port = serial.Serial(self.port, self.baud_rate)
@@ -55,12 +56,7 @@ class Rail(hal.CNC):
         self.update_position()
         return self.x, self.target_x
         
-    def moveto(self, x, y, z):
-        steps = (int) (x  * self.scale)
-        print("%f m = %d steps" % (x, steps));
-        self.__send("m%d" % steps)
-
-    def moveto(self, x):
+    def moveto(self, x, y=0, z=0, pan=0, tilt=0):
         steps = (int) (x  * self.scale)
         print("%f m = %d steps" % (x, steps));
         self.__send("m%d" % steps)
@@ -81,7 +77,7 @@ class Rail(hal.CNC):
         
     def __send(self, s):
         if not self.serial_port:
-            raise Error("Arduino has not been started")
+            raise Exception("Arduino has not been started")
         r = False
         try:
             self.serial_port.write(bytes('%s\n' % s, 'utf-8'))
