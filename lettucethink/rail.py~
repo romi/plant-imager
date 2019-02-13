@@ -1,0 +1,74 @@
+import serial
+import time
+import imageio
+from lettucethink import hal, error
+import datetime
+#import sys
+
+
+class Rail(hal.CNC):
+    def __init__(self, port = "/dev/ttyACM0", baud_rate=115200, homing=False):
+        self.port = port
+        self.serial_port = None
+        self.baud_rate = baud_rate
+        self.homing = homing
+        self.scale = 100000.0 / 3.805  
+        self.x = 0
+        self.y = 0
+        self.z = 0
+        self.has_started = False
+        
+    def start(self, homing=False):
+        self.serial_port = serial.Serial(self.port, self.baud_rate)
+        self.enable()
+        self.has_started = True
+
+    def stop(self):
+        if self.has_started:
+            self.disable()
+            self.serial_port.close()
+            self.has_started=False
+
+    def has_position_control():
+        return True
+
+    def get_position(self):
+        return self.x,self.y, self.z
+
+    def async_enabled(self):
+        return True
+
+    def has_velocity_control(self):
+        return False
+
+    def home(self):
+        self.__send("m0")
+    
+    def moveto(self, x, y, z):
+        steps = (int) (x  * self.scale)
+        print("%f m = %d steps" % (x, steps));
+        self.__send("m%d" % steps)
+
+    def moveto_async(self, x, y, z):
+        steps = (int) (x  * self.scale)
+        print("%f M = %d steps" % (x, steps));
+        self.__send("M%d" % steps)
+        
+    def enable(self):
+        self.__send("E1")
+
+    def disable(self):
+        self.__send("E0")
+
+    def __send(self, s):
+        if not self.serial_port:
+            raise Error("Arduino has not been started")
+        r = False
+        try:
+            self.serial_port.write(bytes('%s\n' % s, 'utf-8'))
+            time.sleep(0.01)   
+            r = self.serial_port.readline()
+        finally:
+            pass # dummy statement to avoid empty 'finally' clause
+        print('cmd=%s: %s' % (s, r))
+        return r;

@@ -63,9 +63,6 @@ class Scanner(object):
         circle = path.circle(xc, yc, z, tilt, radius, num_points)
         return self.scan(circle, metadata=metadata)
 
-    def do_linear_scan(self, origin, y, z, length, num_points, filetype=None):
-        line = path.line(origin, y, z, length, num_points)
-        return self.scan(line, filetype=filetype)
         
     def scan(self, path, metadata=None):
         """
