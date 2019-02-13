@@ -68,7 +68,7 @@ class Scanner(object):
         if z is None:
             x, y, z = self.cnc.get_position()
         if tilt is None:
-            pan, tilt
+            pan, tilt = self.gimbal.get_position()
         circle = path.circle(xc, yc, z, tilt, radius, num_points)
         return self.scan(circle, filetype=filetype)
 
