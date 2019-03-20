@@ -134,6 +134,7 @@ class Camera(object):
         raise NotImplementedError
     
     def store_data(self, scan):
+        print(self.tmpdir)
         data = self.get_data()
         fileset = scan.get_fileset('images', create=True)
         for data_item in data:
@@ -144,11 +145,12 @@ class Camera(object):
                     file_id = '%s' % (data_item['id'])
                 else:
                     file_id = '%s-%s'%(c,data_item['id'])
-                new_file = fileset.create_file(file_id)
-                new_file.write_image(channels[c], data_item['data'][c])
-                if data_item['metadata'] is not None:
-                    new_file.set_metadata(data_item['metadata'])
-
+                if not(self.tmpdir):
+                    new_file = fileset.create_file(file_id)
+                    new_file.write_image(channels[c], data_item['data'][c])
+                    if data_item['metadata'] is not None:
+                       new_file.set_metadata(data_item['metadata'])
+        if self.tmpdir: self.save_data(fileset)  
     
 class GameController(object):
     def __init__(self):

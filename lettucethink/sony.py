@@ -31,6 +31,7 @@ import subprocess
 from io import BytesIO
 from enum import Enum
 from lettucethink import hal, error
+import tempfile
 
 CAMERA_FUNCTION_SHOOT = 'Remote Shooting'
 CAMERA_FUNCTION_TRANSFER = 'Contents Transfer'
@@ -217,7 +218,7 @@ class FlashAirAPI(object):
             })
         return files
 
-    def transfer_latest_pictures(self, count=1):
+    def transfer_latest_pictures(self, count=1, tmpdir=None):
         dir_list = self.get_file_list('/DCIM')
         files = []
         for x in dir_list:
@@ -226,6 +227,7 @@ class FlashAirAPI(object):
 
         files.sort(key = lambda x: x['filename'], reverse=True) #TODO: sort by date
         images = []
+        fnames = []
         for i in range(count):
             if i >= len(files):
                 break
@@ -233,9 +235,17 @@ class FlashAirAPI(object):
             url = self.path_format%(self.host, path)
             print(url)
             new_image = imageio.imread(BytesIO(requests.get(url).content), format='jpg')
-            images.append(new_image)
-        return images[::-1]
-
+            if not(tmpdir): images.append(new_image)
+            else:
+                fname =os.path.join(tmpdir,files[i]['filename'])
+                imageio.imwrite(fname, new_image)
+                fnames.append(fname)
+                
+        if not(tmpdir):
+            return images[::-1]
+        else:
+            return fnames
+        
 class Camera(hal.Camera):
     '''
     Sony Remote Control API.
@@ -248,7 +258,8 @@ class Camera(hal.Camera):
                 use_adb=False,
                 use_flashair=False,
                 flashair_host=None,
-                camera_params=None):
+                camera_params=None,
+                tmpdir = False):
         self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
         self.use_flashair = use_flashair
@@ -261,6 +272,7 @@ class Camera(hal.Camera):
             self.flashair = FlashAirAPI(flashair_host)
         self.data = []
         self.camera_params = camera_params
+        self.tmpdir = tmpdir
         self.start()
           
     def start(self):
@@ -326,8 +338,17 @@ class Camera(hal.Camera):
         return self.data
 
     def get_data(self):
-        if not self.postview:
+        if (not(self.postview) and not(self.tmpdir)):
             self.retrieve_original_images()
         return self.data
 
-
+    def save_data(self, fileset):
+        with tempfile.TemporaryDirectory() as tmp:
+            fnames = self.flashair.transfer_latest_pictures(count=len(self.data), tmpdir=tmp)
+            for fname in fnames:
+                file_id = os.path.splitext(os.path.basename(fname))[0]
+                new_file = fileset.create_file(file_id)
+                new_file.import_file(fname)
+                for data_item in self.data:
+                    if data_item["id"] == file_id:
+                        newfile.set_metadata(data_item['metadata'])

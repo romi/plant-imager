@@ -10,7 +10,8 @@ camera_args = {
                     "use_adb" : False,
                     "use_flashair" : True,
                     "flashair_host" : "192.168.100.6",
-                    "timeout" : 10
+                    "timeout" : 10,
+                    "tmpdir" : True     
                     }
 
 rail_args = {
@@ -22,9 +23,9 @@ path_config = {
         "id" : "linear_10",
         "type" : "linear",
         "args" : {
-                    "num_points" : 10,
+                    "num_points" : 2,
                     "origin"     : 0,
-                    "length"     : 1,
+                    "length"     : .2,
                     "y"          : 0,
                     "z"          : 0,
                     "pan"        : 0,
@@ -46,13 +47,20 @@ metadata = {
  
 scan_id="test"
 
+
 db = DB("/home/pi/data")
 db.connect()
 
+
+print("rail start")
 rail = Rail(**rail_args)
+
+print("camera start")
 camera = Camera(**camera_args)
 
+"""
 print(path_config["args"])
 scanner = scan.Scanner(rail, None, camera, db, scan_id=scan_id)
 scanner.do_linear_scan(**path_config["args"])
 db.disconnect()
+"""
