@@ -200,7 +200,7 @@ class FlashAirAPI(object):
     def get_file_list(self, path):
         res = requests.get(self.commands_format%(self.host, "op=100&DIR=%s"%path))
         res = res.content.split()
-        print(res)
+        #print(res)
         if res[0] != b'WLANSD_FILELIST':
             raise FlashAirAPIError("Could not retrieve file list")
 
@@ -237,6 +237,7 @@ class FlashAirAPI(object):
             new_image = imageio.imread(BytesIO(requests.get(url).content), format='jpg')
             if not(tmpdir): images.append(new_image)
             else:
+                #print(files[i]['filename'])
                 fname =os.path.join(tmpdir,files[i]['filename'])
                 imageio.imwrite(fname, new_image)
                 fnames.append(fname)
@@ -245,6 +246,16 @@ class FlashAirAPI(object):
             return images[::-1]
         else:
             return fnames
+
+    def delete_all(self):
+        files=[]
+        dir_list = self.get_file_list('/DCIM')
+        for x in dir_list:
+            if x['filename'] != '100__TSB': #Ignore file from SD card
+                files.extend(self.get_file_list('/DCIM/' + x['filename']))
+
+        for f in files:
+            request.get()
         
 class Camera(hal.Camera):
     '''
@@ -345,10 +356,12 @@ class Camera(hal.Camera):
     def save_data(self, fileset):
         with tempfile.TemporaryDirectory() as tmp:
             fnames = self.flashair.transfer_latest_pictures(count=len(self.data), tmpdir=tmp)
-            for fname in fnames:
-                file_id = os.path.splitext(os.path.basename(fname))[0]
+            fnames.sort()
+            for i,fname in enumerate(fnames):
+                file_id=fname.split("/")[-1].split(".")[0]
+                print(fname.split("/")[-1])
+                self.data[i]['metadata']['filename']=fname.split("/")[-1]
                 new_file = fileset.create_file(file_id)
                 new_file.import_file(fname)
-                for data_item in self.data:
-                    if data_item["id"] == file_id:
-                        newfile.set_metadata(data_item['metadata'])
+                new_file.set_metadata(self.data[i]['metadata'])
+            self.flashair.delete_all()  

@@ -58,9 +58,7 @@ rail = Rail(**rail_args)
 print("camera start")
 camera = Camera(**camera_args)
 
-"""
 print(path_config["args"])
 scanner = scan.Scanner(rail, None, camera, db, scan_id=scan_id)
-scanner.do_linear_scan(**path_config["args"])
+scanner.do_linear_scan(**path_config["args"],metadata=metadata)
 db.disconnect()
-"""

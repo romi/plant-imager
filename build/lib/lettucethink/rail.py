@@ -13,7 +13,7 @@ class Rail(hal.CNC):
         self.baud_rate = baud_rate
         self.homing = homing
         self.async = False
-        self.scale = 100000.0 / 3.805  
+        self.scale = 100000.0 / 3.745  
         self.x = 0
         self.target_x = 0
         self.y = 0
@@ -22,6 +22,7 @@ class Rail(hal.CNC):
         self.start()
         
     def start(self, homing=False):
+        print("Opening serial port")
         self.serial_port = serial.Serial(self.port, self.baud_rate)
         self.enable()
         self.has_started = True
