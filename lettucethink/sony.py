@@ -188,6 +188,7 @@ class FlashAirAPI(object):
     def __init__(self, host):
         self.host = host
         self.commands_format = "http://%s/command.cgi?%s"
+        self.delete_format = "http://%s/upload.cgi?DEL=%s"
         self.path_format = "http://%s%s"
         requests.get(self.path_format%(self.host, "/"))
 
@@ -255,7 +256,7 @@ class FlashAirAPI(object):
                 files.extend(self.get_file_list('/DCIM/' + x['filename']))
 
         for f in files:
-            request.get()
+            requests.get(self.delete_format%(self.host,f['directory']+'/'+f['filename']))
         
 class Camera(hal.Camera):
     '''
@@ -359,7 +360,6 @@ class Camera(hal.Camera):
             fnames.sort()
             for i,fname in enumerate(fnames):
                 file_id=fname.split("/")[-1].split(".")[0]
-                print(fname.split("/")[-1])
                 self.data[i]['metadata']['filename']=fname.split("/")[-1]
                 new_file = fileset.create_file(file_id)
                 new_file.import_file(fname)

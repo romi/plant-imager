@@ -23,9 +23,9 @@ path_config = {
         "id" : "linear_10",
         "type" : "linear",
         "args" : {
-                    "num_points" : 2,
+                    "num_points" : 100,
                     "origin"     : 0,
-                    "length"     : .2,
+                    "length"     : .0,
                     "y"          : 0,
                     "z"          : 0,
                     "pan"        : 0,

@@ -12,8 +12,8 @@ class Rail(hal.CNC):
         self.serial_port = None
         self.baud_rate = baud_rate
         self.homing = homing
-        self.async = False
         self.scale = 100000.0 / 3.745  
+        self.is_async = False
         self.x = 0
         self.target_x = 0
         self.y = 0
@@ -37,7 +37,7 @@ class Rail(hal.CNC):
         return True
 
     def async_enabled(self):
-        return self.async
+        return self.is_async
 
     def has_velocity_control(self):
         return False

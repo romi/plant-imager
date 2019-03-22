@@ -154,6 +154,14 @@ class Scan(db.Scan):
     def store(self):
         _store_scan(self)
 
+    def delete_fileset(self, fileset_id):
+        for x in self.filesets:
+            if fileset_id == x.id:
+                self.filesets.remove(x)
+                self.store()
+                return
+        raise error.Error("Invalid id")
+
         
 class Fileset(db.Fileset):
     
@@ -189,6 +197,14 @@ class Fileset(db.Fileset):
         self.files.append(file)
         self.store()
         return file
+
+    def delete_file(self, file_id):
+        for x in self.files:
+            if file_id == x.id:
+                self.files.remove(x)
+                self.store()
+                return
+        raise error.Error("Invalid id")
 
     
     def store(self):
@@ -287,6 +303,7 @@ def _load_scans(db):
             scan.filesets = _load_scan_filesets(scan)
             scan.metadata = _load_scan_metadata(scan)
             scans.append(scan)
+            scan.store()
     return scans
 
 
@@ -298,8 +315,13 @@ def _load_scan_filesets(scan):
     filesets_info = structure["filesets"]
     if isinstance(filesets_info, list):
         for fileset_info in filesets_info:
-            fileset = _load_fileset(scan, fileset_info)
-            filesets.append(fileset)
+            try:
+                fileset = _load_fileset(scan, fileset_info)
+                filesets.append(fileset)
+            except:
+                id = fileset_info.get("id")
+                print("Warning: unable to load fileset %s, deleting..."%id)
+                # scan.delete_fileset(id)
     else:
         raise error.Error("%s: filesets is not a list" % files_json)
     return filesets
@@ -328,8 +350,13 @@ def _load_fileset_files(fileset, fileset_info):
     files_info = fileset_info.get("files", [])
     if isinstance(files_info, list):
         for file_info in files_info:
-            file = _load_file(fileset, file_info)
-            files.append(file)
+            try:
+                file = _load_file(fileset, file_info)
+                files.append(file)
+            except:
+                id = file_info.get("id")
+                print("Warning: unable to load file %s, deleting..."%id)
+                # fileset.delete_file(id)
     else:
         raise error.Error("files.json: expected a list for files")
     return files
