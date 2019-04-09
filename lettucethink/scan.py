@@ -116,5 +116,9 @@ class Scanner(object):
             if self.gimbal: self.gimbal.moveto(pan, tilt)
 
         time.sleep(wait_time)
-        self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
+        try:
+           self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
+        except:
+           self.cnc.home()
+           self.cnc.set_home()
         self.is_busy = False
