@@ -77,7 +77,10 @@ class Scanner(object):
         for i in range(nc):
             (x, y, z, pan, tilt) = path[i]
             #x, y, z = self.xyz_clamp(x, y, z) TODO
-            self.scan_at(x, y, z, pan, tilt)
+            try:
+               self.scan_at(x, y, z, pan, tilt)
+            except:
+               break        
             self.scan_count += 1
 
         if self.gimbal: self.gimbal.moveto(0, 0) # FIXME
@@ -116,9 +119,5 @@ class Scanner(object):
             if self.gimbal: self.gimbal.moveto(pan, tilt)
 
         time.sleep(wait_time)
-        try:
-           self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
-        except:
-           self.cnc.home()
-           self.cnc.set_home()
+        self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
         self.is_busy = False
