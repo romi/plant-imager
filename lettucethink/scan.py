@@ -81,8 +81,10 @@ class Scanner(object):
             self.scan_count += 1
 
         if self.gimbal: self.gimbal.moveto(0, 0) # FIXME
-        self.cnc.moveto(*path[0][0:3])
-
+        #self.cnc.moveto(*path[0][0:3])
+        self.cnc.home()
+        self.cnc.set_home()
+        
         # Create scan only if successful
         scan = self.db.create_scan(self.scan_id)
         if metadata is not None:

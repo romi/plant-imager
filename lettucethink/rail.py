@@ -12,7 +12,8 @@ class Rail(hal.CNC):
         self.serial_port = None
         self.baud_rate = baud_rate
         self.homing = homing
-        self.scale = 100000.0 / 3.745  
+        self.scale = 100000.0 / 3.745
+        self.home_dist=0.05
         self.is_async = False
         self.x = 0
         self.target_x = 0
@@ -43,6 +44,7 @@ class Rail(hal.CNC):
         return False
 
     def home(self):
+        self.moveto(self.home_dist)
         self.__send("H")
 
     def set_home(self):
