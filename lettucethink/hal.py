@@ -1,3 +1,27 @@
+"""
+
+    lettucethink-python - Python tools for the LettuceThink robot
+
+    Copyright (C) 2018 Sony Computer Science Laboratories
+    Authors: D. Colliaux, T. Wintz, P. Hanappe
+  
+    This file is part of lettucethink-python.
+
+    lettucethink-python is free software: you can redistribute it
+    and/or modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+
+    lettucethink-python is distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with lettucethink-python.  If not, see
+    <https://www.gnu.org/licenses/>.
+
+"""    
 #import tifffile
 import imageio
 import os
@@ -103,39 +127,30 @@ class Camera(object):
     def stop(self):
         raise NotImplementedError
 
-    def grab(self, view=None):
+    def grab(self, metadata=None):
         raise NotImplementedError
 
-    def get_views(self):
+    def get_channels(self):
         raise NotImplementedError
     
-    def store_views(self, dir, filetype, suffix=None):
-        files = []
-        for view in self.get_views():
-            if suffix:
-                filename = "%s-%s.%s" % (view, suffix, filetype)
-            else:
-                filename = "%s.%s" % (view, filetype)
-            filepath = os.path.join(dir, filename)
-            image = self.grab(view)
-            #if filetype == "tif":
-            #    tifffile.imsave(filepath, image)
-            #else:
-            imageio.imwrite(filepath, image)
-            files.append(filepath)
-        return files
-
-    def store_views_db(self, scan, filetype, suffix=None):
-        files = []
-        for view in self.get_views():
-            image = self.grab(view)
-            fileset = scan.get_fileset("images")
-            file = fileset.create_file("%s-%s" % (view, suffix))
-            file.write_image(filetype, image)
-            files.append(file)
-        return files
-
-
+    def store_data(self, scan):
+        print(self.tmpdir)
+        data = self.get_data()
+        fileset = scan.get_fileset('images', create=True)
+        for data_item in data:
+            print(data_item)
+            channels = self.get_channels()
+            for c in channels.keys():
+                if len(channels) == 1:
+                    file_id = '%s' % (data_item['id'])
+                else:
+                    file_id = '%s-%s'%(c,data_item['id'])
+                if not(self.tmpdir):
+                    new_file = fileset.create_file(file_id)
+                    new_file.write_image(channels[c], data_item['data'][c])
+                    if data_item['metadata'] is not None:
+                       new_file.set_metadata(data_item['metadata'])
+        if self.tmpdir: self.save_data(fileset)  
     
 class GameController(object):
     def __init__(self):

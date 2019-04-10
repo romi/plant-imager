@@ -1,19 +1,28 @@
 # -*- python -*-
 # -*- coding: utf-8 -*-
-#
-#       File author(s):
-#           Peter Hanappe <peter@hanappe.com>
-#
-#       File contributor(s):
-#           Peter Hanappe <peter@hanappe.com>
-#           Jonathan Legrand <jonathan.legrand@ens-lyon.fr>
-#
-#       File maintainer(s):
-#           Peter Hanappe <peter@hanappe.com>
-#
-#       Distributed under XXXXX license.
-#
+# 
+# lettucethink-python - Python tools for the LettuceThink robot
+# 
+# Copyright (C) 2018 Sony Computer Science Laboratories
+# Authors: D. Colliaux, T. Wintz, P. Hanappe
+# 
+# This file is part of lettucethink-python.
+# 
+# lettucethink-python is free software: you can redistribute it
+# and/or modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation, either
+# version 3 of the License, or (at your option) any later version.
+# 
+# lettucethink-python is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with lettucethink-python.  If not, see
+# <https://www.gnu.org/licenses/>.
 # ------------------------------------------------------------------------------
+
 
 """Implementation of a database as a local file structure.
 
@@ -54,16 +63,13 @@ json objects in a separate directory:
 2018/metadata/images/rgb0002.json
 """
 
-import copy
-import json
 import os
+import sys
+import json
+import copy 
+import imageio 
 from shutil import copyfile
-
-import imageio
-
-from lettucethink import error
-from lettucethink.db import db_api as db
-
+from lettucethink import error, db
 
 class DB(db.DB):
     """Class defining the database object `DB`.
@@ -200,10 +206,13 @@ class Scan(db.Scan):
     def get_filesets(self):
         return self.filesets  # Copy?
 
-    def get_fileset(self, id):
+    
+    def get_fileset(self, id, create=False):
         for fileset in self.filesets:
             if fileset.get_id() == id:
                 return fileset
+        if create:
+            return self.create_fileset(id)
         return None
 
     def get_metadata(self, key=None):
@@ -229,7 +238,15 @@ class Scan(db.Scan):
     def store(self):
         _store_scan(self)
 
+    def delete_fileset(self, fileset_id):
+        for x in self.filesets:
+            if fileset_id == x.id:
+                self.filesets.remove(x)
+                self.store()
+                return
+        raise error.Error("Invalid id")
 
+        
 class Fileset(db.Fileset):
 
     def __init__(self, db, scan, id):
@@ -240,13 +257,15 @@ class Fileset(db.Fileset):
     def get_files(self):
         return self.files
 
-    def get_file(self, id):
+    def get_file(self, id, create=False):
         ids = [f.id for f in self.files]
-        if id not in ids:
+        if id not in ids and not create:
             return None
+        if id not in ids and create:
+            return self.create_file(id)
         return self.files[ids.index(id)]
 
-    def get_metadata(self, key):
+    def get_metadata(self, key=None):
         return _get_metadata(self.metadata, key)
 
     def set_metadata(self, data, value=None):
@@ -261,6 +280,15 @@ class Fileset(db.Fileset):
         self.store()
         return file
 
+    def delete_file(self, file_id):
+        for x in self.files:
+            if file_id == x.id:
+                self.files.remove(x)
+                self.store()
+                return
+        raise error.Error("Invalid id")
+
+    
     def store(self):
         self.scan.store()
 
@@ -272,7 +300,7 @@ class File(db.File):
         self.filename = filename
         self.metadata = None
 
-    def get_metadata(self, key):
+    def get_metadata(self, key=None):
         return _get_metadata(self.metadata, key)
 
     def set_metadata(self, data, value=None):
@@ -350,6 +378,7 @@ def _load_scans(db):
             scan.filesets = _load_scan_filesets(scan)
             scan.metadata = _load_scan_metadata(scan)
             scans.append(scan)
+            scan.store()
     return scans
 
 
@@ -361,8 +390,13 @@ def _load_scan_filesets(scan):
     filesets_info = structure["filesets"]
     if isinstance(filesets_info, list):
         for fileset_info in filesets_info:
-            fileset = _load_fileset(scan, fileset_info)
-            filesets.append(fileset)
+            try:
+                fileset = _load_fileset(scan, fileset_info)
+                filesets.append(fileset)
+            except:
+                id = fileset_info.get("id")
+                print("Warning: unable to load fileset %s, deleting..."%id)
+                # scan.delete_fileset(id)
     else:
         raise error.Error("%s: filesets is not a list" % files_json)
     return filesets
@@ -392,8 +426,13 @@ def _load_fileset_files(fileset, fileset_info):
     files_info = fileset_info.get("files", [])
     if isinstance(files_info, list):
         for file_info in files_info:
-            file = _load_file(fileset, file_info)
-            files.append(file)
+            try:
+                file = _load_file(fileset, file_info)
+                files.append(file)
+            except:
+                id = file_info.get("id")
+                print("Warning: unable to load file %s, deleting..."%id)
+                # fileset.delete_file(id)
     else:
         raise error.Error("files.json: expected a list for files")
     return files
@@ -596,35 +635,4 @@ def _store_scan(scan):
 #
 
 def _is_valid_id(id):
-    return True  # haha  (FIXME!)
-
-
-##################################################################
-if __name__ == '__main__':
-    # Test
-    import sys
-    import datetime
-
-    db = DB(sys.argv[1])
-
-    for scan in db.get_scans():
-        print("Scan '%s'" % scan.get_id())
-        for fileset in scan.get_filesets():
-            print("- Fileset '%s'" % fileset.get_id())
-            for file in fileset.get_files():
-                print("      File '%s'" % file.get_id())
-                file.set_metadata("foo", "bar")
-                print(file.get_metadata("foo"))
-                print(file.get_metadata("fox"))
-
-    now = datetime.datetime.now()
-    id = now.strftime("%Y%m%d-%H%M%S")
-
-    scan = db.create_scan(id)
-    scan.set_metadata("hardware",
-                      {"version": "0.1", "camera": "RX0",
-                       "gimbal": "dynamixel"})
-    scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
-    fileset = scan.create_fileset("images")
-    file = fileset.create_file("00001")
-    file.write_text("jpg", "tada")
+    return True # haha  (FIXME!)

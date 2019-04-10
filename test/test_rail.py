@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 
     lettucethink-python - Python tools for the LettuceThink robot
@@ -22,27 +23,20 @@
     <https://www.gnu.org/licenses/>.
 
 """    
-from setuptools import setup, find_packages
-import os
 
-ver_file = os.path.join('lettucethink', 'version.py')
-with open(ver_file) as f:
-    exec(f.read())
+from lettucethink import rail
 
-opts = dict(name=NAME,
-            description=DESCRIPTION,
-            long_description=LONG_DESCRIPTION,
-            license=LICENSE,
-            classifiers=CLASSIFIERS,
-            platforms=PLATFORMS,
-            version=VERSION,
-            packages=find_packages(),
+dev="/dev/ttyACM0"
 
-            install_requires=[
-                'imageio',
-                'gphoto2'
-                ],
-            )
+print("Opening connection to rail on %s" % dev)
 
-if __name__ == '__main__':
-    setup(**opts)
+rail = rail.Rail(dev, homing=True)
+rail.start()
+
+rail.moveto(1)
+
+print("Moving to 0")
+rail.moveto(0)
+rail.stop()
+
+print("Done")

@@ -1,3 +1,27 @@
+"""
+
+    lettucethink-python - Python tools for the LettuceThink robot
+
+    Copyright (C) 2018 Sony Computer Science Laboratories
+    Authors: D. Colliaux, T. Wintz, P. Hanappe
+  
+    This file is part of lettucethink-python.
+
+    lettucethink-python is free software: you can redistribute it
+    and/or modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+
+    lettucethink-python is distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with lettucethink-python.  If not, see
+    <https://www.gnu.org/licenses/>.
+
+"""    
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -137,3 +161,7 @@ def get_plant_contours(mask):
    contours = [np.vstack([ci[:,0], ci[:,0][0]]) for ci in contours if (len(ci) > 10)]
    return contours
 
+def render_path(mask, path, filepath):
+   stp = np.round(path.T, 0).reshape((-1,1,2)).astype(np.int32)
+   cv2.polylines(mask, [stp], False, [145,235,229],8)
+   cv2.imwrite(filepath, mask)
