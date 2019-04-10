@@ -1,0 +1,31 @@
+package:
+  name: lettucethink-python
+#  version: {{ environ.get('GIT_DESCRIBE_TAG', 'default') }}
+  version: dev
+
+source:
+  path: ..
+
+build:
+  number: 0
+  script: python setup.py install
+
+requirements:
+  build:
+    - python=3.7
+    - setuptools
+    - pyserial
+    - py-opencv
+  run:
+    - python=3.7
+    - pyserial
+    - py-opencv
+    - matplotlib
+    - numpy
+    - requests
+
+about:
+  home: https://github.com/romi/lettucethink-python
+  license: None
+  license_file: LICENSE
+  summary: Python tools for the LettuceThink robot.
