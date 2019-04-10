@@ -36,8 +36,42 @@ https://downloads.openmicroscopy.org/omero/5.4.9/artifacts/OMERO.server-5.4.9-ic
 OMERO.py-5.4.9-ice36-b101
 https://downloads.openmicroscopy.org/omero/5.4.9/artifacts/OMERO.py-5.4.9-ice36-b101.zip
 
-Unzip one of them, and test connectivity:
 
+Get the server version:
+``$ wget https://downloads.openmicroscopy.org/omero/5.4.9/artifacts/OMERO.server-5.4.9-ice36-b101.zip``
+Unzip it:
+``$ unzip OMERO.server-5.4.9-ice36-b101.zip``
+
+Python3 conversion:
+
+1. Apply ``2to3`` transformation script to python scripts (directly write changes, no backups):
+``$ 2to3 OMERO.server-5.4.9-ice36-b101/ --write --nobackups``
+
+2. Performs following replacements:
+  * 'threading._Event' -> 'threading.Event'
+  * 'threading._Timer' -> 'threading.Timer'
+  * 'from types import X' -> '', with X in following replacements:
+    * 'IntType' -> 'int'
+    * 'LongType' -> 'int'
+    * 'ListType' -> 'list'
+    * 'TupleType' -> 'tuple'
+    * 'StringType' -> 'str'
+    * 'StringTypes' -> 'str'
+    * 'UnicodeType' -> 'str'
+    * 'BooleanType' -> 'bool'
+
+3. Add OMERO to ``$PYTHONPATH`` environment variable, by adding these lines to:
+  * to ``miniconda*/bin/activate`` if in a conda env:
+  .. code_block::
+     if [[ "$@" == "lettucethink" ]]; then
+         export OMERO_PREFIX=~/Projects/ROMI/OMERO.server-5.4.9-ice36-b101
+         export PYTHONPATH=$PYTHONPATH:$OMERO_PREFIX/lib/python
+     fi
+
+  * to ``~/.bashrc``:
+  .. code_block::
+     export OMERO_PREFIX=~/Projects/ROMI/OMERO.server-5.4.9-ice36-b101
+     export PYTHONPATH=$PYTHONPATH:$OMERO_PREFIX/lib/python
 
 """
 
@@ -50,21 +84,109 @@ from shutil import copyfile
 from lettucethink import error
 from lettucethink.db import db_api as db
 
+from omero.gateway import BlitzGateway
+
+HOST = 'db.romi-project.eu'
+USERNAME = 'jonathan'
+PORT = 4064
+
+CONN_ATTRS = ['host', 'username', 'pwd', 'port']
+
 
 class DB(db.DB):
 
-    def __init__(self, url, login=None, pwd=None, port=4064):
-        self.url = url
-        self.login = login
-        self.pwd = pwd
-        self.port = port
-        self.scans = _load_scans(self)
+    def __init__(self, host=HOST, username=USERNAME, pwd=None, port=PORT):
+        """Database constructor.
 
-    def connect(self, login_data=None):
-        pass
+        Uses host URL, user name, associated password and port to connect to
+        database.
+
+        Parameters
+        ----------
+        host : str
+            OMERO server to connect to
+        username : str
+            user name to use to connect to OMERO server
+        pwd : str
+            password associated to OMERO server
+        port : int
+            port number to use to communicate with the OMERO.server
+
+        Examples
+        --------
+        >>> from lettucethink.db.ome_cli_db import DB
+        >>> omeromi = DB()
+        >>> omeromi.connect(pwd='B@D5%5b4dT&#he3f')
+
+        """
+        # Defines hidden attributes:
+        self._connected = False  # database connexion status, not connected by default
+
+        # Defines attributes:
+        self.host = host
+        self.username = username
+        self.pwd = pwd  # Is it OK to save password ?
+        self.port = port
+
+        attr_vals = [getattr(self, attr, None) for attr in CONN_ATTRS]
+        if None not in attr_vals:
+            self.connect(host=self.host, username=self.username, pwd=self.pwd,
+                         port=self.port)
+
+        # self.scans = _load_scans(self)
+
+    def _is_connected(self):
+        """Test if connected to the OMERO database. """
+        if not self._connected:
+            msg = "Error: Connection not available to {}:{}!"
+            msg += "Please check your user name () and password.\n"
+            raise ValueError(msg.format(self.host, self.port, self.username))
+        else:
+            return self._connected
+
+    def connect(self, **kwargs):
+        """Connect to the OMERO database.
+
+        Provides keyword arguments not provided to DB instance at creation.
+
+        Other Parameters
+        ----------------
+        host : str
+            OMERO server to connect to
+        username : str
+            user name to use to connect to OMERO server
+        pwd : str
+            password associated to OMERO server
+        port : int
+            port number to use to communicate with the OMERO.server
+
+        Returns
+        -------
+        bool
+            connexion status, True if connected
+
+        Raises
+        ------
+        ValueError
+            if could not connect to database with given
+        """
+
+        for attr in CONN_ATTRS:
+            kwd = kwargs.get(attr, None)
+            if kwd is not None:
+                setattr(self, attr, kwd)
+
+        self._connexion = BlitzGateway(self.username, self.pwd, host=self.host,
+                                       port=self.port)
+        self._connected = self._connexion.connect()
+        return self._is_connected()
 
     def disconnect(self):
-        pass
+        """Disconnect from OMERO database. """
+        try:
+            self._connexion.close()
+        except:
+            raise IOError("Not connected yet!")
 
     def get_scans(self):
         return self.scans
@@ -484,28 +606,3 @@ def _store_scan(scan):
 def _is_valid_id(id):
     return True  # haha  (FIXME!)
 
-
-##################################################################
-
-db = DB(sys.argv[1])
-
-for scan in db.get_scans():
-    print("Scan '%s'" % scan.get_id())
-    for fileset in scan.get_filesets():
-        print("- Fileset '%s'" % fileset.get_id())
-        for file in fileset.get_files():
-            print("      File '%s'" % file.get_id())
-            file.set_metadata("foo", "bar")
-            print(file.get_metadata("foo"))
-            print(file.get_metadata("fox"))
-
-now = datetime.datetime.now()
-id = now.strftime("%Y%m%d-%H%M%S")
-
-scan = db.create_scan(id)
-scan.set_metadata("hardware",
-                  {"version": "0.1", "camera": "RX0", "gimbal": "dynamixel"})
-scan.set_metadata("biology", {"species": "A. thaliana", "plant": "GT1"})
-fileset = scan.create_fileset("images")
-file = fileset.create_file("00001")
-file.write_text("jpg", "tada")
