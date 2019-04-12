@@ -1,8 +1,6 @@
 import os
 from setuptools import setup, find_packages
 
-import lettucethink
-
 ver_file = os.path.join('lettucethink', 'version.py')
 with open(ver_file) as f:
     exec(f.read())
@@ -14,23 +12,17 @@ conda_build = os.environ.get('CONDA_BUILD', '0') == '1'
 if conda_build:
     pyopencv = ""
 
-opts = dict(name='lettucethink-python',
-            description="Python tools for the LettuceThink robot",
-            long_description="",
-            license="",
-            platforms=["Linux"],
-            version=lettucethink.__version__,
+opts = dict(name=NAME,
+            description=DESCRIPTION,
+            long_description=LONG_DESCRIPTION,
+            license=LICENSE,
+            classifiers=CLASSIFIERS,
+            platforms=PLATFORMS,
+            version=VERSION,
             packages=find_packages(),
             install_requires=[
                 "pyserial",
                 pyopencv
-            ],
-            classifiers=[
-                "Programming Language :: Python",
-                "Intended Audience :: Science/Research",
-                "Natural Language :: English",
-                "Programming Language :: Python :: 3.7",
-                "Topic :: Scientific/Engineering",
             ],
             )
 
