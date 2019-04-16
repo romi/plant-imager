@@ -161,3 +161,7 @@ def get_plant_contours(mask):
    contours = [np.vstack([ci[:,0], ci[:,0][0]]) for ci in contours if (len(ci) > 10)]
    return contours
 
+def render_path(mask, path, filepath):
+   stp = np.round(path.T, 0).reshape((-1,1,2)).astype(np.int32)
+   cv2.polylines(mask, [stp], False, [145,235,229],8)
+   cv2.imwrite(filepath, mask)

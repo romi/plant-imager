@@ -21,49 +21,57 @@
     License along with lettucethink-python.  If not, see
     <https://www.gnu.org/licenses/>.
 
-"""    
+"""
 import gphoto2 as gp
 import os
 import imageio
 from lettucethink import hal, error
 
+
 class Camera(hal.Camera):
-    '''
+    """
     Gphoto2 Camera object.
-    ''' 
+    """
 
     def __init__(self):
-        self.available_data = {"rgb"}
         self.camera = None
         self.start()
-        
-        
+
     def start(self):
         self.camera = gp.Camera()
         self.camera.init()
         cfg = self.camera.get_config()
         cmode = cfg.get_child_by_name("capturemode")
-        cmode.set_value(cmode.get_choice(0)) # should put in single shot mode
+        cmode.set_value(cmode.get_choice(0))  # should put in single shot mode
         self.is_started = True
 
-        
     def stop(self):
         self.camera.exit()
         self.camera = None
 
-        
-    def get_views(self):
-        return ["rgb"]
-
+    def get_channels(self):
+        return {'rgb': 'jpg'}
 
     # TODO: is there a way to avoid writing the file to disk?
-    def grab(self, view=None):
+    def grab(self, view=None, metadata=None):
         self.grab_write("/tmp/frame.jpg")
-        return imageio.imread("/tmp/frame.jpg")
+        data_item = {
+            'id': id,
+            'filename': filename,
+            'data': {'rgb': None},
+            'metadata': metadata
+        }
+        data = imageio.imread("/tmp/frame.jpg")
+        data_item['data']['rgb'] = data
+        self.data.append(data_item)
+        return data_item
 
-    
     def grab_write(self, target):
         file_path = self.camera.capture(0)
-        camera_file = self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
+        camera_file = self.camera.file_get(file_path.folder, file_path.name,
+                                           gp.GP_FILE_TYPE_NORMAL)
         gp.check_result(gp.gp_file_save(camera_file, target))
         return target
+
+    def get_data(self):
+        return self.data

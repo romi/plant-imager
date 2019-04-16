@@ -54,7 +54,7 @@ class Camera(hal.Camera):
     def get_resolution(self):
         return self.width, self.height
     
-    def get_views(self):
+    def get_channels(self):
         return ["rgb"]
 
     def grab(self, view=0):
