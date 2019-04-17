@@ -25,8 +25,9 @@
 """    
 import sys
 import datetime
-from lettucethink import fsdb
+import sys
 
+from lettucethink.db import fsdb
 
 if len(sys.argv) != 2:
     print("Usage: test_fsdb scan-directory")

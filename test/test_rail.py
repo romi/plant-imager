@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 
     lettucethink-python - Python tools for the LettuceThink robot
@@ -22,29 +23,20 @@
     <https://www.gnu.org/licenses/>.
 
 """    
-import urllib
-import cv2
-from lettucethink import hal, error
-import numpy as np
 
-class Camera(hal.Camera):
-    def __init__(self, url):
-        self.url = url
+from lettucethink import rail
 
-    def start(self):
-        pass
+dev="/dev/ttyACM0"
 
-    def stop(self):
-        pass
-    
-    def get_channels(self):
-        return ["rgb"]
+print("Opening connection to rail on %s" % dev)
 
-    def grab(self, view=0):
-        req = urllib.request.urlopen(self.url)
-        arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-        image = cv2.imdecode(arr, -1)
-        return image
+rail = rail.Rail(dev, homing=True)
+rail.start()
 
+rail.moveto(1)
 
+print("Moving to 0")
+rail.moveto(0)
+rail.stop()
 
+print("Done")

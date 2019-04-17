@@ -30,13 +30,17 @@ import math
 import numpy as np
 from lettucethink import hal, error
 
+ZERO_PAN = 0
+ZERO_TILT = 0
+
 
 # cmp() is no longer defined in Python3 (silly)
 def cmp(a, b):
     return (a > b) - (a < b)
 
 class Gimbal(hal.CNC):
-    def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=50, zero_pan=25, zero_tilt=0):
+    def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=360,
+                zero_pan=0, zero_tilt=0):
         self.port = port
         self.status = "idle"
         self.p = [0, 0]
@@ -100,7 +104,7 @@ class Gimbal(hal.CNC):
     def set_target_pos(self, pan, tilt):
         self.__send("X%d" % (self.zero_pan + int(pan / 2 / math.pi * self.steps_per_turn)))
         if self.has_tilt:
-            self.__send("Y%d" % (ZERO_TILT + int(tilt / 2 / math.pi * self.steps_per_turn)))
+            self.__send("Y%d" % (self.zero_tilt + int(tilt / 2 / math.pi * self.steps_per_turn)))
 
 
     def wait(self):
@@ -113,7 +117,7 @@ class Gimbal(hal.CNC):
         
     def moveto(self, pan, tilt):
         self.moveto_async(pan, tilt)
-        self.wait()
+        # self.wait()
         
         
     def moveto_async(self, pan, tilt):
@@ -139,6 +143,7 @@ class Gimbal(hal.CNC):
     def __send(self, s):
         if not self.serial_port:
             raise Error("CNC has not been started")
+        self.serial_port.reset_input_buffer()
         r = False
         try:
             self.serial_port.write(bytes('%s\n' % s, 'utf-8'))
