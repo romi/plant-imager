@@ -55,8 +55,8 @@ class CNC(hal.CNC):
         self.serial_port.flushInput()
         if self.homing:
             self.home()
-            self.send_cmd("g90")
-            self.send_cmd("g21")
+        self.send_cmd("g90")
+        self.send_cmd("g21")
 
     def stop(self):
         if (self.has_started):
