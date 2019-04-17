@@ -72,6 +72,10 @@ class CNC(object):
     def stop_spindle(self):
         raise NotImplementedError
 
+    def run_path(self, xs, ys, z):
+       for i in range(0, len(xs)):
+           self.moveto(xs[i], ys[i], z)
+
 
 TOOL_NONE = 0
 TOOL_GIMBAL = 1

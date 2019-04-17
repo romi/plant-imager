@@ -115,22 +115,25 @@ class CNC(hal.CNC):
         self.serial_port.write((cmd + "\n").encode())
         grbl_out = self.serial_port.readline()
         log.write("cnc", "-> %s" % grbl_out.strip())
+        time.sleep(0.1)
         return grbl_out
 
-    def run_path(xs, ys, z, rotspeed=12000,feedrate=0):
-       cmd="G0 x%s y%s \n"%(xs[0], ys[0])
-       self.send_cmd(cmd, self.serial_port)
-       self.send_cmd("G0 Z-%s \n"%z, self.serial_port)
-       if rotspeed>0: self.send_cmd("M3 \n S%s \n"%rotspeed, self.serial_port)
-       time.sleep(1)
+    # PH: Moved run_path to hal.CNC
+#    def run_path(xs, ys, z, rotspeed=12000, feedrate=0):
+#       cmd="G0 x%s y%s \n"%(xs[0], ys[0])
+#       self.send_cmd(cmd, self.serial_port)
+#       self.send_cmd("G0 Z-%s \n"%z, self.serial_port)
+#       if rotspeed>0: self.send_cmd("M3 \n S%s \n"%rotspeed, self.serial_port)
+#       time.sleep(1)
+#       
+#       for i in range(1,len(xs)):
+#          if feedrate>0: cmd="G1 x%s y%s F%s \n"%(xs[i], ys[i], feedrate)
+#          else: cmd="G0 x%s y%s \n"%(xs[i], ys[i])
+#          self.send_cmd(cmd, self.serial_port)      
+#          time.sleep(.1)
+#
+#       self.send_cmd("G0 Z0 \n", self.serial_port)
+#       if rotspeed>0: self.send_cmd("M5 \n", self.serial_port)
+#       self.send_cmd("G0 x0 y0 \n", self.serial_port)
        
-       for i in range(1,len(xs)):
-          if feedrate>0: cmd="G1 x%s y%s F%s \n"%(xs[i], ys[i], feedrate)
-          else: cmd="G0 x%s y%s \n"%(xs[i], ys[i])
-          self.send_cmd(cmd, self.serial_port)      
-          time.sleep(.1)
 
-       self.send_cmd("G0 Z0 \n", self.serial_port)
-       if rotspeed>0: self.send_cmd("M5 \n", self.serial_port)
-       self.send_cmd("G0 x0 y0 \n", self.serial_port)
-       
