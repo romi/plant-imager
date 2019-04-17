@@ -69,7 +69,7 @@ import json
 import copy 
 import imageio 
 from shutil import copyfile
-from lettucethink import error, db
+from lettucethink.db import db_api as db
 
 class DB(db.DB):
     """Class defining the database object `DB`.
