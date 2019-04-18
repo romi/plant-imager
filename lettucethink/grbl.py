@@ -31,7 +31,7 @@ class CNC(hal.CNC):
     CNC functionalities 
     TODO: enable workspace origin offset, motor seed configuration,...
     ''' 
-    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=False, 
+    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, 
                        x_lims=[0,800], y_lims=[0,800], z_lims=[-100,0]):
         self.port = port
         self.baud_rate = baud_rate
@@ -47,7 +47,7 @@ class CNC(hal.CNC):
         self.start(homing)
 
         
-    def start(self, homing=False):
+    def start(self, homing=True):
         self.serial_port = serial.Serial(self.port, self.baud_rate)
         self.has_started = True
         self.serial_port.write("\r\n\r\n".encode())
@@ -55,8 +55,8 @@ class CNC(hal.CNC):
         self.serial_port.flushInput()
         if self.homing:
             self.home()
-            self.send_cmd("g90")
-            self.send_cmd("g21")
+        self.send_cmd("g90")
+        self.send_cmd("g21")
 
     def stop(self):
         if (self.has_started):
