@@ -70,6 +70,7 @@ import copy
 import imageio 
 from shutil import copyfile
 from lettucethink.db import db_api as db
+from lettucethink import error
 
 class DB(db.DB):
     """Class defining the database object `DB`.
