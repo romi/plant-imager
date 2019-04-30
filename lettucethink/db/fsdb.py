@@ -242,6 +242,11 @@ class Scan(db.Scan):
     def delete_fileset(self, fileset_id):
         for x in self.filesets:
             if fileset_id == x.id:
+                for f in x.files:
+                    x.delete_file(f.id)
+                fullpath = os.path.join(self.db.basedir, self.id, fileset_id)
+                if os.path.exists(fullpath):
+                    os.rmdir(fullpath)
                 self.filesets.remove(x)
                 self.store()
                 return
@@ -284,6 +289,9 @@ class Fileset(db.Fileset):
     def delete_file(self, file_id):
         for x in self.files:
             if file_id == x.id:
+                fullpath = os.path.join(self.scan.db.basedir, self.scan.id, self.id, x.filename)
+                if os.path.exists(fullpath):
+                    os.remove(fullpath)
                 self.files.remove(x)
                 self.store()
                 return
@@ -379,7 +387,7 @@ def _load_scans(db):
             scan.filesets = _load_scan_filesets(scan)
             scan.metadata = _load_scan_metadata(scan)
             scans.append(scan)
-            scan.store()
+            # scan.store()
     return scans
 
 
