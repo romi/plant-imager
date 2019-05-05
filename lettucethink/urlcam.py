@@ -22,7 +22,8 @@
     <https://www.gnu.org/licenses/>.
 
 """    
-import urllib
+#import urllib
+import urllib.request
 import cv2
 from lettucethink import hal, error
 import numpy as np
