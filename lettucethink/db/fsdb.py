@@ -63,6 +63,7 @@ json objects in a separate directory:
 2018/metadata/images/rgb0002.json
 """
 
+import glob
 import os
 import sys
 import json
