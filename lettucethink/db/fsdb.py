@@ -245,6 +245,8 @@ class Scan(db.Scan):
                 for f in x.files:
                     x.delete_file(f.id)
                 fullpath = os.path.join(self.db.basedir, self.id, fileset_id)
+                for f in glob.glob(os.path.join(fullpath, "*")):
+                    os.remove(f)
                 if os.path.exists(fullpath):
                     os.rmdir(fullpath)
                 self.filesets.remove(x)
