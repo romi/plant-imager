@@ -53,32 +53,51 @@ class Scanner(object):
         pan, tilt = self.gimbal.get_position()
         return {'x': x, 'y': y, 'z': z,
                 'pan': pan, 'tilt': tilt}
+
+    def set_path(self, path, mask=None):
+        """
+        Parameters
+        __________
+        path: list
+            List of 5-tuples (x,y,z,pan,tilt) or
+            4-tupls (x,y,z,pan) or 3-tuples (x,y,z)
+        mask: list
+            list of bools. If an item is set to True,
+            the position is stored as a metadata of the corresponding
+            image, else not. If set to None (default), all positions
+            are stored.
+
+        """
+        self.path = path
+        self.mask = mask
                           
-
-    def do_circular_scan(self, xc, yc, radius, num_points, z=None, tilt=None, metadata=None):
-        if z is None:
-            x, y, z = self.cnc.get_position()
-        if tilt is None:
-            pan, tilt = self.gimbal.get_position()
-        circle = path.circle(xc, yc, z, tilt, radius, num_points)
-        return self.scan(circle, metadata=metadata)
-
-    def do_linear_scan(self, origin, end, num_points, metadata=None):
-        line = path.line(origin, end, num_points)
-        return self.scan(line, metadata)
         
-    def scan(self, path, metadata=None):
+    def scan(self, metadata=None):
         """
         Scans along a given path 
-        :param path: list of 5-tuples (x,y,z,pan,tilt)
         """
+        path = self.path
         nc = len(path)
 
         for i in range(nc):
-            (x, y, z, pan, tilt) = path[i]
+            try:
+                mask = self.mask[i]
+                assert(type(mask) == bool)
+            except:
+                mask = True
+            try:
+                (x, y, z, pan, tilt) = path[i]
+            except:
+                try:
+                    (x, y, z, pan) = path[i]
+                    tilt = None
+                except:
+                    (x, y, z) = path[i]
+                    pan = None
+                    tilt = None
             #x, y, z = self.xyz_clamp(x, y, z) TODO
             try:
-               self.scan_at(x, y, z, pan, tilt)
+               self.scan_at(x, y, z, pan, tilt, store_pose=mask)
             except:
                break        
             self.scan_count += 1
@@ -96,7 +115,7 @@ class Scanner(object):
         return scan
         
     
-    def scan_at(self, x, y, z, pan, tilt, wait_time=1):
+    def scan_at(self, x, y, z, pan, tilt, store_pose=True, wait_time=1):
         """
         Moves arm to position (x,y,z,pan,tilt) and acquire data from camera.
         :param x: position x
@@ -107,6 +126,13 @@ class Scanner(object):
         :param wait_time: time to wait after movement before taking the shot
         """
         self.is_busy = True
+        c_pan, c_tilt = self.gimbal.get_position()
+
+        if pan is None:
+            pan = c_pan
+        if tilt is None:
+            tilt = c_tilt
+
         if self.inverted:
             pan = (math.pi - pan) % (2*math.pi)
         if self.cnc.async_enabled():
@@ -119,5 +145,6 @@ class Scanner(object):
             if self.gimbal: self.gimbal.moveto(pan, tilt)
 
         time.sleep(wait_time)
-        self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
+        if store_pose:
+            self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
         self.is_busy = False
