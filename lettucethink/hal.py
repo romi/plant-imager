@@ -23,7 +23,8 @@
 
 """    
 #import tifffile
-import imageio
+# import imageio
+from romidata import io
 import os
 
 class CNC(object):
@@ -151,7 +152,7 @@ class Camera(object):
                     file_id = '%s-%s'%(c,data_item['id'])
                 if not(self.tmpdir):
                     new_file = fileset.create_file(file_id)
-                    new_file.write_image(channels[c], data_item['data'][c])
+                    io.write_image(new_file, channels[c], data_item['data'][c])
                     if data_item['metadata'] is not None:
                        new_file.set_metadata(data_item['metadata'])
         if self.tmpdir: self.save_data(fileset)  
