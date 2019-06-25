@@ -80,11 +80,13 @@ class Scanner(object):
         nc = len(path)
 
         for i in range(nc):
-            try:
+            #try:
+            if self.mask is not None:
                 mask = self.mask[i]
                 assert(type(mask) == bool)
-            except:
+            else:
                 mask = True
+            print("mask = %s"%str(mask))
             try:
                 (x, y, z, pan, tilt) = path[i]
             except:
