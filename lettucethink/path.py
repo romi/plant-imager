@@ -35,11 +35,16 @@ def circle(center_x, center_y, z, tilt, radius, num_points):
        res.append((x, y, z, angle, tilt))
    return res
 
-def line(origin, y, z, pan, tilt, length, num_points):
-   res = []
-   for i in range(num_points):
-      res.append((origin+i* length/ num_points, y, z, pan, tilt))
-   return res
+def line(origin, end, n_points):
+    assert(len(origin) == len(end))
+    assert(len(origin) == 5)
+    origin = np.array(origin)
+    end = np.array(end)
+    res = []
+
+    for i in range(n_points):
+        res.append(origin + (1- i /(n_points-1)) * end)
+    return res
 
 # Make a boustrophedon. The path goes up and down along the y-axis,
 # and slowly moves forward in the x-direction.

@@ -63,8 +63,8 @@ class Scanner(object):
         circle = path.circle(xc, yc, z, tilt, radius, num_points)
         return self.scan(circle, metadata=metadata)
 
-    def do_linear_scan(self, origin, y, z, pan, tilt, length, num_points, metadata=None):
-        line = path.line(origin, y, z, pan, tilt, length, num_points)
+    def do_linear_scan(self, origin, end, num_points, metadata=None):
+        line = path.line(origin, end, num_points)
         return self.scan(line, metadata)
         
     def scan(self, path, metadata=None):
