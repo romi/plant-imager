@@ -84,6 +84,9 @@ class CNC(hal.CNC):
         #self.send_cmd("g28") #reaching workspace origin
         self.send_cmd("g92 x0 y0 z0")
 
+    def set_home(self):
+        pass
+
                     
     def moveto(self, x, y, z):
         self.moveto_async(x, y, z)
