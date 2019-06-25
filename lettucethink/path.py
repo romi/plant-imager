@@ -43,7 +43,7 @@ def line(origin, end, n_points):
     res = []
 
     for i in range(n_points):
-        res.append(origin + (1- i /(n_points-1)) * end)
+        res.append((1 - i/(n_points-1))*origin + (i /(n_points-1)) * end)
     return res
 
 # Make a boustrophedon. The path goes up and down along the y-axis,
