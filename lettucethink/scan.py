@@ -86,7 +86,6 @@ class Scanner(object):
                 assert(type(mask) == bool)
             else:
                 mask = True
-            print("mask = %s"%str(mask))
             try:
                 (x, y, z, pan, tilt) = path[i]
             except:
@@ -149,4 +148,6 @@ class Scanner(object):
         time.sleep(wait_time)
         if store_pose:
             self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
+        else:
+            self.camera.grab()
         self.is_busy = False
