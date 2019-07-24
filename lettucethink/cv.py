@@ -34,8 +34,8 @@ def rotate_and_crop(image, workspace):
    rotated = cv2.warpAffine(image, M, (iw, ih))
    log.store_image("rotated", rotated)
 
-   cropped = image[ih - workspace.y0 - workspace.height:ih-workspace.y0,
-                workspace.x0:workspace.x0 + workspace.width]
+   cropped = rotated[ih - workspace.y0 - workspace.height:ih-workspace.y0,
+                     workspace.x0:workspace.x0 + workspace.width]
    log.store_image("cropped", cropped)
    return cropped
 
@@ -89,8 +89,8 @@ def calculate_plant_mask(image, toolsize, bilf=[11, 5, 17], morpho_it=[10, 5]):
    # Reduce the surfaces, to filter small one out.
    # See https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html
    print("morphologyEx: %d" % morpho_it[0])
-   #mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=morpho_it[0])
-   mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=20)
+   mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=morpho_it[0])
+   #mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=20)
    log.store_image("mask2", mask)
 
    # Increase the remaining surfaces.
