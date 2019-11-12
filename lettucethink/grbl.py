@@ -121,6 +121,23 @@ class CNC(hal.CNC):
         time.sleep(0.1)
         return grbl_out
 
+    def get_status(self):
+        self.serial_port.write("?".encode("utf-8"))
+        try:
+            res = self.serial_port.readline()
+            res = res.decode("utf-8")
+            res = res[1:-1]
+            res = res.split('|')
+            print(res)
+            res_fmt = {}
+            res_fmt['status'] = res[0]
+            pos = res[1].split(':')[-1].split(',')
+            pos = [-float(p) for p in pos] # why - ?
+            res_fmt['position'] = pos
+        except:
+            return None
+        return res_fmt
+
     # PH: Moved run_path to hal.CNC
 #    def run_path(xs, ys, z, rotspeed=12000, feedrate=0):
 #       cmd="G0 x%s y%s \n"%(xs[0], ys[0])

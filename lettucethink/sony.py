@@ -161,6 +161,18 @@ class SonyCamAPI(object):
         while not self.get_camera_status() == 'ContentsTransfer':
             continue
 
+    def get_available_shoot_mode(self):
+        return self.api_call("camera", "getAvailableShootMode")[1]
+
+    def set_shoot_mode(self, mode):
+        return self.api_call("camera", "setShootMode", [mode])
+
+    def start_movie_rec(self):
+        return self.api_call("camera", "startMovieRec")
+
+    def stop_movie_rec(self):
+        return self.api_call("camera", "stopMovieRec")
+
     def adb_transfer_pictures(self, count=1):
         """
         Transfer the latest count pictures from the camera
@@ -271,7 +283,10 @@ class Camera(hal.Camera):
                 use_flashair=False,
                 flashair_host=None,
                 camera_params=None,
-                tmpdir = False):
+                tmpdir=False,
+                video_camera=False):
+        super().__init__(**locals())
+
         self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
         self.use_flashair = use_flashair
@@ -282,23 +297,36 @@ class Camera(hal.Camera):
             if flashair_host is None:
                 raise SonyCamError("Must provide flashair host IP")
             self.flashair = FlashAirAPI(flashair_host)
-        self.data = []
+
         self.camera_params = camera_params
+        self.video_camera = video_camera
         self.tmpdir = tmpdir
         self.start()
 
     def start(self):
         self.sony_cam.start_shoot_mode()
+        if self.video_camera:
+            if "movie" in self.sony_cam.get_available_shoot_mode():
+                self.sony_cam.set_shoot_mode("movie")
+            else:
+                raise Exception("Video recording not available.")
+        else:
+            self.sony_cam.set_shoot_mode("still")
         if self.camera_params is not None:
             self.sony_cam.setup_camera(self.camera_params)
         
     def stop(self):
         pass
-        
-    def get_channels(self):
-        return {'rgb' : 'jpg'}
+       
+    def channels(self):
+        if self.video_camera:
+            return ['video']
+        else:
+            return ['rgb']
 
-    def grab(self, view=None, metadata=None):
+    def grab(self, metadata=None):
+        if self.video_camera:
+            raise Exception("Grab not available if video mode.")
         if view is not None and view != 'rgb':
             raise ValueError('Unavailable view: %s'%view)
         res = self.sony_cam.take_picture()
@@ -316,52 +344,65 @@ class Camera(hal.Camera):
         if self.postview:
             data = imageio.imread(BytesIO(requests.get(url).content))
             data_item['data']['rgb'] = data
-        self.data.append(data_item)
-        return data_item
+        self.store_queue.append(data_item)
 
-    def retrieve_original_images(self):
+
+    def start_recording(self):
+        if not self.video_camera:
+            raise Exception("not available in still mode")
+        self.sony_cam.start_movie_rec()
+
+    def stop_recording(self):
+        if not self.video_camera:
+            raise Exception("not available in still mode")
+        self.sony_cam.stop_movie_rec()
+        id = self.format_id(self.up_id(), 'video')
+        data_item = {
+            'id' : id,
+            'filename' : '%s.mp4'%id,
+            'data' : {
+                'video' : None
+                },
+            'metadata' : None
+        }
+        self.store_queue.append(data_item)
+
+    def store(self, fileset, last_n=inf):
+        if not self.postview:
+            self.__retrieve_original_images()
+        super().store(self)
+
+
+    def __retrieve_original_images(self):
         if self.use_adb:
-            images = self.sony_cam.adb_transfer_pictures(count=len(self.data))
-            for i, data_item in enumerate(self.data):
+            images = self.sony_cam.adb_transfer_pictures(count=len(self.store_queue))
+            for i, data_item in enumerate(self.store_queue):
                 data_item['data']['rgb'] = images[i]
         elif self.use_flashair:
-            images = self.flashair.transfer_latest_pictures(count=len(self.data))
-            for i, data_item in enumerate(self.data):
+            images = self.flashair.transfer_latest_pictures(count=len(self.store_queue))
+            for i, data_item in enumerate(self.store_queue):
                 data_item['data']['rgb'] = images[i]
         else:
             self.sony_cam.start_transfer_mode()
             uri = self.sony_cam.get_source_list()[0]['source']
-            content_list = self.sony_cam.get_content_list(count=len(self.data), uri=uri)
-            for data_item in self.data:
+            content_list = self.sony_cam.get_content_list(count=len(self.store_queue), uri=uri)
+            for i, data_item in enumerate(self.store_queue):
                 file_found = False
                 filename = data_item['filename']
-                for content in content_list:
-                    content = content['content']['original'][0]
-                    if content['fileName'] == filename:
-                        url = content['url']
-                        img = imageio.imread(BytesIO(requests.get(url).content))
-                        data_item['data']['rgb'] = img
-                        file_found = True
-                        break
-                if not file_found:
-                    raise Exception('Could not find file %s on camera'%filename)
+                content = content_list[-1-i]
+                # for content in content_list:
+                content = content['content']['original'][0]
+                # if content['fileName'] == filename:
+                url = content['url']
+                if self.video_camera:
+                    vid = BytesIO(requests.get(url).content)
+                    data_item['data']['video'] = vid
+                else:
+                    img = imageio.imread(BytesIO(requests.get(url).content))
+                    data_item['data']['rgb'] = img
+                # file_found = True
+                        # break
+                # if not file_found:
+                    # raise Exception('Could not find file %s on camera'%filename)
 
             self.sony_cam.start_shoot_mode()
-        return self.data
-
-    def get_data(self):
-        if (not(self.postview) and not(self.tmpdir)):
-            self.retrieve_original_images()
-        return self.data
-
-    def save_data(self, fileset):
-        with tempfile.TemporaryDirectory() as tmp:
-            fnames = self.flashair.transfer_latest_pictures(count=len(self.data), tmpdir=tmp)
-            fnames.sort()
-            for i,fname in enumerate(fnames):
-                file_id=fname.split("/")[-1].split(".")[0]
-                self.data[i]['metadata']['filename']=fname.split("/")[-1]
-                new_file = fileset.create_file(file_id)
-                new_file.import_file(fname)
-                new_file.set_metadata(self.data[i]['metadata'])
-            self.flashair.delete_all()  

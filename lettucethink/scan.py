@@ -25,8 +25,43 @@
 
 from lettucethink import hal, utils, path
 import os
+import numpy as np
 import math
 import time
+
+def cnc_gimbal_circle(cnc, gimbal, center, radius, callback_begin=None, callback_end=None,rotation_speed=10):
+    cnc.send_cmd("g0 y%i x%i"%(center[1], center[0] - radius))
+
+    feed_rate = int(rotation_speed * radius * 2 * np.pi)
+    print("feed_rate = %i"%feed_rate)
+
+    gimbal_speed = gimbal.steps_per_turn * rotation_speed / 60
+    print("gimbal_speed = %i"%gimbal_speed)
+
+    angle = np.arctan2(0, radius)
+    gimbal.moveto_async(angle, 0)
+
+    cnc.wait()
+    if callback_begin is not None:
+        callback_begin()
+
+    cnc.serial_port.write(("g2 x%i i%i F%i\n"%(center[0] - radius, radius, feed_rate)).encode())
+    # gimbal.moveat(gimbal_speed, 0)
+
+    time.sleep(0.1)
+    while True:
+        status = cnc.get_status()
+        if status is None:
+            continue
+        if status['status'] == 'Idle':
+            break
+        else:
+            x,y,z = status['position']
+            angle = np.arctan2(y - center[1], x - center[0])
+            gimbal.moveto_async(angle, 0)
+        time.sleep(0.01)
+    if callback_end is not None:
+        callback_end()
 
 
 def archive_scan(files, output="scan.zip"):
@@ -70,6 +105,31 @@ class Scanner(object):
         """
         self.path = path
         self.mask = mask
+
+    def circular_video_scan(self, center, radius, metadata=None):
+        self.cnc.home()
+        cnc_gimbal_circle(self.cnc, self.gimbal, center, radius, callback_begin=self.camera.start_recording,
+                            callback_end=self.camera.stop_recording)
+
+        while True:
+            try:
+                data = self.camera.retrieve_original_images()[-1]
+                break
+            except:
+                time.sleep(1)
+                continue
+
+        # Create scan only if successful
+        scan = self.db.create_scan(self.scan_id)
+        if metadata is not None:
+            scan.set_metadata(metadata)
+        fileset = scan.create_fileset("video")
+        video_file = fileset.create_file(data['id'])
+        video_file.write_raw(data['data']['video'].read(), 'mp4')
+        if data['metadata'] is not None:
+            video_file.set_metadata(data['metadata'])
+
+        return scan
                           
         
     def scan(self, metadata=None):
@@ -78,6 +138,8 @@ class Scanner(object):
         """
         path = self.path
         nc = len(path)
+
+        print(self.mask)
 
         for i in range(nc):
             #try:
@@ -112,7 +174,8 @@ class Scanner(object):
         scan = self.db.create_scan(self.scan_id)
         if metadata is not None:
             scan.set_metadata(metadata)
-        self.camera.store_data(scan)
+        fs = scan.create_fileset("images")
+        self.camera.store(fs)
         return scan
         
     
@@ -147,7 +210,22 @@ class Scanner(object):
 
         time.sleep(wait_time)
         if store_pose:
+            print("storing_pose")
             self.camera.grab(metadata={"pose": [x, y, z, pan, tilt]})
         else:
             self.camera.grab()
         self.is_busy = False
+
+if __name__ == "__main__":
+    from lettucethink import grbl
+    from lettucethink import blgimbal
+    from lettucethink import sony
+    from romidata import fsdb
+
+    db = fsdb.FSDB("testdb")
+
+    cnc = grbl.CNC(homing=False)
+    gimbal = blgimbal.Gimbal('/dev/ttyACM1', has_tilt=False, zero_pan=145)
+    cam = sony.Camera("192.168.122.1", "8080", video_camera=True)  
+    scanner = Scanner(cnc, gimbal, cam, db, "test_scan_3")
+    

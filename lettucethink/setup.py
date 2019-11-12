@@ -29,6 +29,7 @@ ver_file = os.path.join('lettucethink', 'version.py')
 with open(ver_file) as f:
     exec(f.read())
 
+
 opts = dict(name=NAME,
             description=DESCRIPTION,
             long_description=LONG_DESCRIPTION,

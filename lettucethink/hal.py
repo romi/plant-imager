@@ -123,8 +123,13 @@ class Gimbal(Tool):
 
     
 class Camera(object):
-    def __init__(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        self.description = {
+            "args": args,
+            "kwargs": kwargs
+        }
+        self.last_id = 0
+        self.store_queue = []
 
     def start(self):
         raise NotImplementedError
@@ -135,28 +140,41 @@ class Camera(object):
     def grab(self, metadata=None):
         raise NotImplementedError
 
-    def get_channels(self):
+    def store(self, fileset, last_n=None):
+        n = 0
+        while last_n is None or n < last_n:
+            try:
+                data_item = self.store_queue.pop()
+            except:
+                break
+            for c in data_item['data'].keys():
+                self.__store_item(data_item, c)
+            n += 1
+
+    def __store_item(self, data_item, fileset, channel):
+        f = fileset.create_file(self.format_id(data_item['id'], channel))
+        f.set_metadata(data_item['metadata'])
+        f.set_metadata('channel', channel)
+        if channel == 'rgb':
+            io.write_image(f, data_item['data']['rgb'])
+        elif channel == 'segmentation':
+            io.write_volume(f, data_item['data']['segmentation'])
+        else:
+            raise ValueError("Wrong argument (channel): %s"%channel)
+
+    def channels(self):
         raise NotImplementedError
-    
-    def store_data(self, scan):
-        print(self.tmpdir)
-        data = self.get_data()
-        fileset = scan.get_fileset('images', create=True)
-        for data_item in data:
-            print(data_item)
-            channels = self.get_channels()
-            for c in channels.keys():
-                if len(channels) == 1:
-                    file_id = '%s' % (data_item['id'])
-                else:
-                    file_id = '%s-%s'%(c,data_item['id'])
-                if not(self.tmpdir):
-                    new_file = fileset.create_file(file_id)
-                    io.write_image(new_file, data_item['data'][c])
-                    if data_item['metadata'] is not None:
-                       new_file.set_metadata(data_item['metadata'])
-        if self.tmpdir: self.save_data(fileset)  
-    
+
+    def format_id(self, id, channel):
+        return "%05d_%s"%(id, channel)
+
+    def up_id(self):
+        aux = self.last_id
+        self.last_id += 1
+        return aux
+
+
+   
 class GameController(object):
     def __init__(self):
         pass
