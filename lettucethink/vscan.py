@@ -76,13 +76,8 @@ class Gimbal(hal.Gimbal):
     
     def moveto(self, pan, tilt):
         data = {
-<<<<<<< HEAD
             "rx": 90 - tilt / np.pi * 180,
             "rz": pan / np.pi * 180 - 90
-=======
-            "rx": tilt / 180 * np.pi,
-            "rz": pan / 180 * np.pi
->>>>>>> 2f9a6d9... gitignore
         }
         self.virtual_scanner.request_post("camera_pose", data)
     
