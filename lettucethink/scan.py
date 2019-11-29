@@ -73,12 +73,10 @@ def animate_scan(files, output="scan.gif"):
 
     
 class Scanner(object):
-    def __init__(self, cnc, gimbal, camera, db, scan_id, inverted=False):
+    def __init__(self, cnc, gimbal, camera, inverted=False):
         self.cnc = cnc
         self.gimbal = gimbal
         self.camera = camera
-        self.db = db
-        self.scan_id = scan_id
         self.inverted=inverted
         self.scan_count = 0
 
@@ -132,7 +130,7 @@ class Scanner(object):
         return scan
                           
         
-    def scan(self, metadata=None):
+    def scan(self):
         """
         Scans along a given path 
         """
@@ -169,14 +167,12 @@ class Scanner(object):
         #self.cnc.moveto(*path[0][0:3])
         self.cnc.home()
         self.cnc.set_home()
-        
+
+    def store(self, fileset, metadata=None):
+        self.camera.store(fileset)
         # Create scan only if successful
-        scan = self.db.create_scan(self.scan_id)
         if metadata is not None:
-            scan.set_metadata(metadata)
-        fs = scan.create_fileset("images")
-        self.camera.store(fs)
-        return scan
+            fileset.scan.set_metadata(metadata)
         
     
     def scan_at(self, x, y, z, pan, tilt, store_pose=True, wait_time=1):
@@ -190,18 +186,18 @@ class Scanner(object):
         :param wait_time: time to wait after movement before taking the shot
         """
         self.is_busy = True
-        c_pan, c_tilt = self.gimbal.get_position()
+        # c_pan, c_tilt = self.gimbal.get_position()
 
-        if pan is None:
-            pan = c_pan
-        if tilt is None:
-            tilt = c_tilt
+        # if pan is None:
+        #     pan = c_pan
+        # if tilt is None:
+        #     tilt = c_tilt
 
         if self.inverted:
             pan = (math.pi - pan) % (2*math.pi)
         if self.cnc.async_enabled():
             self.cnc.moveto_async(x, y, z)
-            if self.gimbal: self.gimbal.moveto_async(pan, tilt)
+            if self.gimbal and pan is not None and tilt is not None: self.gimbal.moveto_async(pan, tilt)
             self.cnc.wait()
             if self.gimbal: self.gimbal.wait()
         else:

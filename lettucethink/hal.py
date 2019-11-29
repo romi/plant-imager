@@ -148,7 +148,7 @@ class Camera(object):
             except:
                 break
             for c in data_item['data'].keys():
-                self.__store_item(data_item, c)
+                self.__store_item(data_item, fileset, c)
             n += 1
 
     def __store_item(self, data_item, fileset, channel):
