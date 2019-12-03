@@ -86,7 +86,7 @@ class Gimbal(hal.Gimbal):
     
 
 class Camera(hal.Camera):
-    def __init__(self, width, height, focal, render_ground_truth=False, host="localhost", port="5000"):
+    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000"):
         super().__init__()
         self.virtual_scanner = VirtualScanner(host, port)
 
@@ -101,8 +101,17 @@ class Camera(hal.Camera):
             "focal": self.focal,
         }
         self.virtual_scanner.request_post("camera_intrinsics", data)
+        
+        self.load_object = load_object
+        
+        if load_object != None:
+            self.virtual_scanner.request_get("load_object/" + load_object)
+        if load_background != None:
+            self.virtual_scanner.request_get("load_background/" + load_background)
+                
         x = self.virtual_scanner.request_get("classes")
         self.classes = json.loads(x.decode('utf-8'))
+        
 
     def start(self):
         pass
@@ -110,6 +119,7 @@ class Camera(hal.Camera):
     def stop(self):
         pass
 
+    
     def grab(self, metadata=None):
         print("grabbing")
         data_item = {}

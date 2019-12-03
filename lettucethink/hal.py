@@ -153,6 +153,7 @@ class Camera(object):
 
     def __store_item(self, data_item, fileset, channel):
         f = fileset.create_file(self.format_id(data_item['id'], channel))
+        f.set_metadata('shot_id', data_item['id'])
         f.set_metadata(data_item['metadata'])
         f.set_metadata('channel', channel)
         if channel == 'rgb':
