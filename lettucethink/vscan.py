@@ -136,12 +136,12 @@ class Camera(hal.Camera):
             return data
         elif channel == 'segmentation':
             n_classes = len(self.classes)
-            data = np.zeros((n_classes, self.width, self.height))
+            data = np.zeros((n_classes, self.height, self.width))
 
             for i, class_name in enumerate(self.classes):
                 x = self.virtual_scanner.request_get("render_class/%s"%class_name)
                 data_ = imageio.imread(BytesIO(x))
-                data[i, :, :] = data_
+                data[i, :, :] = data_[:,:,3]
             return data
         else:
             raise ValueError("Wrong argument (channel): %s"%channel)
