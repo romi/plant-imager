@@ -124,10 +124,20 @@ class Camera(hal.Camera):
         print("grabbing")
         data_item = {}
         data_item["data"] = {}
+
+        rt = self.virtual_scanner.request_get("camera_pose")
+        k = self.virtual_scanner.request_get("camera_intrinsics")
+        if metadata is None:
+            metadata = {}
+
+        metadata["camera"]["K"] = k
+        metadata["camera"]["rot"] = [rt[0][0:3], rt[1][0:3], rt[2][0:3]]
+        metadata["camera"]["tvec"] = [rt[0][3], rt[1][3], rt[2][3]]
         data_item["metadata"] = metadata
         for c in self.channels():
             data_item["data"][c] = self.__grab(c)
         data_item["id"] = self.up_id()
+
 
         self.store_queue.append(data_item)
 
