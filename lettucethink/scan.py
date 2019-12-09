@@ -156,11 +156,7 @@ class Scanner(object):
                     (x, y, z) = path[i]
                     pan = None
                     tilt = None
-            #x, y, z = self.xyz_clamp(x, y, z) TODO
-            try:
-               self.scan_at(x, y, z, pan, tilt, store_pose=mask)
-            except:
-               break        
+            self.scan_at(x, y, z, pan, tilt, store_pose=mask)
             self.scan_count += 1
 
         if self.gimbal: self.gimbal.moveto(0, 0) # FIXME

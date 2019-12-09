@@ -15,7 +15,11 @@ class VirtualScanner():
         x = requests.get("http://%s:%s/%s"%(self.host, self.port, endpoint))
         if x.status_code != 200:
             raise Exception("Unable to connect to virtual scanner (code %i)"%x.status_code)
-        return x.content
+        # If json, return content, else return bytes
+        try:
+            return json.loads(x.content.decode())
+        except:
+            return x.content
 
     def request_post(self, endpoint, data):
         x = requests.post("http://%s:%s/%s"%(self.host, self.port, endpoint), data=data)
@@ -109,8 +113,7 @@ class Camera(hal.Camera):
         if load_background != None:
             self.virtual_scanner.request_get("load_background/" + load_background)
                 
-        x = self.virtual_scanner.request_get("classes")
-        self.classes = json.loads(x.decode('utf-8'))
+        self.classes = self.virtual_scanner.request_get("classes")
         
 
     def start(self):
@@ -121,14 +124,15 @@ class Camera(hal.Camera):
 
     
     def grab(self, metadata=None):
-        print("grabbing")
         data_item = {}
         data_item["data"] = {}
 
         rt = self.virtual_scanner.request_get("camera_pose")
         k = self.virtual_scanner.request_get("camera_intrinsics")
         if metadata is None:
-            metadata = {}
+            metadata = { "camera" : {} }
+        else:
+            metadata["camera"] = {}
 
         metadata["camera"]["K"] = k
         metadata["camera"]["rot"] = [rt[0][0:3], rt[1][0:3], rt[2][0:3]]
