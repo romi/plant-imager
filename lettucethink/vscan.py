@@ -135,7 +135,7 @@ class Camera(hal.Camera):
             metadata["camera"] = {}
 
         metadata["camera"]["K"] = k
-        metadata["camera"]["rot"] = [rt[0][0:3], rt[1][0:3], rt[2][0:3]]
+        metadata["camera"]["rotmat"] = [rt[0][0:3], rt[1][0:3], rt[2][0:3]]
         metadata["camera"]["tvec"] = [rt[0][3], rt[1][3], rt[2][3]]
         data_item["metadata"] = metadata
         for c in self.channels():
