@@ -114,6 +114,7 @@ class Camera(hal.Camera):
             self.virtual_scanner.request_get("load_background/" + load_background)
                 
         self.classes = self.virtual_scanner.request_get("classes")
+        self.bounding_box = self.virtual_scanner.request_get("bounding_box")
         
 
     def start(self):
@@ -134,9 +135,10 @@ class Camera(hal.Camera):
         else:
             metadata["camera"] = {}
 
-        metadata["camera"]["K"] = k
+        metadata["camera"]["camera_model"] = k
         metadata["camera"]["rotmat"] = [rt[0][0:3], rt[1][0:3], rt[2][0:3]]
         metadata["camera"]["tvec"] = [rt[0][3], rt[1][3], rt[2][3]]
+
         data_item["metadata"] = metadata
         for c in self.channels():
             data_item["data"][c] = self.__grab(c)
