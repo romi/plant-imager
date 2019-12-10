@@ -135,10 +135,10 @@ class Camera(hal.Camera):
         else:
             metadata["camera"] = {}
 
-        metadata["camera"]["camera_model"] = k
-        metadata["camera"]["rotmat"] = [rt[0][0:3], rt[1][0:3], rt[2][0:3]]
-        metadata["camera"]["tvec"] = [rt[0][3], rt[1][3], rt[2][3]]
-
+        metadata["camera"] = {
+            "camera_model" : k,
+            **rt
+        }
         data_item["metadata"] = metadata
         for c in self.channels():
             data_item["data"][c] = self.__grab(c)
