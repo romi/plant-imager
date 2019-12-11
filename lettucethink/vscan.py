@@ -109,7 +109,7 @@ class Camera(hal.Camera):
         self.load_object = load_object
         
         if load_object != None:
-            self.virtual_scanner.request_get("load_object/" + load_object)
+            self.displacement = self.virtual_scanner.request_get("load_object/" + load_object)
         if load_background != None:
             self.virtual_scanner.request_get("load_background/" + load_background)
                 
