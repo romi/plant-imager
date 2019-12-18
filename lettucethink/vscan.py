@@ -125,8 +125,11 @@ class Camera(hal.Camera):
 
     
     def grab(self, metadata=None):
+        data = {}
+        for c in self.channels():
+            data[c] = self.__grab(c)
         data_item = {}
-        data_item["data"] = {}
+        data_item["data"] = data
 
         rt = self.virtual_scanner.request_get("camera_pose")
         k = self.virtual_scanner.request_get("camera_intrinsics")
@@ -140,8 +143,6 @@ class Camera(hal.Camera):
             **rt
         }
         data_item["metadata"] = metadata
-        for c in self.channels():
-            data_item["data"][c] = self.__grab(c)
         data_item["id"] = self.up_id()
 
 
