@@ -116,7 +116,8 @@ class Camera(hal.Camera):
         if classes is None:
             self.classes = self.virtual_scanner.request_get("classes")
         else:
-            self.classes = list(classes)
+            self.classes = list(classes)#classes.split(',')
+            print(self.classes)
         self.bounding_box = self.virtual_scanner.request_get("bounding_box")
         
 
@@ -131,6 +132,8 @@ class Camera(hal.Camera):
         data = {}
         for c in self.channels():
             data[c] = self.__grab(c)
+
+                
         data_item = {}
         data_item["data"] = data
 
@@ -165,13 +168,14 @@ class Camera(hal.Camera):
             data = imageio.imread(BytesIO(x))
             return data
         elif channel == 'segmentation':
-            n_classes = len(self.classes)
-            data = np.zeros((n_classes, self.height, self.width))
 
+            data = {}
             for i, class_name in enumerate(self.classes):
                 x = self.virtual_scanner.request_get("render_class/%s"%class_name)
                 data_ = imageio.imread(BytesIO(x))
-                data[i, :, :] = data_[:,:,3]
+                print(class_name)
+                data[class_name] = data_[:,:,3]
+
             return data
         else:
             raise ValueError("Wrong argument (channel): %s"%channel)

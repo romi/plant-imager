@@ -159,7 +159,7 @@ class Camera(object):
         if channel == 'rgb':
             io.write_image(f, data_item['data']['rgb'])
         elif channel == 'segmentation':
-            io.write_volume(f, data_item['data']['segmentation'])
+            io.write_npz(f, data_item['data']['segmentation'])
         else:
             raise ValueError("Wrong argument (channel): %s"%channel)
 
