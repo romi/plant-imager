@@ -90,7 +90,7 @@ class Gimbal(hal.Gimbal):
     
 
 class Camera(hal.Camera):
-    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000"):
+    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000", classes=None):
         super().__init__()
         self.virtual_scanner = VirtualScanner(host, port)
 
@@ -112,8 +112,11 @@ class Camera(hal.Camera):
             self.displacement = self.virtual_scanner.request_get("load_object/" + load_object)
         if load_background != None:
             self.virtual_scanner.request_get("load_background/" + load_background)
-                
-        self.classes = self.virtual_scanner.request_get("classes")
+
+        if classes is None:
+            self.classes = self.virtual_scanner.request_get("classes")
+        else:
+            self.classes = list(classes)
         self.bounding_box = self.virtual_scanner.request_get("bounding_box")
         
 
