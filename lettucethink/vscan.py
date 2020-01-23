@@ -98,7 +98,7 @@ class Camera(hal.Camera):
         self.height = height
         self.focal = focal
         self.render_ground_truth = render_ground_truth
-        self.flash
+        self.flash = flash
 
         data = {
             "width": self.width,
