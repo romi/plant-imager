@@ -90,7 +90,7 @@ class Gimbal(hal.Gimbal):
     
 
 class Camera(hal.Camera):
-    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000", classes=None):
+    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000", classes=None, flash=False):
         super().__init__()
         self.virtual_scanner = VirtualScanner(host, port)
 
@@ -98,6 +98,7 @@ class Camera(hal.Camera):
         self.height = height
         self.focal = focal
         self.render_ground_truth = render_ground_truth
+        self.flash
 
         data = {
             "width": self.width,
@@ -164,7 +165,10 @@ class Camera(hal.Camera):
 
     def __grab(self, channel):
         if channel == 'rgb':
-            x = self.virtual_scanner.request_get("render")
+            ep = "render"
+            if self.flash:
+                ep = ep+"?flash=1"
+            x = self.virtual_scanner.request_get(ep)
             data = imageio.imread(BytesIO(x))
             return data
         elif channel == 'segmentation':
