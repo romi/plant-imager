@@ -90,7 +90,7 @@ class Gimbal(hal.Gimbal):
     
 
 class Camera(hal.Camera):
-    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000"):
+    def __init__(self, width, height, focal, render_ground_truth=False, load_object=None, load_background=None, host="localhost", port="5000", classes=None, flash=False):
         super().__init__()
         self.virtual_scanner = VirtualScanner(host, port)
 
@@ -98,6 +98,7 @@ class Camera(hal.Camera):
         self.height = height
         self.focal = focal
         self.render_ground_truth = render_ground_truth
+        self.flash = flash
 
         data = {
             "width": self.width,
@@ -112,8 +113,12 @@ class Camera(hal.Camera):
             self.displacement = self.virtual_scanner.request_get("load_object/" + load_object)
         if load_background != None:
             self.virtual_scanner.request_get("load_background/" + load_background)
-                
-        self.classes = self.virtual_scanner.request_get("classes")
+
+        if classes is None:
+            self.classes = self.virtual_scanner.request_get("classes")
+        else:
+            self.classes = list(classes)#classes.split(',')
+            print(self.classes)
         self.bounding_box = self.virtual_scanner.request_get("bounding_box")
         
 
@@ -125,8 +130,13 @@ class Camera(hal.Camera):
 
     
     def grab(self, metadata=None):
+        data = {}
+        for c in self.channels():
+            data[c] = self.__grab(c)
+
+                
         data_item = {}
-        data_item["data"] = {}
+        data_item["data"] = data
 
         rt = self.virtual_scanner.request_get("camera_pose")
         k = self.virtual_scanner.request_get("camera_intrinsics")
@@ -140,8 +150,6 @@ class Camera(hal.Camera):
             **rt
         }
         data_item["metadata"] = metadata
-        for c in self.channels():
-            data_item["data"][c] = self.__grab(c)
         data_item["id"] = self.up_id()
 
 
@@ -157,17 +165,21 @@ class Camera(hal.Camera):
 
     def __grab(self, channel):
         if channel == 'rgb':
-            x = self.virtual_scanner.request_get("render")
+            ep = "render"
+            if self.flash:
+                ep = ep+"?flash=1"
+            x = self.virtual_scanner.request_get(ep)
             data = imageio.imread(BytesIO(x))
             return data
         elif channel == 'segmentation':
-            n_classes = len(self.classes)
-            data = np.zeros((n_classes, self.height, self.width))
 
+            data = {}
             for i, class_name in enumerate(self.classes):
                 x = self.virtual_scanner.request_get("render_class/%s"%class_name)
                 data_ = imageio.imread(BytesIO(x))
-                data[i, :, :] = data_[:,:,3]
+                print(class_name)
+                data[class_name] = data_[:,:,3]
+
             return data
         else:
             raise ValueError("Wrong argument (channel): %s"%channel)
