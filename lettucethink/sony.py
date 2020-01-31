@@ -28,6 +28,7 @@ import requests
 import time
 import json
 import subprocess
+import numpy as np
 from io import BytesIO
 from enum import Enum
 from lettucethink import hal, error
@@ -367,7 +368,7 @@ class Camera(hal.Camera):
         }
         self.store_queue.append(data_item)
 
-    def store(self, fileset, last_n=inf):
+    def store(self, fileset, last_n=np.inf):
         if not self.postview:
             self.__retrieve_original_images()
         super().store(self)
