@@ -7,7 +7,7 @@ from setuptools import setup, Extension, find_packages
 s = setup(
     name='romiscanner',
     packages=find_packages(),
-    scripts=['bin/run-task', 'bin/scanner-rest-api'],
+    scripts=['bin/romi_bpy', 'bin/romi_virtualscanner'],
     author='Timothée Wintz',
     author_email='timothee@timwin.fr',
     description='A plant scanner',
@@ -16,17 +16,8 @@ s = setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     install_requires=[
-        'appdirs',
-        'toml',
-        'tqdm',
-        'romidata',
-        'imageio',
-        'opencv-python',
-        'luigi',
-        'pybind11',
-        'colorlog',
-        'scikit-image',
-        'open3d==0.9'
+        'numpy',
+        'imageio'
     ],
     include_package_data=True,
 )
