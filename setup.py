@@ -1,5 +1,5 @@
 import subprocess
-import romiscan
+import romiscanner
 
 from shutil import copyfile
 from setuptools import setup, Extension, find_packages
