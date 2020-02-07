@@ -1,0 +1,446 @@
+#!/usr/bin/env romi_bpy
+import bpy
+import argparse
+import tempfile
+from flask import jsonify
+from flask import Flask, send_file
+from flask import request, send_from_directory
+import numpy as np
+import sys
+import glob
+import flask
+import os
+import time
+import argparse
+import bpy
+from mathutils import Matrix, Vector
+import imageio
+from random import randint
+from mathutils import Color
+from copy import copy
+#---------------------------------------------------------------
+# 3x4 P matrix from Blender camera
+#---------------------------------------------------------------
+
+# BKE_camera_sensor_size
+def get_sensor_size(sensor_fit, sensor_x, sensor_y):
+    if sensor_fit == 'VERTICAL':
+        return sensor_y
+    return sensor_x
+
+# BKE_camera_sensor_fit
+def get_sensor_fit(sensor_fit, size_x, size_y):
+    if sensor_fit == 'AUTO':
+        if size_x >= size_y:
+            return 'HORIZONTAL'
+        else:
+            return 'VERTICAL'
+    return sensor_fit
+
+class Camera():
+    def __init__(self, scene, data, hdri_enabled=False):
+        self.scene = scene
+        self.cam = scene.camera
+        self.render = scene.render
+        self.data = data
+        self.hdri_enabled = hdri_enabled
+        if hdri_enabled:
+            self.setup_hdri()
+
+    def get_K(self):
+        camd = self.cam.data
+        scene = self.scene
+        f_in_mm = camd.lens
+        scale = scene.render.resolution_percentage / 100
+        resolution_x_in_px = scale * scene.render.resolution_x
+        resolution_y_in_px = scale * scene.render.resolution_y
+        sensor_size_in_mm = get_sensor_size(camd.sensor_fit, camd.sensor_width, camd.sensor_height)
+        sensor_fit = get_sensor_fit(
+            camd.sensor_fit,
+            scene.render.pixel_aspect_x * resolution_x_in_px,
+            scene.render.pixel_aspect_y * resolution_y_in_px
+        )
+        pixel_aspect_ratio = scene.render.pixel_aspect_y / scene.render.pixel_aspect_x
+        if sensor_fit == 'HORIZONTAL':
+            view_fac_in_px = resolution_x_in_px
+        else:
+            view_fac_in_px = pixel_aspect_ratio * resolution_y_in_px
+        pixel_size_mm_per_px = sensor_size_in_mm / f_in_mm / view_fac_in_px
+        s_u = 1 / pixel_size_mm_per_px
+        s_v = 1 / pixel_size_mm_per_px / pixel_aspect_ratio
+
+        # Parameters of intrinsic calibration matrix K
+        u_0 = resolution_x_in_px / 2 - camd.shift_x * view_fac_in_px
+        v_0 = resolution_y_in_px / 2 + camd.shift_y * view_fac_in_px / pixel_aspect_ratio
+        skew = 0 # only use rectangular pixels
+
+        K = [[s_u, skew, u_0],
+            [   0,  s_v, v_0],
+            [   0,    0,   1]]
+        return K
+
+    def get_RT(self):
+        # bcam stands for blender camera
+        R_bcam2cv = Matrix(
+            ((1, 0,  0),
+            (0, -1, 0),
+            (0, 0, -1)))
+
+        # Use matrix_world instead to account for all constraints
+        location, rotation = self.cam.matrix_world.decompose()[0:2]
+        R_world2bcam = rotation.to_matrix().transposed()
+
+        # Use location from matrix_world to account for constraints:     
+        T_world2bcam = -1*R_world2bcam @ location
+
+        # Build the coordinate transform matrix from world to computer vision camera
+        R_world2cv = R_bcam2cv @ R_world2bcam
+        T_world2cv = R_bcam2cv @ T_world2bcam
+
+        R = np.matrix(R_world2cv)
+        T = np.array(T_world2cv)
+
+        return R.tolist(), T.tolist()
+
+
+    def set_intrinsics(self, width, height, focal):
+        """
+        :input w image width
+        :input h image height
+        :input f focal length (equiv. 35mm)
+        """
+
+        self.render.resolution_x = width
+        self.render.resolution_y = height
+        self.render.resolution_percentage = 100
+
+        # Set camera fov in degrees
+        self.cam.data.angle = 2*np.arctan(35/focal)
+        self.cam.data.clip_end = 10000
+
+    def move(self, tx=None, ty=None, tz=None, rx=None, ry=None, rz=None):
+        self.cam.rotation_mode = 'XYZ'
+        if tx is not None:
+            self.cam.location[0] = float(tx)
+        if ty is not None:
+            self.cam.location[1] = float(ty)
+        if tz is not None:
+            self.cam.location[2] = float(tz)
+        if rx is not None:
+            self.cam.rotation_euler[0] = float(rx)*(pi/180.0)
+        if ry is not None:
+            self.cam.rotation_euler[1] = float(ry)*(pi/180.0)
+        if rz is not None:
+            self.cam.rotation_euler[2] = float(rz)*(pi/180.0)
+
+
+    def setup_hdri(self):
+        self.data.worlds["World"].use_nodes = True
+        world_nodes = self.data.worlds["World"].node_tree.nodes
+        for node in world_nodes:
+            world_nodes.remove(node)
+        
+        node = world_nodes.new("ShaderNodeTexEnvironment")
+        node.name = "Environment Texture"
+        
+        node = world_nodes.new("ShaderNodeBackground")
+        node.name = "Background"
+        
+        node = world_nodes.new("ShaderNodeOutputWorld")
+        node.name = "World Output"
+        
+        output = world_nodes["Environment Texture"].outputs["Color"]
+        input = world_nodes["Background"].inputs["Color"]
+        self.data.worlds["World"].node_tree.links.new(output, input)
+        
+        output = world_nodes["Background"].outputs["Background"]
+        input = world_nodes["World Output"].inputs["Surface"]
+        self.data.worlds["World"].node_tree.links.new(output, input)
+        
+        world = self.scene.world
+        nodes_tree = self.data.worlds[world.name].node_tree
+        self.env_text_node = nodes_tree.nodes["Environment Texture"]
+        self.hdri_enabled = True
+
+    def load_hdri(self, path):
+        if not self.hdri_enabled:
+            self.setup_hdri()
+        current_bg_image = bpy.data.images.load(path)
+        self.env_text_node.image = current_bg_image   
+        self.scene.render.film_transparent = False
+
+
+class MultiClassObject():
+    def __init__(self, scene, data):
+        self.data = data
+        self.scene = scene
+        self.objects = {}
+        self.classes = []
+        self.scene_materials = [m.name for m in self.data.materials]
+        self.scene_objects = [o.name for o in self.data.objects]
+
+    def show_class(self, class_name):
+        for m in self.classes:
+            if m not in self.objects:
+                continue
+            if m == class_name:
+                self.objects[m].hide_render = False
+            else:
+                self.objects[m].hide_render = True
+        self.scene.render.film_transparent = True
+        
+
+    def show_all(self):
+        for o in self.objects.keys():
+            self.objects[o].hide_render = False
+        self.scene.render.film_transparent = False
+
+    def clear_all_rotation(self):
+        for x in self.objects.values():
+            x.rotation_euler[0] = 0
+
+    def update_classes(self, colorize = 'None'):
+        self.classes = []
+        if colorize == None:
+            colorize = 'None'
+        if colorize == 'True':
+            color = [np.random.rand(), np.random.rand(), np.random.rand()]
+        specular = np.random.rand() * 0.02
+            #c = Color((np.random.rand(), np.random.rand(), np.random.rand()))
+        if 'jpg' in colorize or 'png' in colorize : #choose the name of a file you want to use as color palette, eg. images/palette.png
+            print("colorize = ")
+            print(colorize)
+            im = imageio.imread(colorize)
+            palette_width, palette_height, channels = im.shape
+            color = (im[randint(0, palette_width - 1), randint(0, palette_height - 1)]/255).tolist()
+            #c = Color(color[:-1])
+             #emission = im[randint(0, palette_width - 1), randint(0, palette_height -1)]/255
+        
+        for m in self.data.materials:
+            if m.name not in self.scene_materials:
+                self.classes.append(m.name)
+            if colorize != 'None':
+                #color = c[:] + (1.0,)
+                #c2 = copy(c)
+                #c2.v = np.random.rand()
+                #color_2 = c2[:]  + (1.0,)
+                if len(color) == 3:
+                    color += [1.0]
+                m.node_tree.nodes[1].inputs['Base Color'].default_value = color
+                m.node_tree.nodes[1].inputs['Specular'].default_value = specular
+                #m.node_tree.nodes["Principled BSDF"].inputs[17].default_value = color_2
+
+
+                
+    def load_obj(self, fname, dx = None, dy = None, dz = None, colorize = True):
+        """move object by dx, dy, dz if specified"""
+
+        for o in self.objects.values():
+            self.data.objects.remove(o, do_unlink=True)
+        self.objects = {}
+ 
+        for m in bpy.data.materials:
+            if not m.name in self.scene_materials:
+                bpy.data.materials.remove(m)
+
+        bpy.ops.import_scene.obj(filepath=fname)
+        self.update_classes(colorize)
+        
+        #bpy.ops.import_scene.obj(filepath='images/tuteur.obj')
+        
+        for m in self.classes:
+            for o in self.data.objects:
+                if m in o.name:
+                    self.objects[m] = o
+                    break
+
+        try:
+            dx = float(dx)
+        except:
+            dx = 0.0
+        try:
+            dy = float(dy)
+        except:
+            dy = 0.0
+        try:
+            dz = float(dz)
+        except:
+            dz = 0.0
+
+        for obj in self.objects.values(): #Move object
+            obj.location.x = dx
+            obj.location.y = dy
+            obj.location.x = dz
+
+        self.location = {
+            "x" : dx,
+            "y" : dy,
+            "z" : dz
+        }
+
+            
+        self.clear_all_rotation()
+
+class VirtualPlant(MultiClassObject):
+    def add_leaf_displacement(self, leaf_class_name):
+        obj = self.objects[leaf_class_name]
+        displace_modifier = obj.modifiers.new(name="Displace.01", type='DISPLACE')
+        tex = self.data.textures.new("Displace.01", 'CLOUDS')
+        tex.noise_scale = 2.0
+        displace_modifier.texture = tex
+
+if __name__ == "__main__":
+
+    # PRINT BLEND FILE LOC
+    if bpy.path.abspath("//") == "":
+        print("Empty file")
+        if 'Cube' in bpy.data.objects:
+            bpy.data.objects.remove(bpy.data.objects['Cube'], do_unlink=True)
+        if 'Light' in bpy.data.objects:
+            bpy.data.objects.remove(bpy.data.objects['Light'], do_unlink=True)
+
+    try:
+        idx = sys.argv.index('--')
+        sys.argv = ["null"] + sys.argv[idx+1:]
+    except:
+        sys.argv = ["null"]
+
+    parser = argparse.ArgumentParser(description='Run a romiscan task.')
+
+    parser.add_argument('--data-dir', dest='data_dir', default='data',
+                    help='location of obj and mtl files')
+    parser.add_argument('--hdri-dir', dest='hdri_dir', default='hdri',
+                    help='location of hdr files')
+    parser.add_argument('--port', dest='port', default=5000,
+                    help='port for flask server')
+    args = parser.parse_args()
+
+    data_dir = args.data_dir
+    hdri_dir = args.hdri_dir
+
+    pi = 3.14159265
+
+    object_list = glob.glob(os.path.join(data_dir, "*.obj"))
+    object_list = [os.path.basename(o) for o in object_list]
+
+
+    background_list = glob.glob(os.path.join(hdri_dir, "*.hdr"))
+    background_list = [os.path.basename(o) for o in background_list]
+    L = len(background_list)
+
+    cam = Camera(bpy.context.scene, bpy.data, False)
+    cam.set_intrinsics(1616, 1080, 24)
+    cam.move(-100, 0, 50, 90, 0, -90)
+
+    obj = VirtualPlant(bpy.context.scene, bpy.data)
+
+    app = Flask(__name__)
+
+    @app.route('/objects', methods = ['GET'])
+    def objects():
+        return jsonify(object_list)
+
+    @app.route('/classes', methods = ['GET'])
+    def classes():
+        return jsonify(obj.classes)
+    
+    @app.route('/bounding_box', methods = ['GET'])
+    def bounding_box():
+        bbox = []
+        for o in obj.objects:
+            new_bbox = obj.objects[o].bound_box
+            bbox += new_bbox
+
+        bbox = list(zip(*bbox))
+        dict_bbox = {}
+        for i, key in enumerate(['x', 'y', 'z']): 
+            dict_bbox[key] = [min(bbox[i]), max(bbox[i])] 
+        return jsonify(dict_bbox)
+
+    @app.route('/backgrounds', methods = ['GET'])
+    def backgrounds():
+        return jsonify(background_list)
+
+    @app.route('/camera_intrinsics', methods = ['POST', 'GET'])
+    def camera_intrinsics():
+        if flask.request.method == 'POST':
+            kwargs = request.form.to_dict()
+            cam.set_intrinsics(int(kwargs["width"]), int(kwargs["height"]), float(kwargs["focal"]))
+            return jsonify('OK')
+        else:
+            K = cam.get_K()
+            camera_model = {
+                "width" : cam.render.resolution_x,
+                "height" : cam.render.resolution_y,
+                "model" : "OPENCV",
+                "params" : [ K[0][0], K[1][1], K[0][2], K[1][2], 0.0, 0.0, 0.0, 0.0 ]
+            }
+            return jsonify(camera_model)
+
+    @app.route('/camera_pose', methods = ['POST', 'GET'])
+    def camera_pose():
+        if flask.request.method == 'POST':
+            kwargs = request.form.to_dict()
+            cam.move(**kwargs)
+            return jsonify('OK')
+        else:
+            R, T = cam.get_RT()
+            return jsonify({ "rotmat" : R, "tvec" : T})
+
+    @app.route('/load_object/<object_id>', methods= ['GET'])
+    def load_object(object_id):
+        dx = request.args.get('dx')
+        dy = request.args.get('dy')
+        dz = request.args.get('dz')
+        colorize = request.args.get('colorize')
+        obj.load_obj(os.path.join(data_dir, object_id), dx, dy, dz, colorize)
+        return jsonify(request.args.to_dict())
+
+    @app.route("/add_random_displacement/<class_id>", methods=['GET'])
+    def add_random_displacement(class_id):
+        obj.add_leaf_displacement(class_id)
+        return jsonify('OK')
+
+    @app.route('/load_background/<background_id>', methods = ['GET'])
+    def load_background(background_id):
+        cam.load_hdri(os.path.join(hdri_dir, background_id))
+        return jsonify('OK')
+    
+    light_data = bpy.data.lights.new(type = 'SPOT', name =  "flash")
+    @app.route('/render', methods = ['GET'])
+    def render():
+        flash = request.args.get('flash')
+        light_obj = None
+        if flash is not None:
+                energy = np.random.choice([0.1,0.1,0.1,0.1,0.1,1,2,3,4,5,6,7,8,9,10,11])*1e8
+                light_obj = bpy.data.objects.new(name='Flash', object_data=light_data)
+                light_obj.location = cam.cam.location    
+                light_obj.rotation_euler = cam.cam.rotation_euler
+                light_obj.data.energy = energy
+                light_obj.data.shadow_soft_size = 1000
+                view_layer = bpy.context.view_layer
+                view_layer.active_layer_collection.collection.objects.link(light_obj)
+                light_obj.select_set(True)
+                view_layer.objects.active = light_obj
+                light_obj
+        obj.show_all()
+        
+
+        with tempfile.TemporaryDirectory() as td:
+            bpy.context.scene.render.filepath = os.path.join(td, "plant.png")
+            bpy.ops.render.render(write_still=True)
+            if light_obj is not None:
+                bpy.data.objects.remove(light_obj, do_unlink=True)
+            return send_from_directory(td, "plant.png")
+
+    @app.route('/render_class/<class_id>', methods = ['GET'])
+    def render_class(class_id):
+        obj.show_class(class_id)
+        with tempfile.TemporaryDirectory() as td:
+            bpy.context.scene.render.filepath = os.path.join(td, "plant.png")
+            bpy.ops.render.render(write_still=True)
+            return send_from_directory(td, "plant.png")
+
+
+
+    app.run(debug=False, host="0.0.0.0", port=int(args.port))
