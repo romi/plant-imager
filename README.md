@@ -1,15 +1,5 @@
-LettuceThink control
+ROMI Scanner
 ====================
 
-gathers low-level control the the LettuceThink robot and tools for the related applications.
+Gather hardware control of the ROMI 3D scanner as well as the virtual scanner.
 
-LettuceScan
-===========
-
-In the LettuceScan application, the useful functions are controlling:
-
-- the RGBD camera,
-- the CNC for the xyz motion of the arn,
-- the bracket for pan and tilt motion.
-
-dependencies: python-opencv, numpy, pydepthsense 
