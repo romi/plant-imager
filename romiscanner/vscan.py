@@ -56,7 +56,8 @@ class VirtualScannerRunner():
             if check_port(port):
                 break
         self.port = port
-        self.process = subprocess.Popen(["romi_virtualscanner", "--", "--port", str(port)])
+        self.process = subprocess.Popen(["romi_virtualscanner", "--", "--port", str(port),
+                            "--data-dir", str(self.data_dir), "--hdri-dir", str(self.hdri_dir)])
         atexit.register(VirtualScannerRunner.stop, self)
         time.sleep(2)
 
@@ -78,8 +79,10 @@ class VirtualScanner(AbstractScanner):
                        focal: float, # camera focal
                        flash: bool=False, # light the scene with a flash
                        host: str=None, # host port, if None, launches a virtual scanner process
-                       port: str= None, # port, useful only if host is set
-                       classes: List[str]=[]): # list of classes to render
+                       port: int= 5000, # port, useful only if host is set
+                       classes: List[str]=[], # list of classes to render
+                       obj: str= None,
+                       background: str=None):
         super().__init__()
         if host == None:
             self.runner = VirtualScannerRunner()
@@ -88,7 +91,6 @@ class VirtualScanner(AbstractScanner):
             self.port = self.runner.port
         else:
             self.runner = None
-            assert(port is not None)
             self.host = host
             self.port = port
 
@@ -125,6 +127,35 @@ class VirtualScanner(AbstractScanner):
         }
         self.request_post("camera_intrinsics", data)
 
+    def list_objects(self):
+        return self.request_get_dict("objects")
+
+    def list_backgrounds(self):
+        return self.request_get_dict("backgrounds")
+
+    def load_object(self, file: db.File, palette: db.File=None):
+        """
+        Loads an object from a OBJ file and a palette image.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            file_path = os.path.join(tmpdir, file.filename)
+            io.to_file(file, file_path)
+            files = { "file" : open(file_path, "rb")}
+            if palette is not None:
+                palette_file_path = os.path.join(tmpdir, palette.filename)
+                io.to_file(palette, palette_file_path)
+                files["palette"] = open(palette_file_path, "rb")
+            return self.request_post("upload_object", {}, files)
+
+    def load_background(self, file: db.File):
+        """
+        Loads a background from a HDRI file
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            file_path = os.path.join(tmpdir, file.filename)
+            io.to_file(file, file_path)
+            files = { "file" : open(file_path, "rb")}
+            return self.request_post("upload_background", {}, files)
 
     def request_get_bytes(self, endpoint: str) -> bytes:
         x = requests.get("http://%s:%s/%s"%(self.host, self.port, endpoint))
@@ -136,8 +167,8 @@ class VirtualScanner(AbstractScanner):
         b = self.request_get_bytes(endpoint)
         return json.loads(b.decode())
 
-    def request_post(self, endpoint: str, data: dict) -> None:
-        x = requests.post("http://%s:%s/%s"%(self.host, self.port, endpoint), data=data)
+    def request_post(self, endpoint: str, data: dict, files: dict=None) -> None:
+        x = requests.post("http://%s:%s/%s"%(self.host, self.port, endpoint), data=data, files=files)
         if x.status_code != 200:
             raise Exception("Virtual scanner returned an error (error code %i)"%x.status_code)
 
