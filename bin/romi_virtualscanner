@@ -5,6 +5,7 @@ import tempfile
 from flask import jsonify
 from flask import Flask, send_file
 from flask import request, send_from_directory
+from werkzeug.utils import secure_filename
 import numpy as np
 import sys
 import glob
@@ -36,6 +37,8 @@ def get_sensor_fit(sensor_fit, size_x, size_y):
         else:
             return 'VERTICAL'
     return sensor_fit
+
+image_extensions = [".png", ".jpg"]
 
 class Camera():
     def __init__(self, scene, data, hdri_enabled=False):
@@ -199,38 +202,30 @@ class MultiClassObject():
         for x in self.objects.values():
             x.rotation_euler[0] = 0
 
-    def update_classes(self, colorize = 'None'):
+    def update_classes(self, colorize = False):
         self.classes = []
-        if colorize == None:
-            colorize = 'None'
+        if colorize == None or colorize == 'None' or colorize == 'False':
+            colorize = False
         if colorize == 'True':
-            color = [np.random.rand(), np.random.rand(), np.random.rand()]
+            colorize = True
+
         specular = np.random.rand() * 0.02
-            #c = Color((np.random.rand(), np.random.rand(), np.random.rand()))
-        if 'jpg' in colorize or 'png' in colorize : #choose the name of a file you want to use as color palette, eg. images/palette.png
-            print("colorize = ")
-            print(colorize)
+
+        if colorize == True:
+            color = [np.random.rand(), np.random.rand(), np.random.rand()]
+        elif os.path.exists(colorize): #choose the name of a file you want to use as color palette, eg. images/palette.png
             im = imageio.imread(colorize)
             palette_width, palette_height, channels = im.shape
             color = (im[randint(0, palette_width - 1), randint(0, palette_height - 1)]/255).tolist()
-            #c = Color(color[:-1])
-             #emission = im[randint(0, palette_width - 1), randint(0, palette_height -1)]/255
         
         for m in self.data.materials:
             if m.name not in self.scene_materials:
                 self.classes.append(m.name)
-            if colorize != 'None':
-                #color = c[:] + (1.0,)
-                #c2 = copy(c)
-                #c2.v = np.random.rand()
-                #color_2 = c2[:]  + (1.0,)
+            if colorize:
                 if len(color) == 3:
                     color += [1.0]
                 m.node_tree.nodes[1].inputs['Base Color'].default_value = color
                 m.node_tree.nodes[1].inputs['Specular'].default_value = specular
-                #m.node_tree.nodes["Principled BSDF"].inputs[17].default_value = color_2
-
-
                 
     def load_obj(self, fname, dx = None, dy = None, dz = None, colorize = True):
         """move object by dx, dy, dz if specified"""
@@ -386,6 +381,75 @@ if __name__ == "__main__":
         else:
             R, T = cam.get_RT()
             return jsonify({ "rotmat" : R, "tvec" : T})
+
+    @app.route('/upload_object', methods= ['GET', 'POST'])
+    def upload_object():
+        request = flask.request
+        if flask.request.method == "GET":
+            return  '''
+                <!doctype html>
+                <title>Upload object</title>
+                <h1>Upload object</h1>
+                <form method=post enctype=multipart/form-data>
+                  <input type=file name=file>
+                  <input type=file name=palette>
+                  <input type=submit value=Upload>
+                </form>
+                '''
+        with tempfile.TemporaryDirectory() as tmpdir:
+            kwargs = request.form
+            dx = kwargs.get('dx')
+            dy = kwargs.get('dy')
+            dz = kwargs.get('dz')
+
+            if "palette" not in request.files:
+                colorize = True
+            else:
+                palette_file = request.files['palette']
+                if palette_file.filename == "":
+                    colorize = True
+                else:
+                    assert(os.path.splitext(palette_file.filename)[-1].lower() in image_extensions)
+                    palette_filename = secure_filename(palette_file.filename)
+                    palette_file.save(os.path.join(tmpdir, palette_filename))
+                    colorize = os.path.join(tmpdir, palette_filename)
+
+            if 'file' not in request.files:
+                return "no file", 500
+            file = request.files['file']
+            if file.filename == '':
+                return "no file", 500
+            if file and os.path.splitext(file.filename)[-1].lower() == ".obj":
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(tmpdir, filename))
+                obj.load_obj(os.path.join(tmpdir, filename), dx, dy, dz, colorize)
+                return "OK"
+            return "wrong extension", 500
+
+    @app.route('/upload_background', methods= ['GET', 'POST'])
+    def upload_background():
+        if flask.request.method == "GET":
+            return  '''
+                <!doctype html>
+                <title>Upload background</title>
+                <h1>Upload background</h1>
+                <form method=post enctype=multipart/form-data>
+                  <input type=file name=file>
+                  <input type=submit value=Upload>
+                </form>
+                '''
+        with tempfile.TemporaryDirectory() as tmpdir:
+            if 'file' not in request.files:
+                return "no file", 500
+            file = request.files['file']
+            if file.filename == '':
+                return "no file", 500
+            if file and os.path.splitext(file.filename)[-1].lower() == ".hdr":
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(tmpdir, filename))
+                cam.load_hdri(os.path.join(tmpdir, filename))
+                return "OK"
+            return "wrong extension", 500
 
     @app.route('/load_object/<object_id>', methods= ['GET'])
     def load_object(object_id):
