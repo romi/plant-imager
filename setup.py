@@ -17,7 +17,8 @@ s = setup(
     setup_requires=['setuptools_scm'],
     install_requires=[
         'numpy',
-        'imageio'
+        'imageio',
+        'psutil'
     ],
     include_package_data=True,
 )

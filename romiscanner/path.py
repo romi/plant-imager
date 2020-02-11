@@ -64,13 +64,15 @@ class Path(List[PathElement]):
     def __init__(self):
         self = list()
 
-class XYCircle(Path):
+class Circle(Path):
     def __init__(self, center_x: Length_mm, center_y: Length_mm, z: Length_mm, tilt: Deg, radius: Length_mm, n_points: int):
         super().__init__()
         for i in range(n_points):
             pan = 2*i*math.pi / n_points
             x = center_x - radius * math.cos(pan)
             y = center_y - radius * math.sin(pan)
+            pan = pan * 180 / math.pi
+            pan = (pan - 90) % 360
             self.append(PathElement(x, y, z, pan, tilt, exact_pose=False))
 
 class Line(Path):

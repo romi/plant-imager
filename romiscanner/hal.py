@@ -30,6 +30,7 @@ from .units import *
 from . import path
 from typing import Tuple, List
 from romidata.db import Fileset
+from romidata import io
 
 class ScannerError(Exception):
     pass
@@ -44,7 +45,7 @@ class ChannelData():
         self.name = name
 
     def format_id(self):
-        return "%05d_%s"%(idx, channel_name)
+        return "%05d_%s"%(self.idx, self.name)
 
 class DataItem():
     def __init__(self, idx: int, metadata=None):
@@ -165,8 +166,9 @@ class AbstractScanner(metaclass=ABCMeta):
             data_item = self.scan_at(pose, x.exact_pose)
             for c in self.channels():
                 f = fileset.create_file(data_item.channels[c].format_id())
-                io.write_image(f, data_item.channels[c])
-                f.set_metadata(data_item.metadata)
+                io.write_image(f, data_item.channels[c].data)
+                if data_item.metadata is not None:
+                    f.set_metadata(data_item.metadata)
     
     def scan_at(self, pose: path.Pose, store_pose: bool=True, metadata: dict={}) -> DataItem:
         self.set_position(pose)
