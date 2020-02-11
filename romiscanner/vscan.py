@@ -12,12 +12,14 @@ import imageio
 from io import BytesIO
 import numpy as np
 from typing import List
+import tempfile
 
-from romidata.db import Fileset
+from romidata.db import Fileset, File
 
 from romiscanner import scan
 from romiscanner.hal import DataItem, AbstractScanner
 from romiscanner import path
+from romidata import io
 
 
 def check_port(port: str):
@@ -133,7 +135,7 @@ class VirtualScanner(AbstractScanner):
     def list_backgrounds(self):
         return self.request_get_dict("backgrounds")
 
-    def load_object(self, file: db.File, palette: db.File=None):
+    def load_object(self, file: File, palette: File=None):
         """
         Loads an object from a OBJ file and a palette image.
         """
@@ -147,7 +149,7 @@ class VirtualScanner(AbstractScanner):
                 files["palette"] = open(palette_file_path, "rb")
             return self.request_post("upload_object", {}, files)
 
-    def load_background(self, file: db.File):
+    def load_background(self, file: File):
         """
         Loads a background from a HDRI file
         """

@@ -30,15 +30,39 @@ class Scan(RomiTask):
         path = getattr(path_module, self.path_config["class"])(**self.path_config["kwargs"])
         return path
 
+    def load_scanner(self):
+        scanner_config = self.scanner_config
+
+        cnc_module = scanner_config["cnc"]["module"]
+        cnc_kwargs = scanner_config["cnc"]["kwargs"]
+        cnc_module = importlib.import_module(cnc_module)
+        cnc = getattr(cnc_module, "CNC")(**cnc_kwargs)
+
+        gimbal_module = scanner_config["gimbal"]["module"]
+        gimbal_kwargs = scanner_config["gimbal"]["kwargs"]
+        gimbal_module = importlib.import_module(gimbal_module)
+        gimbal = getattr(gimbal_module, "Gimbal")(**gimbal_kwargs)
+
+        camera_module = scanner_config["camera"]["module"]
+        camera_kwargs = scanner_config["camera"]["kwargs"]
+        camera_module = importlib.import_module(camera_module)
+        camera = getattr(camera_module, "Camera")(**camera_kwargs)
+
+        return Scanner(cnc, gimbal, camera)
+
     def run(self, path=None):
         if path is None:
             path = self.get_path()
-        scanner = ScannerFactory.parse_config(self.scanner_config)
+
+        scanner = self.load_scanner()
         metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
 
         output_fileset = self.output().get()
         scanner.scan(path, output_fileset)
         output_fileset.set_metdata(metadata)
+
+class VirtualScan(Scan):
+    upstream_task = VirtualPlant()
 
 class CalibrationScan(RomiTask):
     n_points_line = luigi.IntParameter(default=5)
