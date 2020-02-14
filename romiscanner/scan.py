@@ -66,15 +66,15 @@ class Scan(RomiTask):
         output_fileset.set_metadata(metadata)
 
 class ObjFileset(FilesetExists):
-    scan = ScanParameter()
+    scan_id = luigi.Parameter()
     fileset_id = "data"
 
 class HdriFileset(FilesetExists):
-    scan = ScanParameter()
+    scan_id = luigi.Parameter()
     fileset_id = "hdri"
 
 class SceneFileset(FilesetExists):
-    scan = ScanParameter()
+    scan_id = ScanParameter()
     fileset_id = "scene"
 
 

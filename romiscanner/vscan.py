@@ -20,6 +20,7 @@ from romiscanner import scan
 from romiscanner.hal import DataItem, AbstractScanner
 from romiscanner import path
 from romidata import io
+from .log import logger
 
 
 def check_port(port: str):
@@ -153,6 +154,7 @@ class VirtualScanner(AbstractScanner):
         """
         Loads a background from a HDRI file
         """
+        logger.debug("loading background : %s"%file.filename)
         with tempfile.TemporaryDirectory() as tmpdir:
             file_path = os.path.join(tmpdir, file.filename)
             io.to_file(file, file_path)
