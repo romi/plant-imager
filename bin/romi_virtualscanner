@@ -285,118 +285,118 @@ class VirtualPlant(MultiClassObject):
         displace_modifier.texture = tex
 
 if __name__ == "__main__":
+    with tempfile.TemporaryDirectory() as tmpdir:
 
-    # PRINT BLEND FILE LOC
-    if bpy.path.abspath("//") == "":
-        print("Empty file")
-        if 'Cube' in bpy.data.objects:
-            bpy.data.objects.remove(bpy.data.objects['Cube'], do_unlink=True)
-        if 'Light' in bpy.data.objects:
-            bpy.data.objects.remove(bpy.data.objects['Light'], do_unlink=True)
+        # PRINT BLEND FILE LOC
+        if bpy.path.abspath("//") == "":
+            print("Empty file")
+            if 'Cube' in bpy.data.objects:
+                bpy.data.objects.remove(bpy.data.objects['Cube'], do_unlink=True)
+            if 'Light' in bpy.data.objects:
+                bpy.data.objects.remove(bpy.data.objects['Light'], do_unlink=True)
 
-    try:
-        idx = sys.argv.index('--')
-        sys.argv = ["null"] + sys.argv[idx+1:]
-    except:
-        sys.argv = ["null"]
+        try:
+            idx = sys.argv.index('--')
+            sys.argv = ["null"] + sys.argv[idx+1:]
+        except:
+            sys.argv = ["null"]
 
-    parser = argparse.ArgumentParser(description='Run a romiscan task.')
+        parser = argparse.ArgumentParser(description='Run a romiscan task.')
 
-    parser.add_argument('--data-dir', dest='data_dir', default='data',
-                    help='location of obj and mtl files')
-    parser.add_argument('--hdri-dir', dest='hdri_dir', default='hdri',
-                    help='location of hdr files')
-    parser.add_argument('--port', dest='port', default=5000,
-                    help='port for flask server')
-    args = parser.parse_args()
+        parser.add_argument('--data-dir', dest='data_dir', default='data',
+                        help='location of obj and mtl files')
+        parser.add_argument('--hdri-dir', dest='hdri_dir', default='hdri',
+                        help='location of hdr files')
+        parser.add_argument('--port', dest='port', default=5000,
+                        help='port for flask server')
+        args = parser.parse_args()
 
-    data_dir = args.data_dir
-    hdri_dir = args.hdri_dir
+        data_dir = args.data_dir
+        hdri_dir = args.hdri_dir
 
-    pi = 3.14159265
+        pi = 3.14159265
 
-    object_list = glob.glob(os.path.join(data_dir, "*.obj"))
-    object_list = [os.path.basename(o) for o in object_list]
+        object_list = glob.glob(os.path.join(data_dir, "*.obj"))
+        object_list = [os.path.basename(o) for o in object_list]
 
 
-    background_list = glob.glob(os.path.join(hdri_dir, "*.hdr"))
-    background_list = [os.path.basename(o) for o in background_list]
-    L = len(background_list)
+        background_list = glob.glob(os.path.join(hdri_dir, "*.hdr"))
+        background_list = [os.path.basename(o) for o in background_list]
+        L = len(background_list)
 
-    cam = Camera(bpy.context.scene, bpy.data, False)
-    cam.set_intrinsics(1616, 1080, 24)
-    cam.move(-100, 0, 50, 90, 0, -90)
+        cam = Camera(bpy.context.scene, bpy.data, False)
+        cam.set_intrinsics(1616, 1080, 24)
+        cam.move(-100, 0, 50, 90, 0, -90)
 
-    obj = VirtualPlant(bpy.context.scene, bpy.data)
+        obj = VirtualPlant(bpy.context.scene, bpy.data)
 
-    app = Flask(__name__)
+        app = Flask(__name__)
 
-    @app.route('/objects', methods = ['GET'])
-    def objects():
-        return jsonify(object_list)
+        @app.route('/objects', methods = ['GET'])
+        def objects():
+            return jsonify(object_list)
 
-    @app.route('/classes', methods = ['GET'])
-    def classes():
-        return jsonify(obj.classes)
-    
-    @app.route('/bounding_box', methods = ['GET'])
-    def bounding_box():
-        bbox = []
-        for o in obj.objects:
-            new_bbox = obj.objects[o].bound_box
-            bbox += new_bbox
+        @app.route('/classes', methods = ['GET'])
+        def classes():
+            return jsonify(obj.classes)
+        
+        @app.route('/bounding_box', methods = ['GET'])
+        def bounding_box():
+            bbox = []
+            for o in obj.objects:
+                new_bbox = obj.objects[o].bound_box
+                bbox += new_bbox
 
-        bbox = list(zip(*bbox))
-        dict_bbox = {}
-        for i, key in enumerate(['x', 'y', 'z']): 
-            dict_bbox[key] = [min(bbox[i]), max(bbox[i])] 
-        return jsonify(dict_bbox)
+            bbox = list(zip(*bbox))
+            dict_bbox = {}
+            for i, key in enumerate(['x', 'y', 'z']): 
+                dict_bbox[key] = [min(bbox[i]), max(bbox[i])] 
+            return jsonify(dict_bbox)
 
-    @app.route('/backgrounds', methods = ['GET'])
-    def backgrounds():
-        return jsonify(background_list)
+        @app.route('/backgrounds', methods = ['GET'])
+        def backgrounds():
+            return jsonify(background_list)
 
-    @app.route('/camera_intrinsics', methods = ['POST', 'GET'])
-    def camera_intrinsics():
-        if flask.request.method == 'POST':
-            kwargs = request.form.to_dict()
-            cam.set_intrinsics(int(kwargs["width"]), int(kwargs["height"]), float(kwargs["focal"]))
-            return jsonify('OK')
-        else:
-            K = cam.get_K()
-            camera_model = {
-                "width" : cam.render.resolution_x,
-                "height" : cam.render.resolution_y,
-                "model" : "OPENCV",
-                "params" : [ K[0][0], K[1][1], K[0][2], K[1][2], 0.0, 0.0, 0.0, 0.0 ]
-            }
-            return jsonify(camera_model)
+        @app.route('/camera_intrinsics', methods = ['POST', 'GET'])
+        def camera_intrinsics():
+            if flask.request.method == 'POST':
+                kwargs = request.form.to_dict()
+                cam.set_intrinsics(int(kwargs["width"]), int(kwargs["height"]), float(kwargs["focal"]))
+                return jsonify('OK')
+            else:
+                K = cam.get_K()
+                camera_model = {
+                    "width" : cam.render.resolution_x,
+                    "height" : cam.render.resolution_y,
+                    "model" : "OPENCV",
+                    "params" : [ K[0][0], K[1][1], K[0][2], K[1][2], 0.0, 0.0, 0.0, 0.0 ]
+                }
+                return jsonify(camera_model)
 
-    @app.route('/camera_pose', methods = ['POST', 'GET'])
-    def camera_pose():
-        if flask.request.method == 'POST':
-            kwargs = request.form.to_dict()
-            cam.move(**kwargs)
-            return jsonify('OK')
-        else:
-            R, T = cam.get_RT()
-            return jsonify({ "rotmat" : R, "tvec" : T})
+        @app.route('/camera_pose', methods = ['POST', 'GET'])
+        def camera_pose():
+            if flask.request.method == 'POST':
+                kwargs = request.form.to_dict()
+                cam.move(**kwargs)
+                return jsonify('OK')
+            else:
+                R, T = cam.get_RT()
+                return jsonify({ "rotmat" : R, "tvec" : T})
 
-    @app.route('/upload_object', methods= ['GET', 'POST'])
-    def upload_object():
-        request = flask.request
-        if flask.request.method == "GET":
-            return  '''
-                <!doctype html>
-                <title>Upload object</title>
-                <h1>Upload object</h1>
-                <form method=post enctype=multipart/form-data>
-                  <input type=file name=file>
-                  <input type=file name=palette>
-                  <input type=submit value=Upload>
-                </form>
-                '''
-        with tempfile.TemporaryDirectory() as tmpdir:
+        @app.route('/upload_object', methods= ['GET', 'POST'])
+        def upload_object():
+            request = flask.request
+            if flask.request.method == "GET":
+                return  '''
+                    <!doctype html>
+                    <title>Upload object</title>
+                    <h1>Upload object</h1>
+                    <form method=post enctype=multipart/form-data>
+                      <input type=file name=file>
+                      <input type=file name=palette>
+                      <input type=submit value=Upload>
+                    </form>
+                    '''
             kwargs = request.form
             dx = kwargs.get('dx')
             dy = kwargs.get('dy')
@@ -426,19 +426,18 @@ if __name__ == "__main__":
                 return "OK"
             return "wrong extension", 500
 
-    @app.route('/upload_background', methods= ['GET', 'POST'])
-    def upload_background():
-        if flask.request.method == "GET":
-            return  '''
-                <!doctype html>
-                <title>Upload background</title>
-                <h1>Upload background</h1>
-                <form method=post enctype=multipart/form-data>
-                  <input type=file name=file>
-                  <input type=submit value=Upload>
-                </form>
-                '''
-        with tempfile.TemporaryDirectory() as tmpdir:
+        @app.route('/upload_background', methods= ['GET', 'POST'])
+        def upload_background():
+            if flask.request.method == "GET":
+                return  '''
+                    <!doctype html>
+                    <title>Upload background</title>
+                    <h1>Upload background</h1>
+                    <form method=post enctype=multipart/form-data>
+                      <input type=file name=file>
+                      <input type=submit value=Upload>
+                    </form>
+                    '''
             if 'file' not in request.files:
                 return "no file", 500
             file = request.files['file']
@@ -451,60 +450,58 @@ if __name__ == "__main__":
                 return "OK"
             return "wrong extension", 500
 
-    @app.route('/load_object/<object_id>', methods= ['GET'])
-    def load_object(object_id):
-        dx = request.args.get('dx')
-        dy = request.args.get('dy')
-        dz = request.args.get('dz')
-        colorize = request.args.get('colorize')
-        obj.load_obj(os.path.join(data_dir, object_id), dx, dy, dz, colorize)
-        return jsonify(request.args.to_dict())
+        @app.route('/load_object/<object_id>', methods= ['GET'])
+        def load_object(object_id):
+            dx = request.args.get('dx')
+            dy = request.args.get('dy')
+            dz = request.args.get('dz')
+            colorize = request.args.get('colorize')
+            obj.load_obj(os.path.join(data_dir, object_id), dx, dy, dz, colorize)
+            return jsonify(request.args.to_dict())
 
-    @app.route("/add_random_displacement/<class_id>", methods=['GET'])
-    def add_random_displacement(class_id):
-        obj.add_leaf_displacement(class_id)
-        return jsonify('OK')
+        @app.route("/add_random_displacement/<class_id>", methods=['GET'])
+        def add_random_displacement(class_id):
+            obj.add_leaf_displacement(class_id)
+            return jsonify('OK')
 
-    @app.route('/load_background/<background_id>', methods = ['GET'])
-    def load_background(background_id):
-        cam.load_hdri(os.path.join(hdri_dir, background_id))
-        return jsonify('OK')
-    
-    light_data = bpy.data.lights.new(type = 'SPOT', name =  "flash")
-    @app.route('/render', methods = ['GET'])
-    def render():
-        flash = request.args.get('flash')
-        light_obj = None
-        if flash is not None:
-                energy = np.random.choice([0.1,0.1,0.1,0.1,0.1,1,2,3,4,5,6,7,8,9,10,11])*1e8
-                light_obj = bpy.data.objects.new(name='Flash', object_data=light_data)
-                light_obj.location = cam.cam.location    
-                light_obj.rotation_euler = cam.cam.rotation_euler
-                light_obj.data.energy = energy
-                light_obj.data.shadow_soft_size = 1000
-                view_layer = bpy.context.view_layer
-                view_layer.active_layer_collection.collection.objects.link(light_obj)
-                light_obj.select_set(True)
-                view_layer.objects.active = light_obj
-                light_obj
-        obj.show_all()
+        @app.route('/load_background/<background_id>', methods = ['GET'])
+        def load_background(background_id):
+            cam.load_hdri(os.path.join(hdri_dir, background_id))
+            return jsonify('OK')
         
+        light_data = bpy.data.lights.new(type = 'SPOT', name =  "flash")
+        @app.route('/render', methods = ['GET'])
+        def render():
+            flash = request.args.get('flash')
+            light_obj = None
+            if flash is not None:
+                    energy = np.random.choice([0.1,0.1,0.1,0.1,0.1,1,2,3,4,5,6,7,8,9,10,11])*1e8
+                    light_obj = bpy.data.objects.new(name='Flash', object_data=light_data)
+                    light_obj.location = cam.cam.location    
+                    light_obj.rotation_euler = cam.cam.rotation_euler
+                    light_obj.data.energy = energy
+                    light_obj.data.shadow_soft_size = 1000
+                    view_layer = bpy.context.view_layer
+                    view_layer.active_layer_collection.collection.objects.link(light_obj)
+                    light_obj.select_set(True)
+                    view_layer.objects.active = light_obj
+                    light_obj
+            obj.show_all()
+            
 
-        with tempfile.TemporaryDirectory() as td:
-            bpy.context.scene.render.filepath = os.path.join(td, "plant.png")
+            bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
             bpy.ops.render.render(write_still=True)
             if light_obj is not None:
                 bpy.data.objects.remove(light_obj, do_unlink=True)
-            return send_from_directory(td, "plant.png")
+            return send_from_directory(tmpdir, "plant.png")
 
-    @app.route('/render_class/<class_id>', methods = ['GET'])
-    def render_class(class_id):
-        obj.show_class(class_id)
-        with tempfile.TemporaryDirectory() as td:
-            bpy.context.scene.render.filepath = os.path.join(td, "plant.png")
+        @app.route('/render_class/<class_id>', methods = ['GET'])
+        def render_class(class_id):
+            obj.show_class(class_id)
+            bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
             bpy.ops.render.render(write_still=True)
-            return send_from_directory(td, "plant.png")
+            return send_from_directory(tmpdir, "plant.png")
 
 
 
-    app.run(debug=False, host="0.0.0.0", port=int(args.port))
+        app.run(debug=False, host="0.0.0.0", port=int(args.port))
