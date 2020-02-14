@@ -1,0 +1,40 @@
+#!/usr/bin/env romi_bpy
+import bpy
+from sys import argv
+
+material_class_corres = {
+    "Color_0" : "flower",
+    "Color_1" : "leaf",
+    "Color_2" : "pedicel",
+    "Color_3" : "stem",
+    "Color_4" : "fruit"
+}
+
+def load_obj(fname):
+    bpy.ops.object.select_all( action = 'SELECT' )
+    bpy.data.objects['Cube']
+    bpy.ops.object.delete()
+   
+    bpy.ops.import_scene.obj(filepath=fname)
+    o = bpy.data.objects[list(bpy.data.objects.keys())[0]]
+    bpy.context.view_layer.objects.active = o
+
+def main(fname, out):
+    load_obj(fname)
+
+    bpy.ops.object.mode_set( mode = 'EDIT' )
+    bpy.ops.mesh.select_all( action = 'SELECT' )
+    bpy.ops.mesh.separate( type = 'MATERIAL' )
+    bpy.ops.object.mode_set( mode = 'OBJECT' )
+
+    # After separating, all pieces are selected
+    for o in bpy.context.selected_objects:
+        # Rename object by the material applied to it
+        class_name = material_class_corres[o.active_material.name]
+        o.name = class_name
+        o.active_material.name = class_name
+
+    bpy.ops.export_scene.obj(filepath=out)
+
+if __name__ == "__main__":
+    main(argv[-2], argv[-1])
