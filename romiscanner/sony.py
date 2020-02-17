@@ -4,7 +4,7 @@
 
     Copyright (C) 2018 Sony Computer Science Laboratories
     Authors: D. Colliaux, T. Wintz, P. Hanappe
-  
+
     This file is part of romiscanner.
 
     romiscanner is free software: you can redistribute it
@@ -21,7 +21,7 @@
     License along with romiscanner.  If not, see
     <https://www.gnu.org/licenses/>.
 
-"""    
+"""
 import os
 import imageio
 import requests
@@ -34,6 +34,7 @@ from enum import Enum
 from . import hal, error
 from .hal import DataItem
 import tempfile
+from .units import *
 
 CAMERA_FUNCTION_SHOOT = 'Remote Shooting'
 CAMERA_FUNCTION_TRANSFER = 'Contents Transfer'
@@ -86,7 +87,7 @@ class SonyCamAPI(object):
                 break
             else:
                 time.sleep(0.1)
-                
+
         return self.api_call("camera", "actTakePicture")[0]
 
     def get_available_camera_function(self):
@@ -152,7 +153,7 @@ class SonyCamAPI(object):
             self.api_call('camera', 'setFlashMode', [params['FlashMode']])
         if 'FocusMode' in params:
             self.api_call('camera', 'setFocusMode', [params['FocusMode']])
-        
+
 
     def start_transfer_mode(self):
         if ('setCameraFunction' in self.supported_methods and
@@ -256,7 +257,7 @@ class FlashAirAPI(object):
                 fname =os.path.join(tmpdir,files[i]['filename'])
                 imageio.imwrite(fname, new_image)
                 fnames.append(fname)
-                
+
         if not(tmpdir):
             return images[::-1]
         else:
@@ -271,11 +272,11 @@ class FlashAirAPI(object):
 
         for f in files:
             requests.get(self.delete_format%(self.host,f['directory']+'/'+f['filename']))
-        
+
 class Camera(hal.AbstractCamera):
     '''
     Sony Remote Control API.
-    ''' 
+    '''
     def __init__(self, device_ip: str,
                 api_port: str,
                 timeout: Time_s=10,
@@ -301,16 +302,10 @@ class Camera(hal.AbstractCamera):
 
     def start(self):
         self.sony_cam.start_shoot_mode()
-        if self.video_camera:
-            if "movie" in self.sony_cam.get_available_shoot_mode():
-                self.sony_cam.set_shoot_mode("movie")
-            else:
-                raise Exception("Video recording not available.")
-        else:
-            self.sony_cam.set_shoot_mode("still")
+        self.sony_cam.set_shoot_mode("still")
         if self.camera_params is not None:
             self.sony_cam.setup_camera(self.camera_params)
-               
+
     def channels(self):
         return ['rgb']
 

@@ -9,6 +9,7 @@ from romidata import io
 from .log import logger
 from .lpy import VirtualPlant
 from .vscan import VirtualScanner
+from .scanner import Scanner
 
 class ScanPath(luigi.Config):
     module = luigi.Parameter(default = "romiscanner.path")
