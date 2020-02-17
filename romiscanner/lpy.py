@@ -21,7 +21,7 @@ class VirtualPlant(RomiTask):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             x = self.input().get().get_file(self.lpy_file_id)
-            tmp_filename = os.path.join(tmpdir, "f.ply")
+            tmp_filename = os.path.join(tmpdir, "f.lpy")
             with open(tmp_filename, "wb") as f:
                 f.write(x.read_raw())
 
