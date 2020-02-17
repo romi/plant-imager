@@ -4,7 +4,7 @@
 
     Copyright (C) 2018 Sony Computer Science Laboratories
     Authors: D. Colliaux, T. Wintz, P. Hanappe
-  
+
     This file is part of romiscanner.
 
     romiscanner is free software: you can redistribute it
@@ -21,7 +21,7 @@
     License along with romiscanner.  If not, see
     <https://www.gnu.org/licenses/>.
 
-"""    
+"""
 import os
 import numpy as np
 import math
@@ -60,11 +60,10 @@ class Scanner(AbstractScanner):
         else:
             self.cnc.moveto(x, y, z)
             self.gimbal.moveto(pose.pan, pose.tilt)
-        time.wait(self.waiting_time)
+        time.sleep(self.waiting_time)
 
     def grab(self, idx: int, metadata: dict=None):
         return self.camera.grab(idx, metadata)
 
     def channels(self) -> List[str]:
         return self.camera.channels()
-
