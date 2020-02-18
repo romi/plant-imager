@@ -7,7 +7,7 @@ from setuptools import setup, Extension, find_packages
 s = setup(
     name='romiscanner',
     packages=find_packages(),
-    scripts=['bin/romi_bpy', 'bin/romi_virtualscanner'],
+    scripts=['bin/romi_bpy', 'bin/romi_virtualscanner', 'bin/romi_split_by_material', 'bin/romi_clean_mesh'],
     author='Timothée Wintz',
     author_email='timothee@timwin.fr',
     description='A plant scanner',
