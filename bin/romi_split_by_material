@@ -1,14 +1,9 @@
 #!/usr/bin/env romi_bpy
 import bpy
 from sys import argv
+import argparse
+import json
 
-material_class_corres = {
-    "Color_0" : "flower",
-    "Color_1" : "leaf",
-    "Color_2" : "pedicel",
-    "Color_3" : "stem",
-    "Color_4" : "fruit"
-}
 
 def load_obj(fname):
     bpy.ops.object.select_all( action = 'SELECT' )
@@ -19,7 +14,7 @@ def load_obj(fname):
     o = bpy.data.objects[list(bpy.data.objects.keys())[0]]
     bpy.context.view_layer.objects.active = o
 
-def main(fname, out):
+def main(fname, out, material_class_corres):
     load_obj(fname)
 
     bpy.ops.object.mode_set( mode = 'EDIT' )
@@ -30,11 +25,24 @@ def main(fname, out):
     # After separating, all pieces are selected
     for o in bpy.context.selected_objects:
         # Rename object by the material applied to it
-        class_name = material_class_corres[o.active_material.name]
-        o.name = class_name
-        o.active_material.name = class_name
+        if o.active_material.name in material_class_corres:
+            class_name = material_class_corres[o.active_material.name]
+            o.name = class_name
+            o.active_material.name = class_name
+        else:
+            o.name = o.active_material.name
 
     bpy.ops.export_scene.obj(filepath=out)
 
 if __name__ == "__main__":
-    main(argv[-2], argv[-1])
+    parser = argparse.ArgumentParser(description='Split an obj file into submeshes')
+
+    parser.add_argument('--classes', dest='classes', default="{}", type=str
+            help='JSON string of the form { "mat_id" : "class_name" }. Renames the materials to selected class names.')
+
+    parser.add_argument('input', dest='input')
+    parser.add_argument('output', dest='output')
+    args = parser.parse_args()
+
+    args.classes = json.loads(args.classes)
+    main(args.input, args.output, args.classes)
