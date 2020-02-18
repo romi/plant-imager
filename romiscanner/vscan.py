@@ -16,7 +16,6 @@ import tempfile
 
 from romidata.db import Fileset, File
 
-from romiscanner import scan
 from romiscanner.hal import DataItem, AbstractScanner
 from romiscanner import path
 from romidata import io
@@ -83,9 +82,7 @@ class VirtualScanner(AbstractScanner):
                        flash: bool=False, # light the scene with a flash
                        host: str=None, # host port, if None, launches a virtual scanner process
                        port: int= 5000, # port, useful only if host is set
-                       classes: List[str]=[], # list of classes to render
-                       obj: str= None,
-                       background: str=None):
+                       classes: List[str]=[]) # list of classes to render
         super().__init__()
         if host == None:
             self.runner = VirtualScannerRunner()
