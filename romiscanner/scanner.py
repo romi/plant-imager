@@ -31,7 +31,6 @@ from typing import List
 from . import path
 from .units import *
 from .hal import *
-# from .vscan import VirtualScanner
 
 from romidata.db import Fileset
 
