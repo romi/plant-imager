@@ -9,7 +9,7 @@ import os
 from romidata.task import  RomiTask, FileByFileTask, FilesetTarget, DatabaseConfig, ScanParameter, FilesetExists
 from romidata import io
 from .log import logger
-from .lpy import VirtualPlant
+from .lpy import VirtualPlant, VirtualPlantConfig
 from .vscan import VirtualScanner
 from .scanner import Scanner
 
@@ -17,6 +17,7 @@ class ScanPath(luigi.Config):
     module = luigi.Parameter(default = "romiscanner.path")
     class_name = luigi.Parameter()
     kwargs = luigi.DictParameter()
+
 
 class Scan(RomiTask):
     upstream_task = None
@@ -67,6 +68,7 @@ class Scan(RomiTask):
         output_fileset = self.output().get()
         scanner.scan(path, output_fileset)
         output_fileset.set_metadata(metadata)
+        output_fileset.set_metadata("channels", scanner.channels())
 
 class ObjFileset(FilesetExists):
     scan_id = luigi.Parameter()
@@ -97,6 +99,8 @@ class VirtualScan(Scan):
     scene_fileset = luigi.TaskParameter(default=SceneFileset)
     palette_fileset = luigi.TaskParameter(default=PaletteFileset)
 
+    render_ground_truth = luigi.BoolParameter(default=False)
+
     def requires(self):
         requires = {
                     "object" : self.obj_fileset()
@@ -119,6 +123,9 @@ class VirtualScan(Scan):
                 logger.debug(f.id)
             self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
             scanner_config["scene"] = os.path.join(self.tmpdir.name, scene_fileset.get_file(self.scene_file_id).filename)
+
+        if self.render_ground_truth:
+            scanner_config["classes"] = list(VirtualPlantConfig().classes.values())
 
         vscan = VirtualScanner(**scanner_config)
         while True:

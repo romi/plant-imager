@@ -31,6 +31,9 @@ from . import path
 from typing import Tuple, List
 from romidata.db import Fileset
 from romidata import io
+import logging
+
+logger = logging.getLogger("romiscanner")
 
 class ScannerError(Exception):
     pass
@@ -50,7 +53,7 @@ class ChannelData():
 class DataItem():
     def __init__(self, idx: int, metadata=None):
         self.channels = {}
-        self.metadata = None
+        self.metadata = metadata
         self.idx = idx
 
     def add_channel(self, channel_name: str, data: np.array) -> None:
@@ -169,10 +172,16 @@ class AbstractScanner(metaclass=ABCMeta):
                 io.write_image(f, data_item.channels[c].data)
                 if data_item.metadata is not None:
                     f.set_metadata(data_item.metadata)
+                f.set_metadata("shot_id", "%06i"%data_item.idx) 
+                f.set_metadata("channel", c) 
     
-    def scan_at(self, pose: path.Pose, store_pose: bool=True, metadata: dict={}) -> DataItem:
-        self.set_position(pose)
-        if store_pose:
-            return self.grab(self.inc_count(), metadata={**metadata, "pose": [pose.x,pose.y,pose.z,pose.pan,pose.tilt]})
+    def scan_at(self, pose: path.Pose, exact_pose: bool=True, metadata: dict={}) -> DataItem:
+        logger.debug("scanning at")
+        logger.debug(pose)
+        if exact_pose:
+            metadata = {**metadata, "pose": [pose.x,pose.y,pose.z,pose.pan,pose.tilt]}
         else:
-            return self.grab(self.inc_count(), metadata=metadata)
+            metadata = {**metadata, "approximate_pose": [pose.x,pose.y,pose.z,pose.pan,pose.tilt]}
+        logger.debug(metadata)
+        self.set_position(pose)
+        return self.grab(self.inc_count(), metadata=metadata)

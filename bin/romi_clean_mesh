@@ -1,6 +1,8 @@
 #!/usr/bin/env romi_bpy
+print("hello")
 import bpy
 from sys import argv
+
 
 def load_obj(fname):
     bpy.ops.object.select_all( action = 'SELECT' )

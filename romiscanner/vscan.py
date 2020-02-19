@@ -196,12 +196,33 @@ class VirtualScanner(AbstractScanner):
             raise Exception("Virtual scanner returned an error (error code %i)"%x.status_code)
 
     def channels(self):
-        return ['rgb'] + self.classes
+        if self.classes == []:
+            return ['rgb']
+        else:
+            return ['rgb'] + self.classes + ['background']
 
     def grab(self, idx: int, metadata: dict=None) -> DataItem:
+        rt = self.request_get_dict("camera_pose")
+        k = self.request_get_dict("camera_intrinsics")
+
+        if metadata is None:
+            metadata = {}
+
+        metadata["camera"] = {
+            "camera_model" : k,
+            **rt
+        }
+
         data_item = DataItem(idx, metadata)
         for c in self.channels():
-            data_item.add_channel(c, self.render(channel=c))
+            if c != 'background':
+                data_item.add_channel(c, self.render(channel=c))
+            else:
+                x = np.zeros(data_item.channel(self.classes[0]).data.shape)
+                for c in self.classes:
+                    x = np.maximum(x, data_item.channel(c).data)
+                x = 1.0 - x
+                data_item.add_channel("background", x)
         return data_item
                 
     def render(self, channel='rgb'):
@@ -215,4 +236,5 @@ class VirtualScanner(AbstractScanner):
         else:
             x = self.request_get_bytes("render_class/%s"%channel)
             data = imageio.imread(BytesIO(x))
+            data = data[:,:,3]
             return data

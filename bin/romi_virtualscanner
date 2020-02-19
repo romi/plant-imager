@@ -185,20 +185,23 @@ class MultiClassObject():
         self.scene_objects = [o.name for o in self.data.objects]
 
     def show_class(self, class_name):
-        for m in self.classes:
-            if m not in self.objects:
-                continue
-            if m == class_name:
-                self.objects[m].hide_render = False
-            else:
-                self.objects[m].hide_render = True
+        for o in self.data.objects:
+            try:
+                m = o.data.materials[0]
+                print("material = %s"%m.name)
+                if class_name in m.name:
+                    o.hide_render = False
+                else:
+                    o.hide_render = True
+            except:
+                o.hide_render = True
         self.scene.render.film_transparent = True
-        
 
     def show_all(self):
-        for o in self.objects.keys():
-            self.objects[o].hide_render = False
+        for o in self.data.objects:
+            o.hide_render = False
         self.scene.render.film_transparent = False
+
 
     def clear_all_rotation(self):
         for x in self.objects.values():

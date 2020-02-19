@@ -13,10 +13,7 @@ class LpyFileset(FilesetExists):
     scan_id = luigi.Parameter()
     fileset_id = "lpy"
 
-class VirtualPlant(RomiTask):
-    upstream_task = LpyFileset
-    lpy_file_id = luigi.Parameter()
-    metadata = luigi.ListParameter(default=["angles", "internodes"])
+class VirtualPlantConfig(luigi.Config):
     classes = luigi.DictParameter(default={
         "Color_0" : "flower",
         "Color_1" : "leaf",
@@ -24,6 +21,11 @@ class VirtualPlant(RomiTask):
         "Color_3" : "stem",
         "Color_4" : "fruit"
     })
+
+class VirtualPlant(RomiTask):
+    upstream_task = LpyFileset
+    lpy_file_id = luigi.Parameter()
+    metadata = luigi.ListParameter(default=["angles", "internodes"])
     lpy_globals = luigi.DictParameter(default=
         { "SEED" : random.randint(0, 100000)}) #by default randomize lpy seed
 
@@ -50,7 +52,7 @@ class VirtualPlant(RomiTask):
             output_file = self.output_file()
             fname = os.path.join(tmpdir, "plant.obj")
             scene.save(fname)
-            classes = luigi.DictParameter().serialize(self.classes).replace(" ", "")
+            classes = luigi.DictParameter().serialize(VirtualPlantConfig().classes).replace(" ", "")
             subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
             subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
             output_file.import_file(fname)
