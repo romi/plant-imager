@@ -1,5 +1,6 @@
 #!/usr/bin/env romi_bpy
 import bpy
+import distutils
 import argparse
 import tempfile
 from flask import jsonify
@@ -20,6 +21,7 @@ from random import randint
 from mathutils import Color
 from copy import copy
 #---------------------------------------------------------------
+#
 # 3x4 P matrix from Blender camera
 #---------------------------------------------------------------
 
@@ -202,32 +204,30 @@ class MultiClassObject():
         for x in self.objects.values():
             x.rotation_euler[0] = 0
 
-    def update_classes(self, colorize = False):
+    def update_classes(self, colorize: bool=False, palette_location: str=None):
         self.classes = []
-        if colorize == None or colorize == 'None' or colorize == 'False':
-            colorize = False
-        if colorize == 'True':
-            colorize = True
-
         specular = np.random.rand() * 0.02
 
-        if colorize == True:
-            color = [np.random.rand(), np.random.rand(), np.random.rand()]
-        elif os.path.exists(colorize): #choose the name of a file you want to use as color palette, eg. images/palette.png
-            im = imageio.imread(colorize)
-            palette_width, palette_height, channels = im.shape
-            color = (im[randint(0, palette_width - 1), randint(0, palette_height - 1)]/255).tolist()
-        
-        for m in self.data.materials:
-            if m.name not in self.scene_materials:
-                self.classes.append(m.name)
-            if colorize:
-                if len(color) == 3:
-                    color += [1.0]
-                m.node_tree.nodes[1].inputs['Base Color'].default_value = color
-                m.node_tree.nodes[1].inputs['Specular'].default_value = specular
+        if colorize:
+            if palette_location is None:
+                color = [np.random.rand(), np.random.rand(), np.random.rand()]
+            else:
+                im = imageio.imread(palette_location)
+                palette_width, palette_height, channels = im.shape
+                color = (im[randint(0, palette_width - 1), randint(0, palette_height - 1)]/255).tolist()
+
+        for o in self.data.objects:
+            if o.name not in self.scene_objects:
+                for m in o.data.materials:
+                    if m.name not in self.scene_materials:
+                        self.classes.append(m.name)
+                    if colorize:
+                        if len(color) == 3:
+                            color += [1.0]
+                        m.node_tree.nodes[1].inputs['Base Color'].default_value = color
+                        m.node_tree.nodes[1].inputs['Specular'].default_value = specular
                 
-    def load_obj(self, fname, dx = None, dy = None, dz = None, colorize = True):
+    def load_obj(self, fname, dx = None, dy = None, dz = None, colorize = True, palette_location=None):
         """move object by dx, dy, dz if specified"""
 
         for o in self.objects.values():
@@ -239,10 +239,8 @@ class MultiClassObject():
                 bpy.data.materials.remove(m)
 
         bpy.ops.import_scene.obj(filepath=fname)
-        self.update_classes(colorize)
-        
-        #bpy.ops.import_scene.obj(filepath='images/tuteur.obj')
-        
+        self.update_classes(colorize, palette_location)
+       
         for m in self.classes:
             for o in self.data.objects:
                 if m in o.name:
@@ -273,8 +271,7 @@ class MultiClassObject():
             "z" : dz
         }
 
-            
-        self.clear_all_rotation()
+        #self.clear_all_rotation()
 
 class VirtualPlant(MultiClassObject):
     def add_leaf_displacement(self, leaf_class_name):
@@ -287,13 +284,10 @@ class VirtualPlant(MultiClassObject):
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as tmpdir:
 
-        # PRINT BLEND FILE LOC
-        if bpy.path.abspath("//") == "":
-            print("Empty file")
-            if 'Cube' in bpy.data.objects:
-                bpy.data.objects.remove(bpy.data.objects['Cube'], do_unlink=True)
-            if 'Light' in bpy.data.objects:
-                bpy.data.objects.remove(bpy.data.objects['Light'], do_unlink=True)
+        if 'Cube' in bpy.data.objects:
+            bpy.data.objects.remove(bpy.data.objects['Cube'], do_unlink=True)
+        if 'Light' in bpy.data.objects:
+            bpy.data.objects.remove(bpy.data.objects['Light'], do_unlink=True)
 
         try:
             idx = sys.argv.index('--')
@@ -309,7 +303,13 @@ if __name__ == "__main__":
                         help='location of hdr files')
         parser.add_argument('--port', dest='port', default=5000,
                         help='port for flask server')
+        parser.add_argument('--scene', dest='scene', default=None,
+                        help='load blender scene')
+
         args = parser.parse_args()
+
+        if args.scene is not None:
+            bpy.ops.wm.open_mainfile(filepath=args.scene)
 
         data_dir = args.data_dir
         hdri_dir = args.hdri_dir
@@ -331,10 +331,6 @@ if __name__ == "__main__":
         obj = VirtualPlant(bpy.context.scene, bpy.data)
 
         app = Flask(__name__)
-
-        @app.route('/objects', methods = ['GET'])
-        def objects():
-            return jsonify(object_list)
 
         @app.route('/classes', methods = ['GET'])
         def classes():
@@ -393,6 +389,7 @@ if __name__ == "__main__":
                     <h1>Upload object</h1>
                     <form method=post enctype=multipart/form-data>
                       <input type=file name=file>
+                      <input type=file name=mtl>
                       <input type=file name=palette>
                       <input type=submit value=Upload>
                     </form>
@@ -402,29 +399,37 @@ if __name__ == "__main__":
             dy = kwargs.get('dy')
             dz = kwargs.get('dz')
 
-            if "palette" not in request.files:
-                colorize = True
+
+            colorize = kwargs.get('colorize')
+            if colorize is not None:
+                colorize = distutils.util.strtobool(colorize)
             else:
+                colorize = False
+            palette_location = None
+
+            if "palette" in request.files and request.files['palette'] != "":
                 palette_file = request.files['palette']
-                if palette_file.filename == "":
-                    colorize = True
-                else:
-                    assert(os.path.splitext(palette_file.filename)[-1].lower() in image_extensions)
-                    palette_filename = secure_filename(palette_file.filename)
-                    palette_file.save(os.path.join(tmpdir, palette_filename))
-                    colorize = os.path.join(tmpdir, palette_filename)
+                assert(os.path.splitext(palette_file.filename)[-1].lower() in image_extensions)
+                palette_filename = secure_filename(palette_file.filename)
+                palette_file.save(os.path.join(tmpdir, palette_filename))
+                palette_location = os.path.join(tmpdir, palette_filename)
 
             if 'file' not in request.files:
-                return "no file", 500
+                return "no file", 501
             file = request.files['file']
             if file.filename == '':
-                return "no file", 500
+                return "no file", 502
             if file and os.path.splitext(file.filename)[-1].lower() == ".obj":
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(tmpdir, filename))
-                obj.load_obj(os.path.join(tmpdir, filename), dx, dy, dz, colorize)
+                if 'mtl' in request.files:
+                    mtl_file = request.files['mtl']
+                    mtl_filename = "plant.mtl"
+                    if mtl_file.filename != '' and os.path.splitext(mtl_file.filename)[-1].lower() == ".mtl":
+                        mtl_file.save(os.path.join(tmpdir, mtl_filename))
+                obj.load_obj(os.path.join(tmpdir, filename), dx, dy, dz, colorize, palette_location=palette_location)
                 return "OK"
-            return "wrong extension", 500
+            return "wrong extension", 503
 
         @app.route('/upload_background', methods= ['GET', 'POST'])
         def upload_background():
@@ -450,25 +455,11 @@ if __name__ == "__main__":
                 return "OK"
             return "wrong extension", 500
 
-        @app.route('/load_object/<object_id>', methods= ['GET'])
-        def load_object(object_id):
-            dx = request.args.get('dx')
-            dy = request.args.get('dy')
-            dz = request.args.get('dz')
-            colorize = request.args.get('colorize')
-            obj.load_obj(os.path.join(data_dir, object_id), dx, dy, dz, colorize)
-            return jsonify(request.args.to_dict())
-
         @app.route("/add_random_displacement/<class_id>", methods=['GET'])
         def add_random_displacement(class_id):
             obj.add_leaf_displacement(class_id)
             return jsonify('OK')
-
-        @app.route('/load_background/<background_id>', methods = ['GET'])
-        def load_background(background_id):
-            cam.load_hdri(os.path.join(hdri_dir, background_id))
-            return jsonify('OK')
-        
+       
         light_data = bpy.data.lights.new(type = 'SPOT', name =  "flash")
         @app.route('/render', methods = ['GET'])
         def render():

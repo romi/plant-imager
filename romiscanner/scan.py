@@ -3,6 +3,8 @@ import importlib
 import random
 import numpy as np
 import json
+import tempfile
+import os
 
 from romidata.task import  RomiTask, FileByFileTask, FilesetTarget, DatabaseConfig, ScanParameter, FilesetExists
 from romidata import io
@@ -75,35 +77,64 @@ class HdriFileset(FilesetExists):
     fileset_id = "hdri"
 
 class SceneFileset(FilesetExists):
-    scan_id = ScanParameter()
-    fileset_id = "scene"
+    scan_id = luigi.Parameter()
+    fileset_id = "scenes"
+
+class PaletteFileset(FilesetExists):
+    scan_id = luigi.Parameter()
+    fileset_id = "palette"
 
 
 class VirtualScan(Scan):
+    load_scene = luigi.BoolParameter(default=False)
+    scene_file_id = luigi.Parameter(default="")
+
+    use_palette = luigi.BoolParameter(default=False)
+    use_hdri = luigi.BoolParameter(default=False)
+
     obj_fileset = luigi.TaskParameter(default=VirtualPlant)
     hdri_fileset = luigi.TaskParameter(default=HdriFileset)
     scene_fileset = luigi.TaskParameter(default=SceneFileset)
+    palette_fileset = luigi.TaskParameter(default=PaletteFileset)
 
     def requires(self):
-        return {
-                    "object" : self.obj_fileset(),
-                    "hdri" : self.hdri_fileset()
+        requires = {
+                    "object" : self.obj_fileset()
                 }
+        if self.use_hdri:
+            requires["hdri"] = self.hdri_fileset()
+        if self.use_palette:
+            requires["palette"] = self.palette_fileset()
+        if self.load_scene:
+            requires["scene"] = self.scene_fileset()
+        return requires
 
     def load_scanner(self):
-        scanner_config = self.scanner
-        vscan = VirtualScanner(**scanner_config)
+        scanner_config = json.loads(luigi.DictParameter().serialize(self.scanner))
 
         obj_fileset = self.input()["object"].get()
+        if self.load_scene:
+            scene_fileset = self.input()["scene"].get()
+            for f in scene_fileset.get_files():
+                logger.debug(f.id)
+            self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
+            scanner_config["scene"] = os.path.join(self.tmpdir.name, scene_fileset.get_file(self.scene_file_id).filename)
+
+        vscan = VirtualScanner(**scanner_config)
         while True:
             obj_file = random.choice(obj_fileset.get_files())
             if "obj" in obj_file.filename:
-                vscan.load_object(obj_file)
                 break
+        mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
+        palette_file = None
+        if self.use_palette:
+            palette_file = random.choice(self.input()["palette"].get().get_files())
+        vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
 
-        hdri_fileset = self.input()["hdri"].get()
-        hdri_file = random.choice(hdri_fileset.get_files())
-        vscan.load_background(hdri_file)
+        if self.use_hdri:
+            hdri_fileset = self.input()["hdri"].get()
+            hdri_file = random.choice(hdri_fileset.get_files())
+            vscan.load_background(hdri_file)
         return vscan
 
 

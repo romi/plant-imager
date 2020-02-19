@@ -24,11 +24,14 @@ class VirtualPlant(RomiTask):
         "Color_3" : "stem",
         "Color_4" : "fruit"
     })
-    seed = luigi.FloatParameter(default=random.randint(0, 100000)) #by default randomize lpy seed
+    lpy_globals = luigi.DictParameter(default=
+        { "SEED" : random.randint(0, 100000)}) #by default randomize lpy seed
 
     def run(self):
         from openalea import lpy
         from openalea.plantgl import all
+
+        lpy_globals = json.loads(luigi.DictParameter().serialize(self.lpy_globals))
 
         with tempfile.TemporaryDirectory() as tmpdir:
 
@@ -37,7 +40,7 @@ class VirtualPlant(RomiTask):
             with open(tmp_filename, "wb") as f:
                 f.write(x.read_raw())
 
-            lsystem = lpy.Lsystem(tmp_filename, globals={"SEED": self.seed})
+            lsystem = lpy.Lsystem(tmp_filename, globals=lpy_globals)
             # lsystem.context().globals()["SEED"] = self.seed
             for lstring in lsystem:
                 t = all.PglTurtle()
@@ -47,7 +50,7 @@ class VirtualPlant(RomiTask):
             output_file = self.output_file()
             fname = os.path.join(tmpdir, "plant.obj")
             scene.save(fname)
-            classes = luigi.DictParameter().serialize(self.classes)
+            classes = luigi.DictParameter().serialize(self.classes).replace(" ", "")
             subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
             subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
             output_file.import_file(fname)

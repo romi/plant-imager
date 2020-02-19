@@ -45,11 +45,9 @@ class VirtualScannerRunner():
     on a random port between 9000 and 9999 and then listens http requests on that port. The process
     is started with the start() method and stopped with the stop() method.
     """
-    def __init__(self, data_dir: str="data",
-                       hdri_dir: str="hdri"):
+    def __init__(self, scene: str=None):
         self.process = None
-        self.data_dir = data_dir
-        self.hdri_dir = hdri_dir
+        self.scene = scene
 
     def start(self):
         port = 0
@@ -58,10 +56,21 @@ class VirtualScannerRunner():
             if check_port(port):
                 break
         self.port = port
-        self.process = subprocess.Popen(["romi_virtualscanner", "--", "--port", str(port),
-                            "--data-dir", str(self.data_dir), "--hdri-dir", str(self.hdri_dir)])
+
+        proclist = ["romi_virtualscanner", "--", "--port", str(self.port)]
+        if self.scene is not None:
+            logger.debug("scene = %s"%self.scene)
+            proclist.extend(['--scene', self.scene])
+        self.process = subprocess.Popen(proclist)
         atexit.register(VirtualScannerRunner.stop, self)
-        time.sleep(2)
+        while True:
+            try:
+                x = requests.get("http://localhost:%i"%self.port)
+                break
+            except:
+                logger.debug("Virtual scanner not ready yet...")
+                time.sleep(1)
+                continue
 
     def stop(self):
         print("killing blender...")
@@ -82,10 +91,12 @@ class VirtualScanner(AbstractScanner):
                        flash: bool=False, # light the scene with a flash
                        host: str=None, # host port, if None, launches a virtual scanner process
                        port: int= 5000, # port, useful only if host is set
-                       classes: List[str]=[]) # list of classes to render
+                       scene: str=None,
+                       classes: List[str]=[]): # list of classes to render
         super().__init__()
+
         if host == None:
-            self.runner = VirtualScannerRunner()
+            self.runner = VirtualScannerRunner(scene=scene)
             self.runner.start()
             self.host= "localhost"
             self.port = self.runner.port
@@ -133,19 +144,30 @@ class VirtualScanner(AbstractScanner):
     def list_backgrounds(self):
         return self.request_get_dict("backgrounds")
 
-    def load_object(self, file: File, palette: File=None):
+    def load_object(self, file, mtl=None, palette=None, colorize=True):
         """
         Loads an object from a OBJ file and a palette image.
         """
+        if type(file) == str:
+            file = io.dbfile_from_local_file(file)
+        if type(mtl) == str:
+            mtl = io.dbfile_from_local_file(mtl)
+        if type(palette) == str:
+            palette = io.dbfile_from_local_file(palette)
+
         with tempfile.TemporaryDirectory() as tmpdir:
             file_path = os.path.join(tmpdir, file.filename)
             io.to_file(file, file_path)
             files = { "file" : open(file_path, "rb")}
+            if mtl is not None:
+                mtl_file_path = os.path.join(tmpdir, mtl.filename)
+                io.to_file(mtl, mtl_file_path)
+                files["mtl"] = open(mtl_file_path, "rb")
             if palette is not None:
                 palette_file_path = os.path.join(tmpdir, palette.filename)
                 io.to_file(palette, palette_file_path)
                 files["palette"] = open(palette_file_path, "rb")
-            return self.request_post("upload_object", {}, files)
+            return self.request_post("upload_object", {"colorize" : colorize}, files)
 
     def load_background(self, file: File):
         """

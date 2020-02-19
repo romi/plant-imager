@@ -1,6 +1,6 @@
 #!/usr/bin/env romi_bpy
 import bpy
-from sys import argv
+import sys
 import argparse
 import json
 
@@ -24,6 +24,10 @@ def main(fname, out, material_class_corres):
 
     # After separating, all pieces are selected
     for o in bpy.context.selected_objects:
+
+        # Remove x rotation from LPY
+        o.rotation_euler[0] = 0
+
         # Rename object by the material applied to it
         if o.active_material.name in material_class_corres:
             class_name = material_class_corres[o.active_material.name]
@@ -35,13 +39,18 @@ def main(fname, out, material_class_corres):
     bpy.ops.export_scene.obj(filepath=out)
 
 if __name__ == "__main__":
+    try:
+        idx = sys.argv.index('--')
+        sys.argv = ["null"] + sys.argv[idx+1:]
+    except:
+        sys.argv = ["null"]
     parser = argparse.ArgumentParser(description='Split an obj file into submeshes')
 
-    parser.add_argument('--classes', dest='classes', default="{}", type=str
+    parser.add_argument('--classes', dest='classes', default="{}", type=str,
             help='JSON string of the form { "mat_id" : "class_name" }. Renames the materials to selected class names.')
 
-    parser.add_argument('input', dest='input')
-    parser.add_argument('output', dest='output')
+    parser.add_argument('input', metavar='input_file', help="Input file")
+    parser.add_argument('output', metavar='output_file', help="Output file")
     args = parser.parse_args()
 
     args.classes = json.loads(args.classes)
