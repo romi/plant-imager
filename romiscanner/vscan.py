@@ -92,6 +92,7 @@ class VirtualScanner(AbstractScanner):
                        host: str=None, # host port, if None, launches a virtual scanner process
                        port: int= 5000, # port, useful only if host is set
                        scene: str=None,
+                       add_leaf_displacement: bool=False,
                        classes: List[str]=[]): # list of classes to render
         super().__init__()
 
@@ -112,6 +113,8 @@ class VirtualScanner(AbstractScanner):
         self.set_intrinsics(width, height, focal)
         self.id = 0
         self.position = path.Pose()
+        self.add_leaf_displacement = add_leaf_displacement
+        logger.warning(self.add_leaf_displacement)
 
     def get_position(self) -> path.Pose:
         return self.position
@@ -167,7 +170,10 @@ class VirtualScanner(AbstractScanner):
                 palette_file_path = os.path.join(tmpdir, palette.filename)
                 io.to_file(palette, palette_file_path)
                 files["palette"] = open(palette_file_path, "rb")
-            return self.request_post("upload_object", {"colorize" : colorize}, files)
+            res = self.request_post("upload_object", {"colorize" : colorize}, files)
+        if self.add_leaf_displacement:
+            self.request_get_dict("add_random_displacement/leaf")
+        return res
 
     def load_background(self, file: File):
         """

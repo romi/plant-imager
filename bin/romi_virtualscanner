@@ -278,11 +278,12 @@ class MultiClassObject():
 
 class VirtualPlant(MultiClassObject):
     def add_leaf_displacement(self, leaf_class_name):
-        obj = self.objects[leaf_class_name]
-        displace_modifier = obj.modifiers.new(name="Displace.01", type='DISPLACE')
-        tex = self.data.textures.new("Displace.01", 'CLOUDS')
-        tex.noise_scale = 2.0
-        displace_modifier.texture = tex
+        for o in self.data.objects:
+            if leaf_class_name in o.name:
+                displace_modifier = o.modifiers.new(name="Displace.01", type='DISPLACE')
+                tex = self.data.textures.new("Displace.01", 'CLOUDS')
+                tex.noise_scale = 2.0
+                displace_modifier.texture = tex
 
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -463,13 +464,13 @@ if __name__ == "__main__":
             obj.add_leaf_displacement(class_id)
             return jsonify('OK')
        
-        light_data = bpy.data.lights.new(type = 'SPOT', name =  "flash")
+        light_data = bpy.data.lights.new(type = 'POINT', name =  "flash")
         @app.route('/render', methods = ['GET'])
         def render():
             flash = request.args.get('flash')
             light_obj = None
             if flash is not None:
-                    energy = np.random.choice([0.1,0.1,0.1,0.1,0.1,1,2,3,4,5,6,7,8,9,10,11])*1e8
+                    energy = 0.3 * np.random.choice([0.1,0.1,0.1,0.1,0.1,1,2,3,4,5,6,7,8,9,10,20])*1e8
                     light_obj = bpy.data.objects.new(name='Flash', object_data=light_data)
                     light_obj.location = cam.cam.location    
                     light_obj.rotation_euler = cam.cam.rotation_euler
