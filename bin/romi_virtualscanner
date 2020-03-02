@@ -3,6 +3,7 @@ import bpy
 import distutils
 import argparse
 import tempfile
+from mathutils import Vector
 from flask import jsonify
 from flask import Flask, send_file
 from flask import request, send_from_directory
@@ -263,10 +264,17 @@ class MultiClassObject():
         except:
             dz = 0.0
 
-        for obj in self.objects.values(): #Move object
-            obj.location.x = dx
-            obj.location.y = dy
-            obj.location.x = dz
+        for o in bpy.context.scene.objects:
+            if o.name not in self.scene_objects:
+                bpy.ops.object.select_all(action='DESELECT')
+                # bpy.context.scene.objects.link(o)
+                o.location.x = dx
+                o.location.y = dy
+                o.location.x = dz
+                o.select_set(True)
+                bpy.context.view_layer.objects.active = o
+                print("transform %s"%o.name)
+                bpy.ops.object.select_all(action='DESELECT')
 
         self.location = {
             "x" : dx,
@@ -342,16 +350,25 @@ if __name__ == "__main__":
         
         @app.route('/bounding_box', methods = ['GET'])
         def bounding_box():
-            bbox = []
-            for o in obj.objects:
-                new_bbox = obj.objects[o].bound_box
-                bbox += new_bbox
+            xmin, ymin, zmin = 10000, 10000, 10000
+            xmax, ymax, zmax = -10000, -10000, -10000
+            for o in obj.data.objects:
+                m = o.matrix_world
+                if o.name not in obj.scene_objects:
+                    print("m = ")
+                    print(m)
+                    for b in o.bound_box:
+                        b1 = m@Vector(b)
+                        x,y,z = b1
+                        xmin, ymin, zmin = np.minimum([xmin, ymin, zmin], [x,y,z])
+                        xmax, ymax, zmax = np.maximum([xmax, ymax, zmax], [x,y,z])
 
-            bbox = list(zip(*bbox))
-            dict_bbox = {}
-            for i, key in enumerate(['x', 'y', 'z']): 
-                dict_bbox[key] = [min(bbox[i]), max(bbox[i])] 
-            return jsonify(dict_bbox)
+            bbox ={
+                "x" : [xmin, xmax],
+                "y" : [ymin, ymax],
+                "z" : [zmin, zmax]
+            }
+            return jsonify(bbox)
 
         @app.route('/backgrounds', methods = ['GET'])
         def backgrounds():
@@ -486,8 +503,7 @@ if __name__ == "__main__":
 
             bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
             bpy.ops.render.render(write_still=True)
-            if light_obj is not None:
-                bpy.data.objects.remove(light_obj, do_unlink=True)
+            if light_obj is not None: bpy.data.objects.remove(light_obj, do_unlink=True)
             return send_from_directory(tmpdir, "plant.png")
 
         @app.route('/render_class/<class_id>', methods = ['GET'])
@@ -497,6 +513,13 @@ if __name__ == "__main__":
             bpy.ops.render.render(write_still=True)
             return send_from_directory(tmpdir, "plant.png")
 
-
+        cuda_devs, cl_devs = bpy.context.preferences.addons['cycles'].preferences.get_devices()
+        bpy.context.scene.render.engine = 'CYCLES'# echo $PYTHONPATH
+        # Set the device_type
+        bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
+        
+        # Set the device and feature set
+        bpy.context.scene.cycles.device = "GPU"
+        bpy.context.scene.cycles.feature_set = "SUPPORTED"
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))

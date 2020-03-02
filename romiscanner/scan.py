@@ -142,6 +142,9 @@ class VirtualScan(Scan):
             hdri_fileset = self.input()["hdri"].get()
             hdri_file = random.choice(hdri_fileset.get_files())
             vscan.load_background(hdri_file)
+
+        bb = vscan.get_bounding_box()
+        self.output().get().set_metadata("bounding_box", bb)
         return vscan
 
 

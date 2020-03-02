@@ -207,17 +207,10 @@ class VirtualScanner(AbstractScanner):
         else:
             return ['rgb'] + self.classes + ['background']
 
+    def get_bounding_box(self):
+        return self.request_get_dict("bounding_box")
+
     def grab(self, idx: int, metadata: dict=None) -> DataItem:
-        rt = self.request_get_dict("camera_pose")
-        k = self.request_get_dict("camera_intrinsics")
-
-        if metadata is None:
-            metadata = {}
-
-        metadata["camera"] = {
-            "camera_model" : k,
-            **rt
-        }
 
         data_item = DataItem(idx, metadata)
         for c in self.channels():
@@ -229,6 +222,17 @@ class VirtualScanner(AbstractScanner):
                     x = np.maximum(x, data_item.channel(c).data)
                 x = 1.0 - x
                 data_item.add_channel("background", x)
+                
+        rt = self.request_get_dict("camera_pose")
+        k = self.request_get_dict("camera_intrinsics")
+
+        if metadata is None:
+            metadata = {}
+
+        metadata["camera"] = {
+            "camera_model" : k,
+            **rt
+        }
         return data_item
                 
     def render(self, channel='rgb'):
