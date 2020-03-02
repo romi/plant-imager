@@ -15,6 +15,8 @@ import tempfile
 import subprocess
 import sys
 
+random.seed(0.1423432)
+
 param = sys.argv[-1]
 db = sys.argv[-2]
 
@@ -39,7 +41,7 @@ def basic_scan_config(config):
     focal = np.random.randint(20, 35)
     config["VirtualScan"]["scanner"]["focal"] = focal
     config["VirtualPlant"]["lpy_globals"]["BETA"] = random.randint(50, 90)
-    config["VirtualPlant"]["lpy_globals"]["INTERNODE_LENGTH"] = 0.1 * random.randint(9, 20)
+    config["VirtualPlant"]["lpy_globals"]["INTERNODE_LENGTH"] = 0.1 * random.randint(11, 15)
     config["VirtualPlant"]["lpy_globals"]["STEM_DIAMETER"] = 0.01 * random.randint(9, 20)
     config["VirtualPlant"]["lpy_globals"]["BETA"] = random.randint(50, 90)
     return config
