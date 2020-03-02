@@ -1,2 +1,3 @@
 #!/bin/bash
-PYTHONPATH=$(python -c "import sys; print(':'.join(x for x in sys.path if x))") blender -b -P $@
+export PYTHONPATH=$(python -c "import sys; print(':'.join(x for x in sys.path if x))")
+blender -b --python-use-system-env -P $@
