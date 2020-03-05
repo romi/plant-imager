@@ -78,7 +78,7 @@ def arabidopsis_big(config):
     return config
 
 orig_config = toml.load(param)
-k = 30
+k = 20
 
 config = basic_scan_config(orig_config)
 config_no_scene = no_scene(config)
@@ -86,13 +86,15 @@ config_no_leaves = no_leaves(config_no_scene)
 config_branch_on = branch_on(config_no_scene)
 config_big_branch_on = arabidopsis_big(config_branch_on)
 config_big = arabidopsis_big(config_no_scene)
+config_big_scene = arabidopsis_big(config)
 
 configs = [config,
 config_no_leaves,
 config_no_scene,
 config_branch_on,
 config_big_branch_on,
-config_big]
+config_big,
+config_big_scene]
 
 for i in range(k):
     for j,c in enumerate(configs):

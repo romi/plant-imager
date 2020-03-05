@@ -129,6 +129,7 @@ class AbstractCamera():
 class AbstractScanner(metaclass=ABCMeta):
     def __init__(self):
         self.scan_count = 0
+        self.ext = 'jpg'
         super().__init__()
 
     @abstractmethod
@@ -169,7 +170,7 @@ class AbstractScanner(metaclass=ABCMeta):
             data_item = self.scan_at(pose, x.exact_pose)
             for c in self.channels():
                 f = fileset.create_file(data_item.channels[c].format_id())
-                io.write_image(f, data_item.channels[c].data)
+                io.write_image(f, data_item.channels[c].data, ext=self.ext)
                 if data_item.metadata is not None:
                     f.set_metadata(data_item.metadata)
                 f.set_metadata("shot_id", "%06i"%data_item.idx) 

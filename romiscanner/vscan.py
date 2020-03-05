@@ -112,6 +112,7 @@ class VirtualScanner(AbstractScanner):
         self.flash = flash
         self.set_intrinsics(width, height, focal)
         self.id = 0
+        self.ext = "png"
         self.position = path.Pose()
         self.add_leaf_displacement = add_leaf_displacement
         logger.warning(self.add_leaf_displacement)

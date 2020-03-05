@@ -513,13 +513,13 @@ if __name__ == "__main__":
             bpy.ops.render.render(write_still=True)
             return send_from_directory(tmpdir, "plant.png")
 
-        cuda_devs, cl_devs = bpy.context.preferences.addons['cycles'].preferences.get_devices()
-        bpy.context.scene.render.engine = 'CYCLES'# echo $PYTHONPATH
+        # cuda_devs, cl_devs = bpy.context.preferences.addons['cycles'].preferences.get_devices()
+        # bpy.context.scene.render.engine = 'CYCLES'# echo $PYTHONPATH
         # Set the device_type
-        bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
+        # bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
         
         # Set the device and feature set
-        bpy.context.scene.cycles.device = "GPU"
-        bpy.context.scene.cycles.feature_set = "SUPPORTED"
+        # bpy.context.scene.cycles.device = "GPU"
+        # bpy.context.scene.cycles.feature_set = "SUPPORTED"
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))
