@@ -1,0 +1,511 @@
+import os
+from openalea.plantgl.all import *
+from random import seed, random, randint, uniform, gauss
+from numpy import arange
+from math import *
+import logging
+logger = logging.getLogger("lpy")
+
+#########################
+# Model constants
+#########################
+
+# Time is counted in hours in the model
+day_len = 24. # constant defined for convenience in hours
+
+nb_days = gauss(MEAN_NB_DAYS,STDEV_NB_DAYS)
+if nb_days < 1:
+    nb_days = 1.
+
+SimulationTime = nb_days*day_len   # in hours, e.g. 24h * 25 days =
+T = 10.                            # plastochrone in hours
+
+
+#########################
+# Simulation Parameters
+#########################
+
+dt = 1.                  # in hours. Unique parameter to change
+                         # time dicretization (this should hardly affect
+                         # simulations beyond integration approximations)
+
+# number of time units for simulation
+NbSimulationSteps = int(SimulationTime/float(dt))
+
+                        # random numbers at each simulation
+version = 5              # change this number to store different scans series
+                         # for a given filename (each scan series should be
+                         # given a different version before the simulation
+                         # is launched)
+zone_size = 30
+nb_triangles = 20
+triangle_zone = 30
+triangle_size = 10
+
+try:
+    seed(SEED)
+except:
+    pass
+
+
+#########################
+# Meristem model
+
+# Durations in physiological states (in # of plastochrones)
+# Simulations times are above the sum of these numbers will
+# end up with fruits only
+
+# CHANGE STOCHASCICITY HERE
+# mean values
+MEANMAXVEGPLAST = 20     # in vegetative state
+MEANMAXVEGINFLOPLAST = 4 # in veginflo state
+MEANMAXINFLOPLAST = 40   # in inflo state
+
+# CHANGE STOCHASCICITY HERE
+# Percentage of uniform variation around the mean value
+PercentVarVEGPLAST = 20      # in percent
+PercentVarVEGINFLOPLAST = 20 # in veginflo state
+PercentVarINFLOPLAST = 20    # in inflo state
+
+# min and max values of the # of physiological states of each category
+minVP  = int( max(1, MEANMAXVEGPLAST * (1 - PercentVarVEGPLAST/100.) ))
+minVIP = int( max(1, MEANMAXVEGINFLOPLAST * (1 - PercentVarVEGINFLOPLAST/100.) ))
+minIP  = int( max(1, MEANMAXINFLOPLAST * (1 - PercentVarINFLOPLAST/100.) ))
+maxVP  = int( MEANMAXVEGPLAST * (1 + PercentVarVEGPLAST/100.))
+maxVIP = int( MEANMAXVEGINFLOPLAST * (1 + PercentVarVEGINFLOPLAST/100.))
+maxIP  = int( MEANMAXINFLOPLAST * (1 + PercentVarINFLOPLAST/100.))
+
+MAXVEGPLAST = randint(minVP,maxVP)     # in vegetative state
+MAXVEGINFLOPLAST = randint(minVIP,maxVIP) # in veginflo state
+MAXINFLOPLAST = randint(minIP,maxIP)   # in inflo state
+
+#########################
+# Geometry
+
+# CHANGE STOCHASCICITY HERE
+# Phyllotaxis + insertion geom (mean values)
+alpha = 137.5         # phyllotactic angle (in degrees)
+sigma_alpha = 20      # Standard deviation for the angle
+beta  = BETA # initial insertion angle of branches (in degrees)
+sigma_beta = 10
+
+# CHANGE STOCHASCICITY HERE
+# internodes (mean values)
+enlen  = INTERNODE_LENGTH           # average length of an internode (in cm)
+enlen_sigma = enlen*0.2 # standard deviation of the length of an internode
+
+endiam = STEM_DIAMETER
+
+logger.debug("endiam = %.2f"%endiam)
+
+# CHANGE STOCHASCICITY HERE
+# leaves:
+leafsize = 8.         # scaling coefficient, to adapt the leaf size to the plant size
+
+leaflength = 1.        # (in cm)
+leafwidth = 1.      # (in cm), to dilate/contract the leaf
+
+max_leaf_petiol_deflection = 30 # in degrees (max defleection angle between leaf and petiole
+
+# CHANGE STOCHASCICITY HERE
+minPetiolprop = 0
+maxPetiolprop = 0.6
+petiol_prop = uniform(minPetiolprop,maxPetiolprop)
+
+nb_seg = 10           # discretization of a leaf blade
+len_seg = 1./nb_seg
+
+# Flowers
+petalsize = 1.5        # scaling coefficient, to adapt the petal size to the plant si
+
+# Tropisms
+# CHANGE STOCHASCICITY HERE
+MEANMAXELASTICITY = 1.
+PercentVarELASTICITY = 10
+
+minElast  = max(0, MEANMAXELASTICITY * (1 - PercentVarELASTICITY/100.) )
+maxElast  = MEANMAXELASTICITY * (1 + PercentVarELASTICITY/100.)
+MAXELASTICITY = uniform(minElast,maxElast)    # for light tropism (by default vertical upward)
+
+# CHANGE STOCHASCICITY HERE
+# influences the bend of the main axis only (0 = no bend, 0.3 = slight bend)
+ELASTICITYDEFLECMAINAXIS = 0.3
+
+#########################
+# Dynamic parameters
+
+# Lateral axes
+LateralGrowthDelay = 7*T    # Growth delay of lateral meristems (in hours)
+LateralGrowthDelay_sigma = LateralGrowthDelay *0.1
+
+# Petals
+PetalWhithering     = 13*day_len # passed this amount of time petals fall (in hours)
+PetalInitialOpening = 10     # (in degrees)
+PetalFinalOpening   = 70     # (in degrees)
+PetalInitialLength  = 0.1    # (in cm)
+
+#########################
+# Numerical parameters
+eps = 0.001           # equality threshold for real numbers
+
+angles = []
+internodes = []
+
+#########################
+# Simulation code
+#########################
+
+# HillCurve: an S shape function controlled by:
+# - ymin: the minimal value of y reached for x = x0 and before
+# - delta2ymax: such that ymax = ymin + delta2ymax
+# - n: the curve stiffness (the larger n the stiffer the curve)
+# - a: x-location of the inflexion point (at this point y = y0+delta2ymax/2)
+# - x is the input value
+# - x0 is the shift in x before the curve starts to increase (no shift by default)
+# Note that for n = 1 the curve has no inflexion point
+# a and x0 are parameters related to x-axis. If the time for example is dilated
+# (by saying for example that a plastochrone is doubled, then these parameters
+# should also be scaled accordingly. This is why they are always given
+# as a function of the plastochrone when calls are made to hillcurve.
+def hillcurve(ymin,delta2ymax,n,a,x,x0=0.):
+  if x > x0:
+    return ymin + ((x-x0)**n)*(delta2ymax)/(a**n + (x-x0)**n)
+  else:
+    return ymin
+
+# Stochastic function (filters out only negative values if any)
+def cap_gauss(m,sigma):
+  res = gauss(m,sigma)
+  if res > 0.: return res
+  else: return 0.
+
+# textures (constructed from Arabidopsis images)
+# see colors:
+# 20-25: senescence of a leaf
+#   True age of the leaves textures in days:
+#   AGETH = [28,35,42,49,52,56]
+# 7-8 leaf texture
+# 30 Internode texture
+
+
+AGETH = [7,11,17,22,27,35]
+
+class MeristemData:
+  def __init__(self, state=[0,0], order=0):
+    self.age = 0      # age since created in time units
+    self.timecnt = 0  # time counter since last lat prod (cumulates dt for comparison with T)
+    self.plastnb = 0  # in plastochrones (= # of lateral prods produced by this meristem)
+    self.state = state# a pair (x,d) indicating the main state and the number of times it was trigerred
+    if order == 0:
+      self.dormant = False
+    else:
+      self.dormant = True
+    self.order = order
+
+class InternodeData:
+  def __init__(self, meristem):
+    self.age = 0
+    self.order = meristem.order
+    self.state = meristem.state
+    self.length = cap_gauss(enlen,enlen_sigma)
+
+class LeafData:
+  def __init__(self, maxsize, meristem):
+    self.age = 0
+    self.maxsize = maxsize
+    self.state = meristem.state
+
+# Physiological state s = (x,n)
+# x=0 :veg
+# x=1 :veginflo
+# x=2 :inflo
+# x=3 :flo
+# n=# plastochrones in this state (duration)
+
+# When a lateral primordium is produced
+# - Update of production/state counters for the current meristem
+# - Check physiological age: if duration limit is reached, move on to the next state
+def addLatProd(md):
+  md.plastnb += 1 # inc the number of lat prods produced by this meristem
+  md.timecnt = 0  # reset counter since last lat prod
+  s = md.state
+  s[1] += 1       # inc the duration in state s[0]
+  if s[0] == 0: #VEG
+    if s[1] >= MAXVEGPLAST:
+      md.state = [1,0]
+  elif s[0] == 1: #VEGINFLO
+    if s[1] >= MAXVEGINFLOPLAST:
+      md.state = [2,0]
+  elif s[0] == 2: #INFLO
+    if s[1] >= MAXINFLOPLAST:
+      md.state = [3,0]
+
+# Incrementation of time for meristems, by dt
+# check if dormant meristem (for meristems that start a new branch)
+def incTime(md,dt):
+  md.age +=dt       # inc age since meristem creation
+  md.timecnt += dt  # inc cnt since last lat prod
+  plastTime = T     # number of time units for a meristem to create a new primordium
+  if md.dormant == True: # a new meristem needs more time to create a primordium
+    delay = cap_gauss(LateralGrowthDelay, LateralGrowthDelay_sigma)
+    plastTime += delay
+  if md.timecnt > plastTime: # a plastochrone has been reached
+    md.dormant = False
+    return True
+  else:
+    return False
+
+def Start():
+  logger.debug("Nb of simulation steps = %i" % NbSimulationSteps)
+
+module M, I, L, Flower, Pedicel, Petals, Carpel, Leaf
+
+Axiom:
+  # plots red cylinders for calibration at the bottom of the scene
+  nproduce @Tp(0,0,1)@Ts(MAXELASTICITY*0.1)
+  md = MeristemData()
+  nproduce SetGuide(stem_curve,10) # 10 is the length of the curve. Should be checked
+  nproduce M(md)
+
+derivation length: NbSimulationSteps
+
+production:
+
+# A meristem M in state [s,n] produces
+# - if n < n_s (duration threshold in state s):
+#     a lateral meristem in state [s+1,0]
+#     an apical meristem in state [s,n+1]
+# - if n = n_s:
+#     a lateral meristem in state [s+2,0]
+#     an apical meristem in state [s+1,0]
+# In addition, a leaf is produced in states 0 and 1
+# Finally, the meristem tranforms into a flower in state 3
+
+M(d):
+  latprod = incTime(d,dt)
+  if  latprod == False:
+    # The plastochrone time has not yet been reached
+    produce M(d)
+  else: # a plastochrone is reached and a lateral production must be produced
+    addLatProd(d) # modifies apical meristem state due to an additional primordium
+    ls = [d.state[0]+1,0]  # new state
+    md = MeristemData(ls, d.order+1)
+    id = InternodeData(d)
+    nproduce I(id)
+    divangle = cap_gauss(alpha,sigma_alpha)
+    nproduce /(divangle)
+    if d.order == 0 and d.state[0] == 2:
+        logger.debug("angle = %.2f, internode = %.2f"%(divangle, id.length))
+        angles.append(divangle)
+        internodes.append(id.length)
+
+    # Compute lateral productions
+    # 1. Leaf
+    if d.state[0] < 2: # in veg and veginflo produce a leaf
+      ld = LeafData(leafsize,d) # Create a lateral leaf
+      if d.state[0]==0: # veg state 0: control leaf size
+        duration = d.state[1]
+        limit = hillcurve(0.,1.,3.,0.6*T,duration)
+        ld.maxsize = leafsize*limit
+      else: # veginflo state 1
+        ld.maxsize = leafsize*0.5 # small leaves for veginflo state
+      nproduce [L(ld)]
+    # 2. Lateral meristem
+    if (BRANCHON and d.state[0] == 1) or d.state[0] == 2 : #produce a lateral meristem
+      # the elasticity of the lateral branch is changed
+      #nproduce @Tp(0,ELASTICITYDEFLECMAINAXIS,1)
+      nproduce [^(-cap_gauss(beta,sigma_beta))
+      # half branches point downwards
+      if random() < 0.5:
+        h = 0.4+ random()*0.5
+        nproduce @Tp(0.,0.,-1.)
+      nproduce M(md)]
+    elif d.state[0] == 3:
+      produce [^(-cap_gauss(beta,sigma_beta))Flower(0)]
+    # And keep an apical growth
+    produce M(d)
+
+I(d):
+  d.age += dt
+  produce I(d)
+
+L(d):
+  d.age += dt
+  produce L(d)
+
+Flower(t):
+  nproduce Flower(t+dt)
+
+
+interpretation:
+maximum depth: 2
+
+# Meristem
+M(d):
+  produce ;(3)f(endiam)@O(endiam)
+
+# Internode (includes the phyllotaxy)
+I(d):
+  if d.state[0] == 0:
+    g = hillcurve(0.01,0.03,2.,2.*T,d.age)
+  elif d.state[0] == 1 :
+    g = hillcurve(0.01,3.,2.,10.*T,d.age)
+    # growth with age
+  elif d.state[0] == 2 :
+    # A large mid value will compact the flowers at the tip of inflorescence axes
+    # e.g. 30.*T
+    g = hillcurve(0.01,2.,5.,60.*T,d.age)
+    # growth with age
+  else:
+    g = hillcurve(0.01,0.011,2.,2.*T,d.age)
+  s = d.length*g
+  produce ;(3)_(endiam*0.9)F(s)
+
+# Leaf
+L(d) :
+  if HAS_LEAVES:
+      g = hillcurve(0.1,1.,2.,4.*T,d.age)
+      size = g*d.maxsize
+      nproduce @Ts(MAXELASTICITY*(0.001))
+      if d.state[0] == 1 and random() < 0.3: # To add additional bend on a meristem
+        nproduce ^(-20-(40*g)-60)
+      else:
+        nproduce ^(-20-(40*g))
+      nproduce ;(1)TextureRotation(180)TextureVScale(1/size)
+      nproduce Leaf(size,size)
+  else:
+      nproduce Leaf(0,0)
+  #length = 2
+  #width = 2
+  #produce ;(2)Sweep(nerve,section,length,len_seg,width,width_law)
+
+Flower(t):
+  nproduce Pedicel(t)
+  nproduce Petals(t)
+  nproduce Carpel(t)
+
+Pedicel(t):
+  g = hillcurve(1.,10.,2.,20.*T,t)
+  produce ;(2)_(endiam*0.7)F(0.2*g)
+
+Petals(t):
+  if t < PetalWhithering:
+    nproduce ;(0)
+    # the growth of petals should be a bit slow in the beginning
+    # hillcurve(ymin,delta2ymax,n,a,x,x0=0.):
+    g = hillcurve(0.1,1.,2.,30.*T,t)
+    angle = PetalInitialOpening+g*(PetalFinalOpening-PetalInitialOpening)
+    length = PetalInitialLength + g* petalsize
+    l = hillcurve(0.1,petalsize,4.,27.*T,t)
+    for i in range(4):
+      #nproduce [/(90*i)^(angle)Leaf(1.,0.5)]
+      nproduce [/(90*i)^(angle)~l(0.8*l)]
+      #petal_l = 0.5
+      #petal_w = 1.5
+      #nproduce [/(90*i)^(angle)Sweep(petal_nerve,section,petal_l,len_seg,petal_w,petal_width_law)]
+  else:
+    produce
+
+Carpel(t):
+  # A shift is introduced in time (last parameter),
+  # to delay the growth of a carpel
+  # with respect to flower development
+  g = hillcurve(0.,2.,2.,4.*T,t,T*28.)
+  nproduce ;(4)_(endiam)F(g*enlen)
+  nproduce @O(endiam)
+
+# Organ definitions
+Leaf(l,w):
+  # to bend slightly the petiole
+  nproduce @Tp(0,0,-1)@Ts(MAXELASTICITY*0.02)
+  incline = - random()*max_leaf_petiol_deflection
+  nproduce ^(incline)_(endiam/2.)nF(l*petiol_prop,l*petiol_prop/10.)
+  nproduce @Tp(0,0,1) @Ts(MAXELASTICITY*0.00)
+  produce Sweep(nerve,section,(1-petiol_prop)*l,len_seg,w,width_law)
+
+
+endlsystem
+
+lol = False
+if lol:
+  l = Lsystem("arabidopsis_notex.lpy") 
+  lstring = l.derive()
+  t = PglTurtle()
+  l.turtle_interpretation(lstring, t)
+###### INITIALISATION ######
+
+__lpy_code_version__ = 1.1
+
+def __initialiseContext__(context):
+	import openalea.plantgl.all as pgl
+	Color_0 = pgl.Material("Color_0" , ambient = (60,60,15) , diffuse = 3 , )
+	Color_0.name = "Color_0"
+	context.turtle.setMaterial(0,Color_0)
+	Color_1 = pgl.Material("Color_1" , ambient = (0,0,60) , diffuse = 3 , )
+	Color_1.name = "Color_1"
+	context.turtle.setMaterial(1,Color_1)
+	Color_2 = pgl.Material("Color_2" , ambient = (60,0,60) , diffuse = 3 , )
+	Color_2.name = "Color_2"
+	context.turtle.setMaterial(2,Color_2)
+	Color_3 = pgl.Material("Color_3" , ambient = (85,170,255) , diffuse = 0.588235 , specular = (48,48,48) , )
+	Color_3.name = "Color_3"
+	context.turtle.setMaterial(3,Color_3)
+	Color_4 = pgl.Material("Color_4" , ambient = (235,31,4) , diffuse = 0.680851 , )
+	Color_4.name = "Color_4"
+	context.turtle.setMaterial(4,Color_4)
+	Color_5 = pgl.Material("Color_5" , ambient = (112,184,18) , diffuse = 0.869565 , )
+	Color_5.name = "Color_5"
+	context.turtle.setMaterial(5,Color_5)
+	context.animation_timestep = 0.01
+	scalars = [('BRANCHON', 'Bool', True),
+                   ('MEAN_NB_DAYS', 'Integer', 40, 0, 100),
+                   ('STDEV_NB_DAYS', 'Integer', 8, 1, 10),
+                   ('BETA', 'Float', 50, 0, 90),
+                   ('INTERNODE_LENGTH', 'Float', 1.0, 0, 3.0),
+                   ('STEM_DIAMETER', 'Float', 0.1, 0.1, 0.3),
+                   ('HAS_LEAVES', 'Bool', True)]
+	context["__scalars__"] = scalars
+	for s in scalars:
+		if not s[1] == "Category" : context[s[0]] = s[2]
+	import openalea.plantgl.all as pgl
+	width_law = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(0, 0.0416748, 1),(0.331287, 0.277421, 1),(0.952188, 0.258821, 1),(1, 0.00747046, 1)]) , 
+	    )
+	width_law.name = "width_law"
+	petal_width_law = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(0, 0, 1),(0.198785, 0.25913, 1),(0.63704, 0.00789736, 1),(0.965662, 0.478393, 1),(1, 0, 1)]) , 
+	    )
+	petal_width_law.name = "petal_width_law"
+	panel_0 = ({'name': 'Functions', 'active': True, 'visible': True},[('Function',width_law),('Function',petal_width_law)])
+	import openalea.plantgl.all as pgl
+	nerve = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(-0.5, 0, 1),(-0.143939, 0.0727273, 1),(0.166667, 0.0227273, 1),(0.338636, -0.0681818, 1),(0.45, -0.154545, 1)]) , 
+	    )
+	nerve.name = "nerve"
+	section = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(-0.5, 0, 1),(-0.256416, -0.0840166, 1),(0.0565162, -0.150645, 1),(0.494569, 0.0034361, 1)]) , 
+	    )
+	section.name = "section"
+	petal_nerve = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(-0.5, 0, 1),(-0.166667, 0, 1),(0.166667, 0, 1),(0.504545, 0.245455, 1)]) , 
+	    )
+	petal_nerve.name = "petal_nerve"
+	stem_curve = pgl.NurbsCurve2D(	
+	    ctrlPointList = pgl.Point3Array([(-0.5, 0, 1),(-0.194255, 0.12178, 1),(0.161805, -0.11181, 1),(0.561934, 0.147405, 1)]) , 
+	    )
+	stem_curve.name = "stem_curve"
+	panel_1 = ({'name': 'Curve2D', 'active': True, 'visible': True},[('Curve2D',nerve),('Curve2D',section),('Curve2D',petal_nerve),('Curve2D',stem_curve)])
+	parameterset = [panel_0,panel_1,]
+	context["__functions__"] = [('width_law',width_law),('petal_width_law',petal_width_law),]
+	context["__curves__"] = [('nerve',nerve),('section',section),('petal_nerve',petal_nerve),('stem_curve',stem_curve),]
+	context["__parameterset__"] = parameterset
+	context["width_law"] = pgl.QuantisedFunction(width_law)
+	context["petal_width_law"] = pgl.QuantisedFunction(petal_width_law)
+	context["nerve"] = nerve
+	context["section"] = section
+	context["petal_nerve"] = petal_nerve
+	context["stem_curve"] = stem_curve
+__authors__ = 'C. Godin\n'
+__institutes__ = 'Inria - RDP Mosaic'
+__copyright__ = 'C. Godin'
+__description__ = 'Model of Arabidopsis development\n\nSpatial and time units have been made realistic\n\nThe meristem has:\n\n- a state s consisting of two numbers: (x,d)\nx: physiological state (0: Vegetative, 1:VegInflo, 2:Inflo, 3: Flower)\nd: count of the number of organs produced in the current physiological state\n\n- a calendar age that counts the number of time units since the beginning of the simulation\n\n- a plastochrone age that counts the number of organ produced since it was created\n\n- a meristem can be dormant\n\nVersion 5 integrates the possibility to generate scans of the plant that can be launched at the end of the simulation\n\nVersion 6 integrates stochastic model for the plant generation:\n\n- The number of nodes in Veg, VegInflo and Inflo states is a uniform law between bound values. The bound values in one state are independent of the bound values in the other states.\n\n-  The global elasticity (tropism) is also a uniform law between bound values. The elasticity of the main axis is controlled independently.\n\n- The divergence angle is determined by a capped gaussian (no neg values) with controllable mean and stdev\n\n- The insertion angle is determined by a capped gaussian\n\n- The leaf morphology is determined by a ratio between the leaf blae and the petiole and computed randomly \n\n- The size of the internodes is determined as a capped gaussian\n\n- the size of each internode is drawn as a capped gaussian \n\n- The delay with which the axes start to grow is also normally randomized around a mean value\n\n\nVersion 7 integrates:\n - generation of a texture at the bottom of the plant for reconsttruction from motion:\n- and control via button parameters\n\nVersion 9 integrates:\n - generation of a texture at the bottom of the plant for reconsttruction from motion:\n- and control via button parameters\n\n'
