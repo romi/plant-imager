@@ -6,20 +6,37 @@ import json
 import tempfile
 import os
 
-from romidata.task import  RomiTask, FileByFileTask, FilesetTarget, DatabaseConfig, ScanParameter, FilesetExists
+from romidata.task import RomiTask, FileByFileTask, FilesetTarget, \
+    DatabaseConfig, ScanParameter, FilesetExists
 from romidata import io
 from .log import logger
 from .lpy import VirtualPlant, VirtualPlantConfig
 from .vscan import VirtualScanner
 from .scanner import Scanner
 
+
 class ScanPath(luigi.Config):
-    module = luigi.Parameter(default = "romiscanner.path")
+    module = luigi.Parameter(default="romiscanner.path")
     class_name = luigi.Parameter()
     kwargs = luigi.DictParameter()
 
 
 class Scan(RomiTask):
+    """ A task for running a scan, real or virtual.
+
+    Module: romiscan.tasks.scan
+    Default upstream tasks: None
+
+    Parameters
+    ----------
+    metadata : DictParameter
+        metadata for the scan
+    scanner : DictParameter
+        scanner hardware configuration (TODO: see hardware documentation)
+    path : DictParameter
+        scanner path configuration (TODO: see hardware documentation)
+
+    """
     upstream_task = None
 
     metadata = luigi.DictParameter(default={})
@@ -70,17 +87,21 @@ class Scan(RomiTask):
         output_fileset.set_metadata(metadata)
         output_fileset.set_metadata("channels", scanner.channels())
 
+
 class ObjFileset(FilesetExists):
     scan_id = luigi.Parameter()
     fileset_id = "data"
+
 
 class HdriFileset(FilesetExists):
     scan_id = luigi.Parameter()
     fileset_id = "hdri"
 
+
 class SceneFileset(FilesetExists):
     scan_id = luigi.Parameter()
     fileset_id = "scenes"
+
 
 class PaletteFileset(FilesetExists):
     scan_id = luigi.Parameter()
@@ -103,8 +124,8 @@ class VirtualScan(Scan):
 
     def requires(self):
         requires = {
-                    "object" : self.obj_fileset()
-                }
+            "object": self.obj_fileset()
+        }
         if self.use_hdri:
             requires["hdri"] = self.hdri_fileset()
         if self.use_palette:
@@ -114,7 +135,8 @@ class VirtualScan(Scan):
         return requires
 
     def load_scanner(self):
-        scanner_config = json.loads(luigi.DictParameter().serialize(self.scanner))
+        scanner_config = json.loads(
+            luigi.DictParameter().serialize(self.scanner))
 
         obj_fileset = self.input()["object"].get()
         if self.load_scene:
@@ -122,10 +144,13 @@ class VirtualScan(Scan):
             for f in scene_fileset.get_files():
                 logger.debug(f.id)
             self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
-            scanner_config["scene"] = os.path.join(self.tmpdir.name, scene_fileset.get_file(self.scene_file_id).filename)
+            scanner_config["scene"] = os.path.join(self.tmpdir.name,
+                                                   scene_fileset.get_file(
+                                                       self.scene_file_id).filename)
 
         if self.render_ground_truth:
-            scanner_config["classes"] = list(VirtualPlantConfig().classes.values())
+            scanner_config["classes"] = list(
+                VirtualPlantConfig().classes.values())
 
         vscan = VirtualScanner(**scanner_config)
         while True:
@@ -135,7 +160,8 @@ class VirtualScan(Scan):
         mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
         palette_file = None
         if self.use_palette:
-            palette_file = random.choice(self.input()["palette"].get().get_files())
+            palette_file = random.choice(
+                self.input()["palette"].get().get_files())
         vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
 
         if self.use_hdri:
@@ -149,7 +175,26 @@ class VirtualScan(Scan):
 
 
 class CalibrationScan(RomiTask):
+    """ A task for running a scan, real or virtual, with a calibration path.
+
+    Module: romiscan.tasks.scan
+    Colmap poses for subsequent scans. (TODO: see calibration documentation)
+    Default upstream tasks: None
+
+    Parameters
+    ----------
+    metadata : DictParameter
+        metadata for the scan
+    scanner : DictParameter
+        scanner hardware configuration (TODO: see hardware documentation)
+    path : DictParameter
+        scanner path configuration (TODO: see hardware documentation)
+    n_line : int ?
+        number of shots taken on the orthogonal calibration lines
+
+    """
     n_points_line = luigi.IntParameter(default=5)
+
     def run(self):
         path = Scan().get_path()
         calibration_path = path(CalibrationScan, self.n_points_line)
