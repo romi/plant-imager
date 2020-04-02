@@ -1,4 +1,4 @@
-from romidata.task import FilesetExists
+from romidata.tasks.db import FilesetExists
 
 import luigi
 

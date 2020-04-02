@@ -1,6 +1,6 @@
 import luigi
 
-from romidata.task import FilesetExists
+from romidata.tasks.db import FilesetExists
 
 
 class ObjFileset(FilesetExists):
