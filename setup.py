@@ -18,7 +18,8 @@ s = setup(
     install_requires=[
         'numpy',
         'imageio',
-        'psutil'
+        'psutil',
+        'requests'
     ],
     include_package_data=True,
 )
