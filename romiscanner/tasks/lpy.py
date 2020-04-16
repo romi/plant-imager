@@ -24,7 +24,6 @@ class VirtualPlant(RomiTask):
         lpy_globals = json.loads(luigi.DictParameter().serialize(self.lpy_globals))
 
         with tempfile.TemporaryDirectory() as tmpdir:
-
             x = self.input().get().get_file(self.lpy_file_id)
             tmp_filename = os.path.join(tmpdir, "f.lpy")
             with open(tmp_filename, "wb") as f:
