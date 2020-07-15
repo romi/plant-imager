@@ -16,6 +16,7 @@ s = setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     install_requires=[
+        'colorlog',
         'numpy',
         'imageio',
         'psutil',
