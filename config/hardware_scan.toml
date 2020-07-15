@@ -1,44 +1,37 @@
-[Scan.scanner]
-camera_firmware = "sony_wifi"
-cnc_firmware = "grbl-v1.1"
-gimbal_firmware = "blgimbal"
+[ScanPath]
+class_name = "Circle"
 
-[Scan.scanner.scanner_args] # These are the kwargs passed to the scanner constructor
-inverted = false
+[ScanPath.kwargs]
+center_x = -350
+center_y = -350
+z = 0
+tilt = 0
+radius = 300
+n_points = 6
 
-[Scan.scanner.camera_args] # These are the kwargs passed to the camera constructor
-postview = true
-device_ip = "10.0.2.66"
-api_port = "10000"
+[Scan.scanner.camera]
+module = "romiscanner.urlcam"
 
-[Scan.scanner.cnc_args] # These are kwargs passed to the CNC constructor
+[Scan.scanner.cnc]
+module = "romiscanner.grbl"
+
+[Scan.scanner.gimbal]
+module = "romiscanner.blgimbal"
+
+[Scan.scanner.camera.kwargs]
+url = "http://192.168.0.1:8080"
+
+[Scan.scanner.cnc.kwargs]
 homing = true
 port = "/dev/ttyACM0"
 
-[Scan.scanner.gimbal_args]
+[Scan.scanner.gimbal.kwargs]
 port = "/dev/ttyACM1"
 has_tilt = false
-zero_pan = 145
+zero_pan = 180
+invert_rotation = true
 
-[Scan.scanner.camera_model] # This is a precalibrated camera model
-width = 1616
-height = 1080
-id = 1
-model = "OPENCV"
-params = [ 1120.72122223961, 1120.72122223961, 808.0, 540.0, 0.0007513494532588769, 0.0007513494532588769, 0.0, 0.0,]
-
-[Scan.scanner.workspace] # A volume containing the target scanned object
+[Scan.metadata.workspace]
 x = [ 200, 600,]
 y = [ 200, 600,]
 z = [ -100, 300,]
-
-[Scan.path] # Example circular scan with 72 points:
-type = "circular"
-
-[Scan.path.args]
-num_points = 3
-radius = 350
-tilt = 0.45 # rad
-xc = 400
-yc = 400
-z = 0
