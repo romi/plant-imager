@@ -32,6 +32,6 @@ homing = true
 port = "/dev/ttyACM0"
 
 [Scan.metadata.workspace]
-x = [ 200, 600,]
-y = [ 200, 600,]
+x = [ 100, 700,]
+y = [ 100, 700,]
 z = [ -100, 300,]
