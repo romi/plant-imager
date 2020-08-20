@@ -95,7 +95,7 @@ class Camera(hal.AbstractCamera):
         # Open with ImageIO:
         data = imageio.imread(BytesIO(file_data))
         # Add data as RGB channel to hal.DataItem object:
-        data_item.add_channel("rgb", data)
+        data_item.add_channel(self.channels()[0], data)
         return data_item
 
     def grab_write(self, target: str):
