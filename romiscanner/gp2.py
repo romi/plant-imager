@@ -28,7 +28,6 @@ import imageio
 import tempfile
 import atexit
 from io import BytesIO
-from PIL import Image
 
 from romiscanner import hal, error
 from .hal import DataItem
@@ -47,8 +46,12 @@ class Camera(hal.AbstractCamera):
     --------
     >>> from romiscanner.gp2 import Camera
     >>> cam = Camera()
+    >>> # Grab a picture as an hal.DataItem:
     >>> img = cam.grab(0)
-    >>> img.show()
+    >>> # Get the numpy array with RGB data:
+    >>> arr = img.channel("rgb").data
+    >>> arr.shape
+    >>> # Save the picture to a local file:
     >>> img_file = cam.grab_write('gp2_img.jpg')
 
     """
@@ -89,8 +92,8 @@ class Camera(hal.AbstractCamera):
         camera_file = self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
         # Read data using 'get_data_and_size' which allocates its own buffer:
         file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
-        # Open with PIL:
-        data = Image.open(BytesIO(file_data))
+        # Open with ImageIO:
+        data = imageio.imread(BytesIO(file_data))
         # Add data as RGB channel to hal.DataItem object:
         data_item.add_channel("rgb", data)
         return data_item
