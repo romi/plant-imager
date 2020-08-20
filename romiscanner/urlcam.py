@@ -63,5 +63,5 @@ class Camera(hal.AbstractCamera):
         # data = imageio.imread(BytesIO(requests.get(self.url+"scan.jpg").content))
         _ = requests.get(self.url + "/scan.jpg")  # update the picture
         data = imageio.imread(self.url + "/scan.jpg")  # download it
-        data_item.add_channel("rgb", data)
+        data_item.add_channel(self.channels()[0], data)
         return data_item
