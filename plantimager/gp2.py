@@ -74,6 +74,7 @@ class Camera(hal.AbstractCamera):
         return ['rgb']
 
     def grab(self, idx: int, metadata: dict=None):
+        """Grab a picture with gphoto2. """
         # with tempfile.TemporaryDirectory as tmp:
         #     fname = os.path.join(tmp, "frame.jpg")
         #     self.grab_write(fname)
@@ -81,16 +82,21 @@ class Camera(hal.AbstractCamera):
         #     data = imageio.imread(fname)
         #     data_item.add_channel("rgb", data)
         #     return data_item
-
+        # Initialize an hal.DataItem object to return:
+        data_item = hal.DataItem(idx, metadata)
+        # Capture
         file_path = self.camera.capture(0)
         camera_file = self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL)
         # Read data using 'get_data_and_size' which allocates its own buffer:
         file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
         # Open with PIL:
-        image = Image.open(BytesIO(file_data))
-        return image
+        data = Image.open(BytesIO(file_data))
+        # Add data as RGB channel to hal.DataItem object:
+        data_item.add_channel("rgb", data)
+        return data_item
 
     def grab_write(self, target: str):
+        """Grab & save a picture with gphoto2. """
         file_path = self.camera.capture(0)
         camera_file = self.camera.file_get(file_path.folder, file_path.name,
                                            gp.GP_FILE_TYPE_NORMAL)
