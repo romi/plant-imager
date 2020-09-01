@@ -169,7 +169,7 @@ class VirtualScan(Scan):
         return vscan
 
 
-class CalibrationScan(RomiTask):
+class CalibrationScan(Scan):
     """ A task for running a scan, real or virtual, with a calibration path.
 
     Module: romiscan.tasks.scan
@@ -192,5 +192,6 @@ class CalibrationScan(RomiTask):
 
     def run(self):
         path = Scan().get_path()
-        calibration_path = path(CalibrationScan, self.n_points_line)
+        path_module = importlib.import_module(ScanPath().module)
+        calibration_path = getattr(path_module, "CalibrationScan")(path, self.n_points_line)
         Scan().run(path=calibration_path)
