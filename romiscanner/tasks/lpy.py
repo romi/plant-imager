@@ -40,8 +40,10 @@ class VirtualPlant(RomiTask):
             fname = os.path.join(tmpdir, "plant.obj")
             scene.save(fname)
             classes = luigi.DictParameter().serialize(VirtualPlantConfig().classes).replace(" ", "")
-            subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
-            subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
+            subprocess.run(["romi_bpy", "romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+
+            #subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+            subprocess.run(["romi_bpy", "romi_clean_mesh", "--", fname, fname], check=True)
             output_file.import_file(fname)
 
             output_mtl_file = self.output().get().create_file(output_file.id + "_mtl")

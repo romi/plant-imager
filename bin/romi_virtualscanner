@@ -1,6 +1,7 @@
 #!/usr/bin/env romi_bpy
 import bpy
 import distutils
+import distutils.util
 import argparse
 import tempfile
 from mathutils import Vector

@@ -28,7 +28,7 @@ n_points = 72
 obj_fileset = "VirtualPlant"
 use_palette = true
 use_hdri = true
-load_scene = true
+load_scene = false
 scene_file_id = "pot"
 render_ground_truth = true
 
@@ -38,6 +38,7 @@ height = 896
 focal = 24
 flash = true
 add_leaf_displacement = true
+#host = "localhost"
 
 [VirtualPlant]
 lpy_file_id = "arabidopsis_notex"
@@ -50,3 +51,32 @@ STDEV_NB_DAYS = 5
 [Voxels]
 type = "averaging"
 voxel_size = 0.05
+
+[Scan.scanner]
+camera_firmware = "virtual"
+cnc_firmware = "virtual"
+gimbal_firmware = "virtual"
+id = "virtual"
+
+[Scan.path]
+id = "virtual"
+type = "circular"
+
+[Scan.scanner.scanner_args]
+inverted = false
+
+[Scan.scanner.camera_args]
+width = 1600
+height = 1200
+focal = 35
+render_ground_truth = false
+load_object = "arabidopsis_0.obj?dx=10&dy=20&dz=30&colorize=True"
+[Scan.scanner.cnc_args]
+[Scan.scanner.gimbal_args]
+[Scan.path.args]
+num_points = 2
+radius = 100
+tilt = 0.25
+xc = 0
+yc = 0
+z = 50

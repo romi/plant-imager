@@ -15,6 +15,7 @@ def load_obj(fname):
     bpy.context.view_layer.objects.active = o
 
 def main(fname, out, material_class_corres):
+
     load_obj(fname)
 
     bpy.ops.object.mode_set( mode = 'EDIT' )
@@ -35,6 +36,7 @@ def main(fname, out, material_class_corres):
             o.active_material.name = class_name
         else:
             o.name = o.active_material.name
+
 
     bpy.ops.export_scene.obj(filepath=out)
 

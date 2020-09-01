@@ -56,8 +56,8 @@ class VirtualScannerRunner():
             if check_port(port):
                 break
         self.port = port
-
-        proclist = ["romi_virtualscanner", "--", "--port", str(self.port)]
+        logger.critical('came here')
+        proclist = ["romi_bpy",  "romi_virtualscanner", "--", "--port", str(self.port)]
         if self.scene is not None:
             logger.debug("scene = %s"%self.scene)
             proclist.extend(['--scene', self.scene])
