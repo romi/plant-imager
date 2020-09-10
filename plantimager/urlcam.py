@@ -38,12 +38,17 @@ class Camera(hal.AbstractCamera):
 
     Examples
     --------
+    >>> from PIL import Image
+    >>> from romiscanner.urlcam import Camera
     >>> from plantimager.urlcam import Camera
     >>> url = "http://192.168.0.1:8080"
     >>> cam = Camera(url)
     >>> img = cam.grab("img_001")
     >>> arr = img.channel("rgb").data
     >>> arr.shape
+
+    >>> image = Image.fromarray(arr)
+    >>> image.show()
 
     """
 
