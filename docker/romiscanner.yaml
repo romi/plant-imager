@@ -1,0 +1,16 @@
+name: lpy
+channels:
+  - defaults
+  - conda-forge
+  - fredboudon
+  - open3d-admin
+dependencies:
+  - python=3.7
+  - appdirs
+  - colorlog
+  - flask
+  - imageio
+  - luigi
+  - open3d
+  - openalea.lpy
+  - toml
