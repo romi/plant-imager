@@ -1,8 +1,5 @@
 FROM continuumio/miniconda3
 
-ARG ROMISCAN_BRANCH=dev
-ARG ROMIDATA_BRANCH=dev
-ARG ROMISCANNER_BRANCH=master
 ARG USER_NAME=scanner
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -42,6 +39,10 @@ COPY romiscanner.yaml romiscanner.yaml
 # TODO: To be even faster on conda env creation & setup, write a YAML environment recipe!
 RUN conda env create -f romiscanner.yaml && \
     conda clean -a -y
+
+ARG ROMISCAN_BRANCH=dev
+ARG ROMIDATA_BRANCH=dev
+ARG ROMISCANNER_BRANCH=master
 
 RUN git clone --branch $ROMISCAN_BRANCH https://github.com/romi/romiscan && \
     git clone --branch $ROMIDATA_BRANCH https://github.com/romi/romidata && \
