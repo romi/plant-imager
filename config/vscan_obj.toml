@@ -1,10 +1,13 @@
 [ObjFileset]
-scan_id = "vscan_data"
+scan_id = "vscan_007"
 
 [HdriFileset]
 scan_id = "vscan_data"
 
 [LpyFileset]
+scan_id = "vscan_data"
+
+[PaletteFileset]
 scan_id = "vscan_data"
 
 [ScanPath]
@@ -20,12 +23,15 @@ n_points = 16
 
 [VirtualScan]
 obj_fileset = "ObjFileset"
+use_palette = true
+use_hdri = true
+load_scene = false
+scene_file_id = "pot"
+render_ground_truth = true
 
 [VirtualScan.scanner]
 width = 896
 height = 896
 focal = 24
-
-[VirtualPlant]
-lpy_file_id = "arabidopsis_notex"
-seed = 123
+flash = true
+add_leaf_displacement = true
