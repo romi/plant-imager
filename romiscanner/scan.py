@@ -129,10 +129,13 @@ class VirtualScan(Scan):
         return requires
 
     def load_scanner(self):
+        logger.info("Initializing VirtualScanner...")
         scanner_config = json.loads(
             luigi.DictParameter().serialize(self.scanner))
 
         obj_fileset = self.input()["object"].get()
+        logger.info("Done loading 'obj' file!")
+
         if self.load_scene:
             scene_fileset = self.input()["scene"].get()
             for f in scene_fileset.get_files():
@@ -141,27 +144,34 @@ class VirtualScan(Scan):
             scanner_config["scene"] = os.path.join(self.tmpdir.name,
                                                    scene_fileset.get_file(
                                                        self.scene_file_id).filename)
+            logger.info("Done loading 'scene'!")
 
         if self.render_ground_truth:
             scanner_config["classes"] = list(
                 VirtualPlantConfig().classes.values())
+            logger.info("Got a list of ground truth: {}".format(scanner_config["classes"]))
 
         vscan = VirtualScanner(**scanner_config)
+        logger.info("Initialized a VirtualScanner instance!")
+
         while True:
             obj_file = random.choice(obj_fileset.get_files())
             if "obj" in obj_file.filename:
                 break
         mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
+
         palette_file = None
         if self.use_palette:
             palette_file = random.choice(
                 self.input()["palette"].get().get_files())
+            logger.info("Done loading 'palette'!")
         vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
 
         if self.use_hdri:
             hdri_fileset = self.input()["hdri"].get()
             hdri_file = random.choice(hdri_fileset.get_files())
             vscan.load_background(hdri_file)
+            logger.info("Done loading 'hdri' background!")
 
         bb = vscan.get_bounding_box()
         self.output().get().set_metadata("bounding_box", bb)
