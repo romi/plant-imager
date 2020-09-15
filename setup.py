@@ -23,6 +23,7 @@ s = setup(
     install_requires=[
         'colorlog',
         'numpy',
+        'flask',
         'imageio',
         'psutil',
         'requests',
