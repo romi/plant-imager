@@ -1,27 +1,24 @@
 #!/usr/bin/env romi_bpy
-import bpy
+import argparse
 import distutils
 import distutils.util
-import argparse
-import tempfile
-from mathutils import Vector
-from flask import jsonify
-from flask import Flask, send_file
-from flask import request, send_from_directory
-from werkzeug.utils import secure_filename
-import numpy as np
-import sys
 import glob
-import flask
 import os
-import time
-import argparse
-import bpy
-from mathutils import Matrix, Vector
-import imageio
+import sys
+import tempfile
 from random import randint
-from mathutils import Color
-from copy import copy
+
+import bpy
+import flask
+import imageio
+import numpy as np
+from flask import Flask
+from flask import jsonify
+from flask import request, send_from_directory
+from mathutils import Matrix, Vector
+from werkzeug.utils import secure_filename
+
+
 #---------------------------------------------------------------
 #
 # 3x4 P matrix from Blender camera
