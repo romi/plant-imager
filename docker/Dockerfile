@@ -24,7 +24,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chown -R ${USER_NAME}: /home/${USER_NAME} && \
     chown -R ${USER_NAME}: /opt/conda
 
-RUN wget -nv https://download.blender.org/release/Blender2.81/blender-2.81a-linux-glibc217-x86_64.tar.bz2 && \
+ENV BLENDER_URL=https://download.blender.org/release/Blender2.81/blender-2.81a-linux-glibc217-x86_64.tar.bz2
+RUN wget --progress=bar $BLENDER_URL && \
     tar -xjf blender-2.81a-linux-glibc217-x86_64.tar.bz2 && \
     mv blender-2.81a-linux-glibc217-x86_64 /opt/blender && \
     rm blender-2.81a-linux-glibc217-x86_64.tar.bz2
@@ -52,7 +53,3 @@ RUN git clone --branch $ROMISCAN_BRANCH https://github.com/romi/romiscan && \
     python -m pip install ./romiscan/ --no-cache-dir
 
 RUN echo "conda activate lpy" >> ~/.bashrc
-
-#
-# docker run -v /data/ROMI/DB:/home/scanner/db -v /home/jonathan/Projects/ROMI/romiscanner/config/:/home/scanner/configs -it roboticsmicrofarms/romiscanner:latest bash
-# romi_run_task VirtualScan db/my_vscan_007 --config romiscanner/config/vscan_obj.toml
