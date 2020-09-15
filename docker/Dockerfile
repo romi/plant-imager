@@ -37,7 +37,7 @@ USER ${USER_NAME}
 WORKDIR /home/${USER_NAME}
 
 COPY romiscanner.yaml romiscanner.yaml
-# TODO: To be even faster on conda env creation & setup, write a YAML environment recipe!
+
 RUN conda env create -f romiscanner.yaml && \
     conda clean -a -y
 
