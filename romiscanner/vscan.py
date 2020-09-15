@@ -1,28 +1,27 @@
-import socket
-import json
-import random
-import subprocess
-import os
-import signal
-import psutil
 import atexit
-import time
-import requests
-import imageio
-from io import BytesIO
-import numpy as np
-from typing import List
+import json
+import os
+import random
+import socket
+import subprocess
 import tempfile
+import time
+from io import BytesIO
+from typing import List
 
-from romidata.db import Fileset, File
-
-from romiscanner.hal import DataItem, AbstractScanner
-from romiscanner import path
+import imageio
+import numpy as np
+import psutil
+import requests
 from romidata import io
+from romidata.db import File
+from romiscanner import path
+from romiscanner.hal import DataItem, AbstractScanner
+
 from .log import logger
 
 
-def check_port(port: str):
+def check_port(port: int):
     """ True -- it's possible to listen on this port for TCP/IPv4 or TCP/IPv6
     connections. False -- otherwise.
     """
@@ -39,41 +38,43 @@ def check_port(port: str):
         return False
     return True
 
+
 class VirtualScannerRunner():
     """
     A class for running blender in the background for the virtual scanner. It initalizes the flask server
     on a random port between 9000 and 9999 and then listens http requests on that port. The process
     is started with the start() method and stopped with the stop() method.
     """
-    def __init__(self, scene: str=None):
+
+    def __init__(self, scene: str = None):
+        self.port = None
         self.process = None
         self.scene = scene
 
     def start(self):
-        port = 0
         while True:
             port = random.randint(9000, 9999)
             if check_port(port):
                 break
         self.port = port
-        logger.critical('came here')
-        proclist = ["romi_bpy",  "romi_virtualscanner", "--", "--port", str(self.port)]
+        logger.info('Starting a local VirtualScannerRunner instance...')
+        proclist = ["romi_bpy", "romi_virtualscanner", "--", "--port", str(self.port)]
         if self.scene is not None:
-            logger.debug("scene = %s"%self.scene)
+            logger.debug("scene = %s" % self.scene)
             proclist.extend(['--scene', self.scene])
         self.process = subprocess.Popen(proclist)
         atexit.register(VirtualScannerRunner.stop, self)
         while True:
             try:
-                x = requests.get("http://localhost:%i"%self.port)
+                x = requests.get("http://localhost:%i" % self.port)
                 break
             except:
-                logger.debug("Virtual scanner not ready yet...")
+                logger.warning("VirtualScannerRunner instance not ready yet...")
                 time.sleep(1)
                 continue
 
     def stop(self):
-        print("killing blender...")
+        logger.critical("Killing blender...")
         parent_pid = self.process.pid
         parent = psutil.Process(parent_pid)
         for child in parent.children(recursive=True):  # or parent.children() for recursive=False
@@ -83,23 +84,25 @@ class VirtualScannerRunner():
             if self.process.poll() != None:
                 break
             time.sleep(1)
+        logger.critical("Done!")
+
 
 class VirtualScanner(AbstractScanner):
-    def __init__(self, width: int, # image width
-                       height: int, # image height
-                       focal: float, # camera focal
-                       flash: bool=False, # light the scene with a flash
-                       host: str=None, # host port, if None, launches a virtual scanner process
-                       port: int= 5000, # port, useful only if host is set
-                       scene: str=None,
-                       add_leaf_displacement: bool=False,
-                       classes: List[str]=[]): # list of classes to render
+    def __init__(self, width: int,  # image width
+                 height: int,  # image height
+                 focal: float,  # camera focal
+                 flash: bool = False,  # light the scene with a flash
+                 host: str = None,  # host port, if None, launches a virtual scanner process
+                 port: int = 5000,  # port, useful only if host is set
+                 scene: str = None,
+                 add_leaf_displacement: bool = False,
+                 classes: List[str] = []):  # list of classes to render
         super().__init__()
 
         if host == None:
             self.runner = VirtualScannerRunner(scene=scene)
             self.runner.start()
-            self.host= "localhost"
+            self.host = "localhost"
             self.port = self.runner.port
         else:
             self.runner = None
@@ -162,7 +165,7 @@ class VirtualScanner(AbstractScanner):
         with tempfile.TemporaryDirectory() as tmpdir:
             file_path = os.path.join(tmpdir, file.filename)
             io.to_file(file, file_path)
-            files = { "file" : open(file_path, "rb")}
+            files = {"file": open(file_path, "rb")}
             if mtl is not None:
                 mtl_file_path = os.path.join(tmpdir, mtl.filename)
                 io.to_file(mtl, mtl_file_path)
@@ -171,7 +174,7 @@ class VirtualScanner(AbstractScanner):
                 palette_file_path = os.path.join(tmpdir, palette.filename)
                 io.to_file(palette, palette_file_path)
                 files["palette"] = open(palette_file_path, "rb")
-            res = self.request_post("upload_object", {"colorize" : colorize}, files)
+            res = self.request_post("upload_object", {"colorize": colorize}, files)
         if self.add_leaf_displacement:
             self.request_get_dict("add_random_displacement/leaf")
         return res
@@ -180,27 +183,27 @@ class VirtualScanner(AbstractScanner):
         """
         Loads a background from a HDRI file
         """
-        logger.debug("loading background : %s"%file.filename)
+        logger.debug("loading background : %s" % file.filename)
         with tempfile.TemporaryDirectory() as tmpdir:
             file_path = os.path.join(tmpdir, file.filename)
             io.to_file(file, file_path)
-            files = { "file" : open(file_path, "rb")}
+            files = {"file": open(file_path, "rb")}
             return self.request_post("upload_background", {}, files)
 
     def request_get_bytes(self, endpoint: str) -> bytes:
-        x = requests.get("http://%s:%s/%s"%(self.host, self.port, endpoint))
+        x = requests.get("http://%s:%s/%s" % (self.host, self.port, endpoint))
         if x.status_code != 200:
-            raise Exception("Unable to connect to virtual scanner (code %i)"%x.status_code)
+            raise Exception("Unable to connect to virtual scanner (code %i)" % x.status_code)
         return x.content
 
     def request_get_dict(self, endpoint: str) -> dict:
         b = self.request_get_bytes(endpoint)
         return json.loads(b.decode())
 
-    def request_post(self, endpoint: str, data: dict, files: dict=None) -> None:
-        x = requests.post("http://%s:%s/%s"%(self.host, self.port, endpoint), data=data, files=files)
+    def request_post(self, endpoint: str, data: dict, files: dict = None) -> None:
+        x = requests.post("http://%s:%s/%s" % (self.host, self.port, endpoint), data=data, files=files)
         if x.status_code != 200:
-            raise Exception("Virtual scanner returned an error (error code %i)"%x.status_code)
+            raise Exception("Virtual scanner returned an error (error code %i)" % x.status_code)
 
     def channels(self):
         if self.classes == []:
@@ -211,7 +214,7 @@ class VirtualScanner(AbstractScanner):
     def get_bounding_box(self):
         return self.request_get_dict("bounding_box")
 
-    def grab(self, idx: int, metadata: dict=None) -> DataItem:
+    def grab(self, idx: int, metadata: dict = None) -> DataItem:
 
         data_item = DataItem(idx, metadata)
         for c in self.channels():
@@ -223,7 +226,7 @@ class VirtualScanner(AbstractScanner):
                     x = np.maximum(x, data_item.channel(c).data)
                 x = 1.0 - x
                 data_item.add_channel("background", x)
-                
+
         rt = self.request_get_dict("camera_pose")
         k = self.request_get_dict("camera_intrinsics")
 
@@ -231,21 +234,21 @@ class VirtualScanner(AbstractScanner):
             metadata = {}
 
         metadata["camera"] = {
-            "camera_model" : k,
+            "camera_model": k,
             **rt
         }
         return data_item
-                
+
     def render(self, channel='rgb'):
         if channel == 'rgb':
             ep = "render"
             if self.flash:
-                ep = ep+"?flash=1"
+                ep = ep + "?flash=1"
             x = self.request_get_bytes(ep)
             data = imageio.imread(BytesIO(x))
             return data
         else:
-            x = self.request_get_bytes("render_class/%s"%channel)
+            x = self.request_get_bytes("render_class/%s" % channel)
             data = imageio.imread(BytesIO(x))
-            data = data[:,:,3]
+            data = data[:, :, 3]
             return data

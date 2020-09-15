@@ -151,6 +151,7 @@ class VirtualScan(Scan):
                 VirtualPlantConfig().classes.values())
             logger.info("Got a list of ground truth: {}".format(scanner_config["classes"]))
 
+        logger.debug(f"VirtualScanner config: {scanner_config}")
         vscan = VirtualScanner(**scanner_config)
         logger.info("Initialized a VirtualScanner instance!")
 
