@@ -50,11 +50,7 @@ class VirtualScannerRunner():
         self.scene = scene
 
     def start(self):
-        port = 0
-        while True:
-            port = random.randint(9000, 9999)
-            if check_port(port):
-                break
+        port = 9001
         self.port = port
         logger.critical('came here')
         proclist = ["romi_bpy",  "romi_virtualscanner", "--", "--port", str(self.port)]
