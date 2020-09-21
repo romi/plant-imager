@@ -4,7 +4,7 @@
 
     Copyright (C) 2018 Sony Computer Science Laboratories
     Authors: D. Colliaux, T. Wintz, P. Hanappe
-  
+
     This file is part of plantimager.
 
     plantimager is free software: you can redistribute it
@@ -39,7 +39,6 @@ class Camera(hal.AbstractCamera):
     Examples
     --------
     >>> from PIL import Image
-    >>> from romiscanner.urlcam import Camera
     >>> from plantimager.urlcam import Camera
     >>> url = "http://192.168.0.1:8080"
     >>> cam = Camera(url)
