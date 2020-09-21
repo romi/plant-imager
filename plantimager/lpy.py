@@ -27,6 +27,10 @@ from romitask.task import FilesetExists
 
 import luigi
 
+import logging
+
+logger = logging.getLogger('plantimager')
+
 
 class LpyFileset(FilesetExists):
     scan_id = luigi.Parameter()

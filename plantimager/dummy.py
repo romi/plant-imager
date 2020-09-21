@@ -21,7 +21,7 @@
     License along with plantimager.  If not, see
     <https://www.gnu.org/licenses/>.
 
-"""    
+"""
 from plantimager import hal, log
 import time
 import imageio

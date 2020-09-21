@@ -24,19 +24,18 @@
 
 import atexit
 import json
-import random
-import subprocess
 import os
-import signal
-import psutil
-import atexit
-import time
-import requests
-import imageio
-from io import BytesIO
-import numpy as np
-from typing import List
+import random
+import socket
+import subprocess
 import tempfile
+import time
+from io import BytesIO
+from typing import List
+import imageio
+import numpy as np
+import psutil
+import requests
 
 from plantdb.db import Fileset, File
 
@@ -44,6 +43,7 @@ from plantimager.hal import DataItem, AbstractScanner
 from plantimager import path
 from plantdb import io
 from .log import logger
+
 
 
 def check_port(port: str):
