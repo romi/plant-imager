@@ -21,7 +21,7 @@
     License along with plantimager.  If not, see
     <https://www.gnu.org/licenses/>.
 
-"""    
+"""
 import os
 from abc import ABC, ABCMeta, abstractmethod
 import numpy as np
