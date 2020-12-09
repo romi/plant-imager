@@ -23,7 +23,7 @@ db = sys.argv[-2]
 def run(config, scan_name):
     with tempfile.TemporaryDirectory() as tempdir:
         toml.dump(config, open(os.path.join(tempdir, "config.toml"), "w"))
-        subprocess.run(["romi_run_task", "--config", os.path.join(tempdir, "config.toml"), "VirtualScan", os.path.join(db, scan_name), "--local-scheduler", "--log-level", "WARNING"], check=True)
+        subprocess.run(["romi_run_task", "--config", os.path.join(tempdir, "config.toml"), "--module", "romiscanner.scan", "VirtualScan", os.path.join(db, scan_name), "--local-scheduler", "--log-level", "WARNING"], check=True)
 
 def basic_scan_config(config):
     config = copy.deepcopy(config)
