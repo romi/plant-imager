@@ -65,7 +65,7 @@ SHELL [ "conda", "run", "-n", "lpyEnv", "/bin/bash", "-c" ]
 # Install romiscanner, romiscan and romidata
 ARG ROMISCAN_BRANCH=dev
 ARG ROMIDATA_BRANCH=dev
-ARG ROMISCANNER_BRANCH=Feat/LpyIntegration
+ARG ROMISCANNER_BRANCH=master
 
 RUN git clone --branch $ROMISCAN_BRANCH https://github.com/romi/romiscan && \
     git clone --branch $ROMIDATA_BRANCH https://github.com/romi/romidata && \
