@@ -3,7 +3,7 @@ FROM continuumio/miniconda3
 ARG USER_NAME=scanner
 ARG USER_ID=1000
 ARG GROUP_NAME=scanner
-ARG GROUP_ID=scanner
+ARG GROUP_ID=1000
 
 ENV DB_LOCATION="/home/${USER_NAME}/db"
 ENV PATH=$PATH:"/home/${USER_NAME}}/.local/bin"
