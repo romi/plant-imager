@@ -1,0 +1,35 @@
+{
+    "filesets": [
+        {
+            "files": [
+                {
+                    "file": "felsenlabyrinth_2k.hdr",
+                    "id": "felsenlabyrinth_2k"
+                },
+                {
+                    "file": "forest_slope_2k.hdr",
+                    "id": "forest_slope_2k"
+                }
+            ],
+            "id": "hdri"
+        },
+        {
+            "files": [
+                {
+                    "file": "arabidopsis_notex.lpy",
+                    "id": "arabidopsis_notex"
+                }
+            ],
+            "id": "lpy"
+        },
+        {
+            "files": [
+                {
+                    "file": "palette_arabi.png",
+                    "id": "palette_arabi"
+                }
+            ],
+            "id": "palette"
+        }
+    ]
+}
