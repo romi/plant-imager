@@ -28,7 +28,7 @@ usage() {
     "
 
   echo "DESCRIPTION:"
-  echo "  Build a docker image named 'roboticsmicrofarms/romiscanner' using Dockerfile in same location.
+  echo "  Build a docker image named 'romiscanner' using Dockerfile in same location.
     "
 
   echo "OPTIONS:"
