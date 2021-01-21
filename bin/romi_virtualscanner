@@ -53,6 +53,7 @@ class Camera():
         self.hdri_enabled = hdri_enabled
         if hdri_enabled:
             self.setup_hdri()
+        else: self.setup_background()
 
     def get_K(self):
         camd = self.cam.data
@@ -139,6 +140,16 @@ class Camera():
             self.cam.rotation_euler[1] = float(ry)*(pi/180.0)
         if rz is not None:
             self.cam.rotation_euler[2] = float(rz)*(pi/180.0)
+    def setup_background(self):
+        world = bpy.data.worlds['World']
+        world.use_nodes = True
+	    bg = world.node_tree.nodes['Background']
+        r = 0
+        g = 0
+        b = 0
+        bg.inputs[0].default_value[:3] = (r, g, b)
+	    bg.inputs[1].default_value = 1.0
+        print("yessss")
 
 
     def setup_hdri(self):
