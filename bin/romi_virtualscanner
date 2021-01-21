@@ -140,17 +140,14 @@ class Camera():
             self.cam.rotation_euler[1] = float(ry)*(pi/180.0)
         if rz is not None:
             self.cam.rotation_euler[2] = float(rz)*(pi/180.0)
+    
     def setup_background(self):
         world = bpy.data.worlds['World']
         world.use_nodes = True
-	    bg = world.node_tree.nodes['Background']
-        r = 0
-        g = 0
-        b = 0
-        bg.inputs[0].default_value[:3] = (r, g, b)
-	    bg.inputs[1].default_value = 1.0
+        bg = world.node_tree.nodes['Background']
+        bg.inputs[0].default_value[:3] = (0, 0, 0)
+        bg.inputs[1].default_value = 1.0
         print("yessss")
-
 
     def setup_hdri(self):
         self.data.worlds["World"].use_nodes = True
