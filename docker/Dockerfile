@@ -12,7 +12,7 @@ ENV PATH="/opt/blender:${PATH}"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-dev \
     libxi6 \
-    gcc python3-dev && \
+    gcc python3.7-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -42,7 +42,7 @@ WORKDIR /home/${USER_NAME}
 RUN conda create -n lpyEnv python=3.7
 
 RUN conda install -n lpyEnv -c conda-forge -c fredboudon openalea.lpy
-RUN conda install -n lpyEnv -c conda-forge flask imageio
+RUN conda install -n lpyEnv -c conda-forge flask imageio boost=1.70.0 qhull=2015.2
 
 RUN conda install -c conda-forge toml
 RUN conda install -c conda-forge luigi
