@@ -41,11 +41,9 @@ WORKDIR /home/${USER_NAME}
 # Create the appropriate conda python environment
 RUN conda create -n lpyEnv python=3.7
 
+RUN conda install -n lpyEnv -c conda-forge flask imageio toml luigi boost=1.70.0 qhull=2015.2
 RUN conda install -n lpyEnv -c conda-forge -c fredboudon openalea.lpy
-RUN conda install -n lpyEnv -c conda-forge flask imageio boost=1.70.0 qhull=2015.2
 
-RUN conda install -c conda-forge toml
-RUN conda install -c conda-forge luigi
 
 # Copy python libraries to the python's blender site-packages
 USER root
