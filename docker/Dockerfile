@@ -12,6 +12,7 @@ ENV PATH="/opt/blender:${PATH}"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-dev \
     libxi6 \
+    emacs-nox \
     gcc python3.7-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
