@@ -147,7 +147,6 @@ class Camera():
         bg = world.node_tree.nodes['Background']
         bg.inputs[0].default_value[:3] = (0, 0, 0)
         bg.inputs[1].default_value = 1.0
-        print("yessss")
 
     def setup_hdri(self):
         self.data.worlds["World"].use_nodes = True
