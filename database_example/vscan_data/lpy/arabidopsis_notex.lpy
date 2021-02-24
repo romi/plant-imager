@@ -296,7 +296,7 @@ M(d):
     nproduce /(divangle)
     if d.order == 0 and d.state[0] == 2:
         logger.debug("angle = %.2f, internode = %.2f"%(divangle, id.length))
-        angles.append(divangle)
+        angles.append((divangle / 180.0) * pi) # convert to radians
         internodes.append(id.length)
 
     # Compute lateral productions
