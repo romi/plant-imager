@@ -9,6 +9,7 @@ In this repository, you will find a script `build.sh` in the `docker` directory.
 
 ```
     git clone https://github.com/romi/romiscanner.git
+    cd romiscanner/
     cd docker/
     ./build.sh
 ```
