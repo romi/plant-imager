@@ -42,9 +42,9 @@ unhandled_exception = 40
 [ScanPath.kwargs]
 center_x = -2
 center_y = 3
-z = 55
+z = 65
 tilt = 8
-radius = 70
+radius = 75
 n_points = 18
 
 [VirtualScan.scanner]
