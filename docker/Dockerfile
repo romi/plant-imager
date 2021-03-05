@@ -12,6 +12,7 @@ ENV PATH="/opt/blender:${PATH}"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-dev \
     libxi6 \
+    libc++-dev \
     emacs-nox \
     gcc python3.7-dev && \
     apt-get clean && \
@@ -44,7 +45,7 @@ RUN conda create -n lpyEnv python=3.7
 
 RUN conda install -n lpyEnv -c conda-forge flask imageio toml luigi boost=1.70.0 qhull=2015.2
 RUN conda install -n lpyEnv -c conda-forge -c fredboudon openalea.lpy
-
+RUN conda install -n lpyEnv -c open3d-admin open3d=0.10
 
 # Copy python libraries to the python's blender site-packages
 USER root
