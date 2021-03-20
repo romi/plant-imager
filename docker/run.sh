@@ -3,10 +3,15 @@
 ###############################################################################
 # Example usages:
 ###############################################################################
-# 1. Run starts an interactive shell:
+# 1. Default run starts an interactive shell:
+# $ ./run.sh
 # $ ./run.sh -t latest -db /abs/host/my_data_base -v /abs/host/dir:/abs/container/dir
+#
+# 2. Run a command:
+# $ ./run.sh -t latest -db /abs/host/my_data_base -v /abs/host/dir:/abs/container/dir -c "romi_run_task --config /path/to/config.toml VirtualScan my_data_base/scan_id"
 
 user=$USER
+cmd=''
 db_path=''
 vtag="latest"
 mount_option=""
@@ -30,6 +35,9 @@ usage() {
   echo "  -v, --volume
     Volume mapping for docker, e.g. '/abs/host/dir:/abs/container/dir'. Multiple use is allowed.
   "
+  echo "  -c, --cmd
+    Defines the command to run at docker startup, by default start an interactive container with a bash shell.
+    "
 
   echo "  -h, --help
     Output a usage message and exit.
@@ -59,6 +67,10 @@ while [ "$1" != "" ]; do
       mount_option="$mount_option -v $1"  # append
     fi
     ;;
+  -c | --cmd)
+    shift
+    cmd=$1
+    ;;
   -h | --help)
     usage
     exit
@@ -77,5 +89,12 @@ then
   mount_option="$mount_option -v $db_path:/home/$user/db"
 fi
 
-# Start in interactive mode:
-docker run -it $mount_option --gpus all romiscanner:$vtag bash
+if [ "$cmd" = "" ]
+then
+    # Start in interactive mode. ~/.bashrc will be loaded.
+    docker run -it $mount_option --gpus all romiscanner:$vtag bash
+else
+    # Start in non-interactive mode (run the command). 
+    # Request a login shell (-l) to load ~/.profile.
+    docker run $mount_option --gpus all romiscanner:$vtag bash -lc "$cmd"
+fi
