@@ -8,6 +8,7 @@ ARG GROUP_ID=1000
 ENV DB_LOCATION="/home/${USER_NAME}/db"
 ENV PATH=$PATH:"/home/${USER_NAME}}/.local/bin"
 ENV PATH="/opt/blender:${PATH}"
+ENV PATH="/opt/blender:${PATH}"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-dev \
@@ -77,4 +78,12 @@ RUN git clone --branch $ROMISCAN_BRANCH https://github.com/romi/romiscan && \
 
 EXPOSE 9001
 
+# For interactive shell
 RUN echo "conda activate lpyEnv" >> ~/.bashrc
+
+# For login shell, used in run.sh when passing a script as argument
+RUN echo "conda activate lpyEnv" >> ~/.profile
+RUN echo "export PATH=\$PATH:/opt/blender" >> ~/.profile
+RUN echo "export LD_LIBRARY_PATH=/opt/blender/lib" >> ~/.profile
+
+
