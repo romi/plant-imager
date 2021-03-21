@@ -16,8 +16,9 @@ from romiscanner.vscan import VirtualScanner
 
 
 class ObjFileset(FilesetExists):
-    scan_id = luigi.Parameter()
-    fileset_id = "data"
+    # If no scan_id was provided then you the ID of the active scan.
+    scan_id = luigi.Parameter(default="")
+    fileset_id = luigi.Parameter(default="obj")
 
 
 class HdriFileset(FilesetExists):
