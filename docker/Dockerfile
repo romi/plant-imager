@@ -69,10 +69,13 @@ ARG ROMISCANNER_BRANCH=master
 
 RUN git clone --branch $ROMISCAN_BRANCH https://github.com/romi/romiscan && \
     git clone --branch $ROMIDATA_BRANCH https://github.com/romi/romidata && \
-    git clone --branch $ROMISCANNER_BRANCH https://github.com/romi/romiscanner && \
     python -m pip install ./romidata/ --no-cache-dir && \
-    python -m pip install ./romiscanner/ --no-cache-dir && \
     python -m pip install ./romiscan/ --no-cache-dir
+
+COPY --chown=${USER_NAME}:${GROUP_NAME} ./ romiscanner/
+
+RUN cd romiscanner/ && \
+    python -m pip install . --no-cache-dir
 
 
 EXPOSE 9001

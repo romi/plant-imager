@@ -119,7 +119,7 @@ docker build -t romiscanner:$vtag $docker_opts \
   --build-arg USER_ID=$uid \
   --build-arg GROUP_NAME=$group \
   --build-arg GROUP_ID=$gid \
-  .
+  -f docker/Dockerfile .
 
 # Print docker image build time:
 echo
