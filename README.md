@@ -10,8 +10,7 @@ In this repository, you will find a script `build.sh` in the `docker` directory.
 ```
     git clone https://github.com/romi/romiscanner.git
     cd romiscanner/
-    cd docker/
-    ./build.sh
+    ./docker/build.sh
 ```
 This will create by default a docker image `romiscanner:latest`.
 Inside the docker image, a user is created and named as the one currently used by your system.
