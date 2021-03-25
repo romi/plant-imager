@@ -63,19 +63,18 @@ USER ${USER_NAME}
 RUN conda init bash
 SHELL [ "conda", "run", "-n", "lpyEnv", "/bin/bash", "-c" ]
 
-# Install romiscanner, romiscan and romidata
-ARG ROMISCAN_BRANCH=dev
-ARG ROMIDATA_BRANCH=dev
-ARG ROMISCANNER_BRANCH=master
+# Install plant-imager, plant-3d-vision and plantdb
+ARG PLANT3DVISION_BRANCH=dev
+ARG PLANTDB_BRANCH=dev
 
-RUN git clone --branch $ROMISCAN_BRANCH https://github.com/romi/romiscan && \
-    git clone --branch $ROMIDATA_BRANCH https://github.com/romi/romidata && \
-    python -m pip install ./romidata/ --no-cache-dir && \
-    python -m pip install ./romiscan/ --no-cache-dir
+RUN git clone --branch $PLANT3DVISION_BRANCH https://github.com/romi/plant-3d-vision && \
+    git clone --branch $PLANTDB_BRANCH https://github.com/romi/plantdb && \
+    python -m pip install ./plantdb/ --no-cache-dir && \
+    python -m pip install ./plant-3d-vision/ --no-cache-dir
 
-COPY --chown=${USER_NAME}:${GROUP_NAME} ./ romiscanner/
+COPY --chown=${USER_NAME}:${GROUP_NAME} ./ plant-imager/
 
-RUN cd romiscanner/ && \
+RUN cd plant-imager/ && \
     python -m pip install . --no-cache-dir
 
 
@@ -88,5 +87,3 @@ RUN echo "conda activate lpyEnv" >> ~/.bashrc
 RUN echo "conda activate lpyEnv" >> ~/.profile
 RUN echo "export PATH=\$PATH:/opt/blender" >> ~/.profile
 RUN echo "export LD_LIBRARY_PATH=/opt/blender/lib" >> ~/.profile
-
-

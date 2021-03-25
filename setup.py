@@ -9,7 +9,7 @@ s = setup(
     packages=find_packages(),
     scripts=[
         'bin/romi_bpy',
-        'bin/romi_virtualscanner',
+        'bin/romi_virtualplantimager',
         'bin/romi_split_by_material',
         'bin/romi_clean_mesh'
     ],
