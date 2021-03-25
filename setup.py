@@ -15,7 +15,7 @@ s = setup(
     ],
     author='Timothée Wintz',
     author_email='timothee@timwin.fr',
-    description='A plant scanner',
+    description='A plant imager',
     long_description='',
     zip_safe=False,
     use_scm_version=True,

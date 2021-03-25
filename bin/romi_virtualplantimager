@@ -315,7 +315,7 @@ if __name__ == "__main__":
         except:
             sys.argv = ["null"]
 
-        parser = argparse.ArgumentParser(description='Run a romiscan task.')
+        parser = argparse.ArgumentParser(description='Run a plant imaging task.')
 
         parser.add_argument('--data-dir', dest='data_dir', default='data',
                         help='location of obj and mtl files')
