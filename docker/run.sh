@@ -22,7 +22,7 @@ usage() {
     "
 
   echo "DESCRIPTION:"
-  echo "  Run 'romiscanner:<vtag>' container with a mounted local (host) database.
+  echo "  Run 'plantimager:<vtag>' container with a mounted local (host) database.
     "
 
   echo "OPTIONS:"

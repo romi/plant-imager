@@ -1,6 +1,6 @@
 """
 
-    plantimager - Python tools for the ROMI 3D Scanner
+    plantimager - Python tools for the ROMI 3D Plant Imager
 
     Copyright (C) 2018 Sony Computer Science Laboratories
     Authors: D. Colliaux, T. Wintz, P. Hanappe
