@@ -1,11 +1,11 @@
 import subprocess
-import romiscanner
+import plantimager
 
 from shutil import copyfile
 from setuptools import setup, Extension, find_packages
 
 s = setup(
-    name='romiscanner',
+    name='plantimager',
     packages=find_packages(),
     scripts=[
         'bin/romi_bpy',

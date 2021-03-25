@@ -16,8 +16,8 @@ import tempfile
 
 from romidata.db import Fileset, File
 
-from romiscanner.hal import DataItem, AbstractScanner
-from romiscanner import path
+from plantimager.hal import DataItem, AbstractScanner
+from plantimager import path
 from romidata import io
 from .log import logger
 
