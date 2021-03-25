@@ -101,8 +101,8 @@ start_time=`date +%s`
 
 # Start the docker image build:
 docker build -t plantimager:$vtag $docker_opts \
-  --build-arg PLANT3DVISION_BRANCH=$romiscan_branch \
-  --build-arg PLANTDB_BRANCH=$romidata_branch \
+  --build-arg PLANT3DVISION_BRANCH=$plant3dvision_branch \
+  --build-arg PLANTDB_BRANCH=$plantdb_branch \
   --build-arg USER_NAME=$user \
   --build-arg USER_ID=$uid \
   --build-arg GROUP_NAME=$group \
