@@ -7,12 +7,12 @@ import luigi
 from romidata import RomiTask, FilesetTarget, DatabaseConfig, io
 
 from romidata.task import FilesetExists
-from romiscanner.configs.lpy import VirtualPlantConfig
-from romiscanner.configs.scan import ScanPath
-from romiscanner.log import logger
-from romiscanner.scanner import Scanner
-from romiscanner.tasks.lpy import VirtualPlant
-from romiscanner.vscan import VirtualScanner
+from plantimager.configs.lpy import VirtualPlantConfig
+from plantimager.configs.scan import ScanPath
+from plantimager.log import logger
+from plantimager.scanner import Scanner
+from plantimager.tasks.lpy import VirtualPlant
+from plantimager.vscan import VirtualScanner
 
 
 class ObjFileset(FilesetExists):

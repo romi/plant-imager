@@ -6,8 +6,8 @@ import tempfile
 
 import luigi
 from romidata import RomiTask
-from romiscanner.lpy import LpyFileset
-from romiscanner.configs.lpy import VirtualPlantConfig
+from plantimager.lpy import LpyFileset
+from plantimager.configs.lpy import VirtualPlantConfig
 
 
 class VirtualPlant(RomiTask):
