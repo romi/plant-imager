@@ -14,11 +14,11 @@ import numpy as np
 from typing import List
 import tempfile
 
-from romidata.db import Fileset, File
+from plantdb.db import Fileset, File
 
 from plantimager.hal import DataItem, AbstractScanner
 from plantimager import path
-from romidata import io
+from plantdb import io
 from .log import logger
 
 
