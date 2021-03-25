@@ -3,19 +3,15 @@
 ###############################################################################
 # Example usages:
 ###############################################################################
-# 1. Default build options will create `romiscanner:latest`:
+# 1. Default build options will create `plantimager:latest`:
 # $ ./build.sh
 #
-# 2. Build image with 'debug' tag & another 'romiscanner' branch 'feature/LpyIntegration' options:
-# $ ./build.sh -t debug -b feature/LpyIntegration
-#
-# 3. Build image with 'debug' tag & other specific branches
-# $ ./build.sh -t debug --romiscanner specific_branch_of_romiscanner --romiscan specific_branch_of_romiscan --romidata specific_branch_of_romidata
+# 2. Build image with 'debug' tag & other specific branches
+# $ ./build.sh -t debug --plant3dvision specific_branch_of_plant3dvision --plantdb specific_branch_of_plantdb
 
 vtag="latest"
-romidata_branch='dev'
-romiscan_branch='dev'
-romiscanner_branch='master'
+plantdb_branch='dev'
+plant3dvision_branch='dev'
 user=$USER
 uid=$(id -u)
 group=$(id -g -n)
@@ -28,7 +24,7 @@ usage() {
     "
 
   echo "DESCRIPTION:"
-  echo "  Build a docker image named 'romiscanner' using Dockerfile in same location.
+  echo "  Build a docker image named 'plantimager' using Dockerfile in same location.
     "
 
   echo "OPTIONS:"
@@ -47,14 +43,11 @@ usage() {
   echo "  --gid
     Group id to use with 'user' inside docker image, default to '$gid'.
     "
-  echo "  --romiscan
-    Git branch to use for cloning 'romiscan' inside docker image, default to '$romiscan_branch'.
+  echo "  --plant3dvision
+    Git branch to use for cloning 'plant-3d-vision' inside docker image, default to '$plant3dvision_branch'.
     "
-  echo "  --romidata
-    Git branch to use for cloning 'romidata' inside docker image, default to '$romidata_branch'.
-    "
-  echo "  -b, --romiscanner
-    Git branch to use for cloning 'romiscanner' inside docker image, default to '$romiscanner_branch'.
+  echo "  --plantdb
+    Git branch to use for cloning 'plantdb' inside docker image, default to '$plantdb_branch'.
     "
   # Docker options:
   echo "  --no-cache
@@ -75,17 +68,13 @@ while [ "$1" != "" ]; do
     shift
     vtag=$1
     ;;
-  -b | --romiscanner)
+  --plant3dvision)
     shift
-    romiscanner_branch=$1
+    plant3dvision_branch=$1
     ;;
-  --romiscan)
+  --plantdb)
     shift
-    romiscan_branch=$1
-    ;;
-  --romidata)
-    shift
-    romidata_branch=$1
+    plantdb_branch=$1
     ;;
   --no-cache)
     shift
@@ -111,10 +100,9 @@ done
 start_time=`date +%s`
 
 # Start the docker image build:
-docker build -t romiscanner:$vtag $docker_opts \
-  --build-arg ROMISCAN_BRANCH=$romiscan_branch \
-  --build-arg ROMIDATA_BRANCH=$romidata_branch \
-  --build-arg ROMISCANNER_BRANCH=$romiscanner_branch \
+docker build -t plantimager:$vtag $docker_opts \
+  --build-arg PLANT3DVISION_BRANCH=$romiscan_branch \
+  --build-arg PLANTDB_BRANCH=$romidata_branch \
   --build-arg USER_NAME=$user \
   --build-arg USER_ID=$uid \
   --build-arg GROUP_NAME=$group \
