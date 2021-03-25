@@ -14,7 +14,7 @@ In this repository, you will find a script `build.sh` in the `docker` directory.
 ```
 This will create by default a docker image `romiscanner:latest`.
 Inside the docker image, a user is created and named as the one currently used by your system.
-If you want more build options (specific branches, tags...etc), type `./build.sh --help`.
+If you want more build options (specific branches, tags...etc), type `./docker/build.sh --help`.
 
 #### Running the docker container
 In the docker directory, you will find also a script named `run.sh`.
