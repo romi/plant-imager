@@ -10,13 +10,13 @@ radius = 375
 n_points = 20
 
 [Scan.scanner.camera]
-module = "romiscanner.urlcam"
+module = "plantimager.urlcam"
 
 [Scan.scanner.camera.kwargs]
 url = "http://192.168.0.1:8080"
 
 [Scan.scanner.gimbal]
-module = "romiscanner.blgimbal"
+module = "plantimager.blgimbal"
 
 [Scan.scanner.gimbal.kwargs]
 port = "/dev/ttyACM1"
@@ -25,7 +25,7 @@ zero_pan = 180
 invert_rotation = true
 
 [Scan.scanner.cnc]
-module = "romiscanner.grbl"
+module = "plantimager.grbl"
 
 [Scan.scanner.cnc.kwargs]
 homing = true
