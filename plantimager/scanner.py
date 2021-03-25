@@ -32,7 +32,7 @@ from . import path
 from .units import *
 from .hal import *
 
-from romidata.db import Fileset
+from plantdb.db import Fileset
 
 class Scanner(AbstractScanner):
     def __init__(self, cnc: AbstractCNC,

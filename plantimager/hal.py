@@ -29,8 +29,8 @@ import numpy as np
 from .units import *
 from . import path
 from typing import Tuple, List
-from romidata.db import Fileset
-from romidata import io
+from plantdb.db import Fileset
+from plantdb import io
 import logging
 
 logger = logging.getLogger("plantimager")
