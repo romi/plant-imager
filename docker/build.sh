@@ -6,12 +6,10 @@
 # 1. Default build options will create `plantimager:latest`:
 # $ ./build.sh
 #
-# 2. Build image with 'debug' tag & other specific branches
-# $ ./build.sh -t debug --plant3dvision specific_branch_of_plant3dvision --plantdb specific_branch_of_plantdb
+# 2. Build image with 'debug' tag
+# $ ./build.sh -t debug
 
 vtag="latest"
-plantdb_branch='dev'
-plant3dvision_branch='dev'
 user=$USER
 uid=$(id -u)
 group=$(id -g -n)
@@ -43,12 +41,6 @@ usage() {
   echo "  --gid
     Group id to use with 'user' inside docker image, default to '$gid'.
     "
-  echo "  --plant3dvision
-    Git branch to use for cloning 'plant-3d-vision' inside docker image, default to '$plant3dvision_branch'.
-    "
-  echo "  --plantdb
-    Git branch to use for cloning 'plantdb' inside docker image, default to '$plantdb_branch'.
-    "
   # Docker options:
   echo "  --no-cache
     Do not use cache when building the image, (re)start from scratch.
@@ -67,14 +59,6 @@ while [ "$1" != "" ]; do
   -t | --tag)
     shift
     vtag=$1
-    ;;
-  --plant3dvision)
-    shift
-    plant3dvision_branch=$1
-    ;;
-  --plantdb)
-    shift
-    plantdb_branch=$1
     ;;
   --no-cache)
     shift
@@ -101,8 +85,6 @@ start_time=`date +%s`
 
 # Start the docker image build:
 docker build -t plantimager:$vtag $docker_opts \
-  --build-arg PLANT3DVISION_BRANCH=$plant3dvision_branch \
-  --build-arg PLANTDB_BRANCH=$plantdb_branch \
   --build-arg USER_NAME=$user \
   --build-arg USER_ID=$uid \
   --build-arg GROUP_NAME=$group \
