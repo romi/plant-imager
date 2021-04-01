@@ -1,0 +1,3 @@
+[submodule "plantdb"]
+	path = plantdb
+	url = https://github.com/romi/plantdb.git
