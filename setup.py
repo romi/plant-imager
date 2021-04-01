@@ -28,5 +28,5 @@ s = setup(
         'requests',
         'pyserial'
     ],
-    include_package_data=True,
+    include_package_data=True
 )
