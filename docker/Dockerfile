@@ -63,18 +63,13 @@ USER ${USER_NAME}
 RUN conda init bash
 SHELL [ "conda", "run", "-n", "lpyEnv", "/bin/bash", "-c" ]
 
-# Install plant-imager, plant-3d-vision and plantdb
-ARG PLANT3DVISION_BRANCH=dev
-ARG PLANTDB_BRANCH=dev
-
-RUN git clone --branch $PLANT3DVISION_BRANCH https://github.com/romi/plant-3d-vision && \
-    git clone --branch $PLANTDB_BRANCH https://github.com/romi/plantdb && \
-    python -m pip install ./plantdb/ --no-cache-dir && \
-    python -m pip install ./plant-3d-vision/ --no-cache-dir
+# Install plant-imager from host's local source files
 
 COPY --chown=${USER_NAME}:${GROUP_NAME} ./ plant-imager/
 
 RUN cd plant-imager/ && \
+    python -m pip install -e ./plantdb/ --no-cache-dir && \
+    python -m pip install -e ./romitask/ --no-cache-dir && \
     python -m pip install . --no-cache-dir
 
 
