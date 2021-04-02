@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 
 import luigi
-from plantdb import RomiTask
+from romitask import RomiTask
 from plantimager.lpy import LpyFileset
 from plantimager.configs.lpy import VirtualPlantConfig
 

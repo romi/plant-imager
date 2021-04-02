@@ -4,9 +4,10 @@ import os
 import random
 
 import luigi
-from plantdb import RomiTask, FilesetTarget, DatabaseConfig, io
+from romitask import RomiTask, FilesetTarget, DatabaseConfig
 
-from plantdb.task import FilesetExists
+from romitask.task import FilesetExists
+from plantdb import io
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
 from plantimager.log import logger
