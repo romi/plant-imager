@@ -12,6 +12,8 @@ In this repository, you will find a script `build.sh` in the `docker` directory.
 ```
     git clone https://github.com/romi/plant-imager.git
     cd plant-imager/
+    git submodule init
+    git submodule update
     ./docker/build.sh
 ```
 This will create by default a docker image `plantimager:latest`.
