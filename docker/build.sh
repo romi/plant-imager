@@ -4,10 +4,10 @@
 # Example usages:
 ###############################################################################
 # 1. Default build options will create `plantimager:latest`:
-# $ ./build.sh
+# $ ./docker/build.sh
 #
 # 2. Build image with 'debug' tag
-# $ ./build.sh -t debug
+# $ ./docker/build.sh -t debug
 
 vtag="latest"
 user=$USER
