@@ -26,7 +26,6 @@
 # import cv2
 
 import imageio
-import requests
 
 from . import hal
 
@@ -76,7 +75,7 @@ class Camera(hal.AbstractCamera):
             This is me trying to create an example:
 
             >>> from PIL import Image
-            >>> from romiscanner.urlcam import Camera
+            >>> from plantimager.urlcam import Camera
             >>> url = "http://192.168.0.1:8080"
             >>> cam = Camera(url)
             >>> img = cam.grab("img_001")

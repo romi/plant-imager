@@ -10,8 +10,8 @@ radius = 300
 n_points = 20
 
 [Scan.scanner.camera]
-module = "romiscanner.sony"
-#module = "romiscanner.gp2"
+module = "plantimager.sony"
+#module = "plantimager.gp2"
 
 [Scan.scanner.camera.kwargs]
 #url = "http://myflashair"
@@ -22,16 +22,16 @@ use_flashair = false
 rotation = 270
 
 [Scan.scanner.gimbal]
-module = "romiscanner.blgimbal"
+module = "plantimager.blgimbal"
 
 [Scan.scanner.gimbal.kwargs]
-port = "/dev/ttyACM2"
+port = "/dev/ttyACM1"
 has_tilt = false
 zero_pan = 0
 invert_rotation = true
 
 [Scan.scanner.cnc]
-module = "romiscanner.grbl"
+module = "plantimager.grbl"
 
 [Scan.scanner.cnc.kwargs]
 port = "/dev/ttyACM0"

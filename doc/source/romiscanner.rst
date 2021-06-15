@@ -1,130 +1,130 @@
-romiscanner module
+plantimager module
 ==================
 
-romiscanner.blgimbal module
+plantimager.blgimbal module
 ---------------------------
 
-.. automodule:: romiscanner.blgimbal
+.. automodule:: plantimager.blgimbal
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.dummy module
+plantimager.dummy module
 ------------------------
 
-.. automodule:: romiscanner.dummy
+.. automodule:: plantimager.dummy
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.dynamixel module
+plantimager.dynamixel module
 ----------------------------
 
-.. automodule:: romiscanner.dynamixel
+.. automodule:: plantimager.dynamixel
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.error module
+plantimager.error module
 ------------------------
 
-.. automodule:: romiscanner.error
+.. automodule:: plantimager.error
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.gp2 module
+plantimager.gp2 module
 ----------------------
 
-.. automodule:: romiscanner.gp2
+.. automodule:: plantimager.gp2
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.grbl module
+plantimager.grbl module
 -----------------------
 
-.. automodule:: romiscanner.grbl
+.. automodule:: plantimager.grbl
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.hal module
+plantimager.hal module
 ----------------------
 
-.. automodule:: romiscanner.hal
+.. automodule:: plantimager.hal
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.log module
+plantimager.log module
 ----------------------
 
-.. automodule:: romiscanner.log
+.. automodule:: plantimager.log
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.lpy module
+plantimager.lpy module
 ----------------------
 
-.. automodule:: romiscanner.lpy
+.. automodule:: plantimager.lpy
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.path module
+plantimager.path module
 -----------------------
 
-.. automodule:: romiscanner.path
+.. automodule:: plantimager.path
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.scan module
+plantimager.scan module
 -----------------------
 
-.. automodule:: romiscanner.scan
+.. automodule:: plantimager.scan
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.scanner module
+plantimager.scanner module
 --------------------------
 
-.. automodule:: romiscanner.scanner
+.. automodule:: plantimager.scanner
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.sony module
+plantimager.sony module
 -----------------------
 
-.. automodule:: romiscanner.sony
+.. automodule:: plantimager.sony
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.units module
+plantimager.units module
 ------------------------
 
-.. automodule:: romiscanner.units
+.. automodule:: plantimager.units
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.urlcam module
+plantimager.urlcam module
 -------------------------
 
-.. automodule:: romiscanner.urlcam
+.. automodule:: plantimager.urlcam
    :members:
    :undoc-members:
    :show-inheritance:
 
-romiscanner.vscan module
+plantimager.vscan module
 ------------------------
 
-.. automodule:: romiscanner.vscan
+.. automodule:: plantimager.vscan
    :members:
    :undoc-members:
    :show-inheritance:

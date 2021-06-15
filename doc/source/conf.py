@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'romiscanner'
+project = 'plantimager'
 copyright = '2020, ROMI H2020 European Project'
 author = 'ROMI H2020 European Project'
 

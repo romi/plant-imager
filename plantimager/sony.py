@@ -22,17 +22,17 @@
     <https://www.gnu.org/licenses/>.
 
 """
-import os
-import imageio
-import requests
-import time
 import json
+import os
 import subprocess
-import numpy as np
+import time
 from io import BytesIO
 
+import imageio
+import numpy as np
+import requests
 from PIL import Image
-from romiscanner.error import SonyCamError, FlashAirAPIError
+from plantimager.error import SonyCamError, FlashAirAPIError
 
 from . import hal
 from .hal import DataItem
@@ -276,7 +276,7 @@ class Camera(hal.AbstractCamera):
     Examples
     --------
     >>> import numpy as np
-    >>> from romiscanner.sony import Camera
+    >>> from plantimager.sony import Camera
     >>> cam = Camera('192.168.122.1', '10000', postview=True, rotation=0)
     >>> img = cam.grab(0)
     >>> arr = img.channels['rgb'].data

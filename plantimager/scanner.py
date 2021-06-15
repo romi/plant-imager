@@ -22,17 +22,10 @@
     <https://www.gnu.org/licenses/>.
 
 """
-import os
-import numpy as np
-import math
 import time
-from typing import List
 
-from . import path
-from .units import *
 from .hal import *
 
-from plantdb.db import Fileset
 
 class Scanner(AbstractScanner):
     def __init__(self, cnc: AbstractCNC,
@@ -43,7 +36,7 @@ class Scanner(AbstractScanner):
         self.cnc = cnc
         self.gimbal = gimbal
         self.camera = camera
-        self.waiting_time = waiting_time # time to wait for stabilization after setting position
+        self.waiting_time = waiting_time  # time to wait for stabilization after setting position
 
     def get_position(self) -> path.Pose:
         x,y,z = self.cnc.get_position()

@@ -1,9 +1,9 @@
-romiscanner
+plantimager
 ===========
 
 .. toctree::
    :maxdepth: 4
 
-   romiscanner
-   romiscanner_tasks
-   romiscanner_configs
+   plantimager
+   plantimager_tasks
+   plantimager_configs

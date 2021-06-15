@@ -26,7 +26,7 @@ import atexit
 import time
 
 import serial
-from romiscanner import hal
+from plantimager import hal
 
 from .log import logger
 
@@ -134,7 +134,7 @@ class CNC(hal.AbstractCNC):
 
         Examples
         --------
-        >>> from romiscanner.grbl import CNC
+        >>> from plantimager.grbl import CNC
         >>> cnc = CNC("/dev/ttyACM1", x_lims=[0, 780], y_lims=[0, 790], z_lims=[0, 90])
         >>> cnc.moveto(200, 200, 50)
         >>> cnc.moveto_async(200, 200, 50)

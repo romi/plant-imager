@@ -1,31 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# romiscanner - Python tools for the ROMI 3D Scanner
+# plantimager - Python tools for the ROMI 3D Scanner
 #
 # Copyright (C) 2018 Sony Computer Science Laboratories
 # Authors: D. Colliaux, T. Wintz, P. Hanappe
 #
-# This file is part of romiscanner.
+# This file is part of plantimager.
 #
-# romiscanner is free software: you can redistribute it
+# plantimager is free software: you can redistribute it
 # and/or modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation, either
 # version 3 of the License, or (at your option) any later version.
 #
-# romiscanner is distributed in the hope that it will be
+# plantimager is distributed in the hope that it will be
 # useful, but WITHOUT ANY WARRANTY; without even the implied
 # warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU Lesser General Public
-# License along with romiscanner.  If not, see
+# License along with plantimager.  If not, see
 # <https://www.gnu.org/licenses/>.
+import importlib
+import json
+import os
+from random import random
 
 import luigi
-from romitask import RomiTask, FilesetTarget, DatabaseConfig
-
 from romitask.task import FilesetExists
+
 from plantdb import io
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
@@ -33,6 +36,9 @@ from plantimager.log import logger
 from plantimager.scanner import Scanner
 from plantimager.tasks.lpy import VirtualPlant
 from plantimager.vscan import VirtualScanner
+from romitask import DatabaseConfig
+from romitask import FilesetTarget
+from romitask import RomiTask
 
 
 class ObjFileset(FilesetExists):

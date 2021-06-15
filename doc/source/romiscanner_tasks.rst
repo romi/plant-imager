@@ -1,19 +1,19 @@
-romiscanner Tasks submodules
+plantimager Tasks submodules
 ============================
 
-.. automodule:: romiscanner.tasks.lpy
+.. automodule:: plantimager.tasks.lpy
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: romiscanner.tasks.scan
+.. automodule:: plantimager.tasks.scan
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: romiscanner.tasks.vscan
+.. automodule:: plantimager.tasks.vscan
    :members:
    :undoc-members:
    :show-inheritance:

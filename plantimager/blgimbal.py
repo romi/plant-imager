@@ -23,13 +23,13 @@
 
 """
 
-import serial
-import json
-import time
-import math
-import numpy as np
-from plantimager import hal, error
 import atexit
+import time
+
+import serial
+
+from plantimager import hal
+
 
 class Gimbal(hal.AbstractGimbal):
     def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=360,
@@ -56,7 +56,7 @@ class Gimbal(hal.AbstractGimbal):
             self.serial_port.close()
             self.serial_port = None
 
-    def has_position_control():
+    def has_position_control(self):
         return True
 
 

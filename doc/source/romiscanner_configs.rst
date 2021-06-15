@@ -1,13 +1,13 @@
-romiscanner Configs submodules
+plantimager Configs submodules
 ==============================
 
 
-.. automodule:: romiscanner.configs.lpy
+.. automodule:: plantimager.configs.lpy
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: romiscanner.configs.scan
+.. automodule:: plantimager.configs.scan
    :members:
    :undoc-members:
    :show-inheritance:

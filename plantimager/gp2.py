@@ -22,15 +22,14 @@
     <https://www.gnu.org/licenses/>.
 
 """
-import gphoto2 as gp
-import os
-import imageio
-import tempfile
 import atexit
 from io import BytesIO
 
-from plantimager import hal, error
-from .hal import DataItem
+import gphoto2 as gp
+import imageio
+
+from plantimager import hal
+
 
 class Camera(hal.AbstractCamera):
     """
@@ -44,7 +43,7 @@ class Camera(hal.AbstractCamera):
 
     Examples
     --------
-    >>> from romiscanner.gp2 import Camera
+    >>> from plantimager.gp2 import Camera
     >>> cam = Camera()
     >>> # Grab a picture as an hal.DataItem:
     >>> img = cam.grab(0)

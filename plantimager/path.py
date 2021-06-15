@@ -35,15 +35,15 @@ class Pose(object):
         """
         Parameters
         ----------
-        x : romiscanner.units.length_mm, optional
+        x : plantimager.units.length_mm, optional
             Relative distance to the origin along the x-axis.
-        y : romiscanner.units.length_mm, optional
+        y : plantimager.units.length_mm, optional
             Relative distance to the origin along the y-axis.
-        z : romiscanner.units.length_mm, optional
+        z : plantimager.units.length_mm, optional
             Relative distance to the origin along the z-axis.
-        pan : romiscanner.units.deg, optional
+        pan : plantimager.units.deg, optional
             Relative rotation to the origin along the xy-plane.
-        tilt : romiscanner.units.deg, optional
+        tilt : plantimager.units.deg, optional
             Relative rotation to the origin along the xy-plane.
         """
         self.x = x
@@ -61,7 +61,7 @@ class PathElement(Pose):
 
     Examples
     --------
-    >>> from romiscanner.path import PathElement
+    >>> from plantimager.path import PathElement
     >>> elt = PathElement(50, 250, 80, 270, 0, True)
     >>> print(elt)
 
@@ -71,15 +71,15 @@ class PathElement(Pose):
         """
         Parameters
         ----------
-        x : romiscanner.units.length_mm, optional
+        x : plantimager.units.length_mm, optional
             Relative distance, in millimeters, to the origin along the x-axis.
-        y : romiscanner.units.length_mm, optional
+        y : plantimager.units.length_mm, optional
             Relative distance, in millimeters, to the origin along the y-axis.
-        z : romiscanner.units.length_mm, optional
+        z : plantimager.units.length_mm, optional
             Relative distance, in millimeters, to the origin along the z-axis.
-        pan : romiscanner.units.deg, optional
+        pan : plantimager.units.deg, optional
             Relative rotation, in degrees, to the origin along the xy-plane.
-        tilt : romiscanner.units.deg, optional
+        tilt : plantimager.units.deg, optional
             Relative rotation, in degrees, to the origin along the xy-plane.
         exact_pose : bool, optional
             If ``True``, the above parameter values are exact, else they are approximations.
@@ -101,9 +101,9 @@ class Path(list):
 
     Examples
     --------
-    >>> from romiscanner.path import PathElement
+    >>> from plantimager.path import PathElement
     >>> elt = PathElement(0, 0, 0, 0, 0, True)
-    >>> from romiscanner.path import Path
+    >>> from plantimager.path import Path
     >>> p = Path()
     >>> type(p)
     >>> p.append(elt)
@@ -142,7 +142,7 @@ class Circle(Path):
 
     Examples
     --------
-    >>> from romiscanner.path import Circle
+    >>> from plantimager.path import Circle
     >>> circular_path = Circle(200, 200, 50, 0, 200, 9)
     >>> circular_path
     [x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
@@ -167,16 +167,16 @@ class Circle(Path):
         """
         Parameters
         ----------
-        center_x : romiscanner.units.length_mm
+        center_x : plantimager.units.length_mm
             X-axis position, in millimeters, of the circle's center, relative to the origin.
-        center_y : romiscanner.units.length_mm
+        center_y : plantimager.units.length_mm
             Y-axis position, in millimeters, of the circle's center, relative to the origin.
-        z : romiscanner.units.length_mm
+        z : plantimager.units.length_mm
             Height at which to make the circle.
-        tilt : romiscanner.units.deg or list(romiscanner.units.deg)
+        tilt : plantimager.units.deg or list(plantimager.units.deg)
             Camera tilt(s), in degrees, to use for this circle.
             If an iterable is given, performs more than one camera acquisition at same xyz position.
-        radius : romiscanner.units.length_mm
+        radius : plantimager.units.length_mm
             Radius, in millimeters, of the circular path to create.
         n_points : int
             Number of points (``PathElement``) used to generate the circular path.
@@ -204,7 +204,7 @@ class Cylinder(Path):
 
     Examples
     --------
-    >>> from romiscanner.path import Cylinder
+    >>> from plantimager.path import Cylinder
     >>> n_points = 9
     >>> cylinder_path = Cylinder(200, 200, (0, 50), 0, 200, n_points, 2)
     >>> cylinder_path[:2]
@@ -220,16 +220,16 @@ class Cylinder(Path):
         """
         Parameters
         ----------
-        center_x : romiscanner.units.length_mm
+        center_x : plantimager.units.length_mm
             X-axis position, in millimeters, of the circle's center, relative to the origin.
-        center_y : romiscanner.units.length_mm
+        center_y : plantimager.units.length_mm
             Y-axis position, in millimeters, of the circle's center, relative to the origin.
-        z_range : (romiscanner.units.length_mm, romiscanner.units.length_mm)
+        z_range : (plantimager.units.length_mm, plantimager.units.length_mm)
             Height range, in millimeters, at which to make the cylinder.
-        tilt : romiscanner.units.deg or list(romiscanner.units.deg)
+        tilt : plantimager.units.deg or list(plantimager.units.deg)
             Camera tilt(s), in degrees, to use for this circle.
             If an iterable is given, performs more than one camera acquisition at same xyz position.
-        radius : romiscanner.units.length_mm
+        radius : plantimager.units.length_mm
             Radius of the circular path to create.
         n_points : int
             Number of points (``PathElement``) used to generate the circular path.
@@ -251,9 +251,9 @@ def line_1d(start, stop, n_points):
 
     Parameters
     ----------
-    start : romiscanner.units.length_mm
+    start : plantimager.units.length_mm
         Line starting position, in millimeters.
-    stop : romiscanner.units.length_mm
+    stop : plantimager.units.length_mm
         Line ending position, in millimeters.
     n_points : int
         Number of points used to create the line of points.
@@ -272,17 +272,17 @@ def line3d(x_0, y_0, z_0, x_1, y_1, z_1, n_points):
 
     Parameters
     ----------
-    x_0 : romiscanner.units.length_mm
+    x_0 : plantimager.units.length_mm
         Line starting position, in millimeters, for the x-axis.
-    y_0 : romiscanner.units.length_mm
+    y_0 : plantimager.units.length_mm
         Line starting position, in millimeters, for the y-axis.
-    z_0 : romiscanner.units.length_mm
+    z_0 : plantimager.units.length_mm
         Line starting position, in millimeters, for the z-axis.
-    x_1 : romiscanner.units.length_mm
+    x_1 : plantimager.units.length_mm
         Line ending position, in millimeters, for the x-axis.
-    y_1 : romiscanner.units.length_mm
+    y_1 : plantimager.units.length_mm
         Line ending position, in millimeters, for the y-axis.
-    z_1 : romiscanner.units.length_mm
+    z_1 : plantimager.units.length_mm
         Line ending position, in millimeters, for the z-axis.
     n_points : int
         Number of points used to create the linear path.
@@ -306,7 +306,7 @@ class Line(Path):
 
     Examples
     --------
-    >>> from romiscanner.path import Line
+    >>> from plantimager.path import Line
     >>> n_points = 2
     >>> linear_path = Line(0, 0, 0, 10, 10, 0, 180, 0, n_points)
     >>> linear_path
@@ -319,21 +319,21 @@ class Line(Path):
         """
         Parameters
         ----------
-        x_0 : romiscanner.units.length_mm
+        x_0 : plantimager.units.length_mm
             Line starting position, in millimeters for the x-axis.
-        y_0 : romiscanner.units.length_mm
+        y_0 : plantimager.units.length_mm
             Line starting position, in millimeters for the y-axis.
-        z_0 : romiscanner.units.length_mm
+        z_0 : plantimager.units.length_mm
             Line starting position, in millimeters for the z-axis.
-        x_1 : romiscanner.units.length_mm
+        x_1 : plantimager.units.length_mm
             Line ending position, in millimeters for the x-axis.
-        y_1 : romiscanner.units.length_mm
+        y_1 : plantimager.units.length_mm
             Line ending position, in millimeters for the y-axis.
-        z_1 : romiscanner.units.length_mm
+        z_1 : plantimager.units.length_mm
             Line ending position, in millimeters for the z-axis.
-        pan : romiscanner.units.deg
+        pan : plantimager.units.deg
             Camera pan value, in degrees, to use for the linear path.
-        tilt : romiscanner.units.deg or list(romiscanner.units.deg)
+        tilt : plantimager.units.deg or list(plantimager.units.deg)
             Camera tilt(s), in degrees, to use for this circle.
             If an iterable is given, performs more than one camera acquisition at same xyz position.
         n_points : int
@@ -377,8 +377,8 @@ class CalibrationPath(Path):
 
     Examples
     --------
-    >>> from romiscanner.path import CalibrationPath
-    >>> from romiscanner.path import Circle
+    >>> from plantimager.path import CalibrationPath
+    >>> from plantimager.path import Circle
     >>> circular_path = Circle(200, 200, 50, 0, 200, 9)
     >>> n_points_line = 5
     >>> calib_path = CalibrationPath(circular_path, n_points_line)
