@@ -94,11 +94,13 @@ conda activate plant_imager
 git clone --branch $PLANTIMAGER_BRANCH https://github.com/romi/plant-imager
 cd plant-imager
 # Get the sub-modules:
-git submodule init
-git submodule update
+git submodule update --init
 # Install plantdb from sub-modules
 python -m pip install -e ./plantdb/
 # Install romitask from sub-modules
 python -m pip install -e ./romitask/
-python -m pip install . --no-cache-dir
+python -m pip install -e .
 ```
+
+> :information_source: The `-e` option install the module or sub-module in *editable* mode.
+> That means you will not have to reinstall them if you make modifications to the sources.
