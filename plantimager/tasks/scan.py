@@ -24,7 +24,7 @@
 import importlib
 import json
 import os
-from random import random
+import random
 
 import luigi
 from romitask.task import FilesetExists
