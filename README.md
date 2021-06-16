@@ -84,21 +84,21 @@ sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/imageio/ /op
 ```
 
 ##### 3. Install ROMI sources
-We will now finish by cloning and installing the ROMI sources for `plant-imager`, `plant-3d-vision` and `plantdb`:
+We will now finish by cloning and installing the ROMI sources for `plant-imager`.
+Please notice that we here use the git sub-modules to clone and install `romitask` and `plantdb`.
 ```shell
-PLANT3DVISION_BRANCH=dev
-PLANTDB_BRANCH=dev
-PLANTIMAGER_BRANCH=master
+PLANTIMAGER_BRANCH=master  # use this to change the default branch
 # Don't forget to activate the environment!
 conda activate plant_imager
-# Clone & install plantdb
-git clone --branch $PLANTDB_BRANCH https://github.com/romi/plantdb
-python -m pip install -e ./plantdb/ --no-cache-dir
-# Clone & install plant-imager
+# Clone plant-imager sources
 git clone --branch $PLANTIMAGER_BRANCH https://github.com/romi/plant-imager
-python -m pip install -e ./plant-imager/ --no-cache-dir
-# Clone & install plant-3d-vision
-git clone --branch $PLANT3DVISION_BRANCH https://github.com/romi/plant-3d-vision
-python -m pip install -r ./plant-3d-vision/requirements.txt --no-cache-dir
-python -m pip install -e ./plant-3d-vision/ --no-cache-dir
+cd plant-imager
+# Get the sub-modules:
+git submodule init
+git submodule update
+# Install plantdb from sub-modules
+python -m pip install -e ./plantdb/
+# Install romitask from sub-modules
+python -m pip install -e ./romitask/
+python -m pip install . --no-cache-dir
 ```
