@@ -3,8 +3,8 @@
 ###############################################################################
 # Example usages:
 ###############################################################################
-# 1. Default run starts an interactive shell:
-# $ ./run.sh
+# 1. By default, starts an interactive shell:
+# $ ./docker/virtualplantimager/run.sh
 # $ ./run.sh -t latest -db /abs/host/my_data_base -v /abs/host/dir:/abs/container/dir
 #
 # 2. Run a command:
@@ -22,26 +22,22 @@ usage() {
     "
 
   echo "DESCRIPTION:"
-  echo "  Run 'plantimager:<vtag>' container with a mounted local (host) database.
+  echo "  Start a 'virtualplantimager:<tag>' container and mount local (host) database.
     "
 
   echo "OPTIONS:"
   echo "  -t, --tag
-    Docker image tag to use, default to '$vtag'.
-    "
+    Docker image tag to use, default to '$vtag'."
   echo "  -db, --database_path
-    Path to the host database to mount inside docker container, requires '--user' if not defautl.
-    "
+    Host database path to mount in docker container. Require definition of docker container user."
+  echo "  -u, --user
+    User name in docker container, default to '$user'."
   echo "  -v, --volume
-    Volume mapping for docker, e.g. '/abs/host/dir:/abs/container/dir'. Multiple use is allowed.
-  "
+    Volume mapping for docker, e.g. '/abs/host/dir:/abs/container/dir'. Multiple use is allowed."
   echo "  -c, --cmd
-    Defines the command to run at docker startup, by default start an interactive container with a bash shell.
-    "
-
+    Defines the command to run at docker startup, by default start an interactive container with a bash shell."
   echo "  -h, --help
-    Output a usage message and exit.
-    "
+    Output a usage message and exit."
 }
 
 while [ "$1" != "" ]; do
@@ -92,9 +88,9 @@ fi
 if [ "$cmd" = "" ]
 then
     # Start in interactive mode. ~/.bashrc will be loaded.
-    docker run -it $mount_option --gpus all plantimager:$vtag bash
+    docker run -it $mount_option --gpus all virtualplantimager:$vtag bash
 else
     # Start in non-interactive mode (run the command). 
     # Request a login shell (-l) to load ~/.profile.
-    docker run $mount_option --gpus all plantimager:$vtag bash -lc "$cmd"
+    docker run $mount_option --gpus all virtualplantimager:$vtag bash -lc "$cmd"
 fi

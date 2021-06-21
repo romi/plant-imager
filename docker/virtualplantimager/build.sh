@@ -3,11 +3,11 @@
 ###############################################################################
 # Example usages:
 ###############################################################################
-# 1. Default build options will create `plantimager:latest`:
-# $ ./docker/build.sh
+# 1. Default build options will create `virtualplantimager:latest`:
+# $ ./docker/virtualplantimager/build.sh
 #
 # 2. Build image with 'debug' tag
-# $ ./docker/build.sh -t debug
+# $ ./docker/virtualplantimager/build.sh -t debug
 
 vtag="latest"
 user=$USER
@@ -18,40 +18,34 @@ docker_opts=""
 
 usage() {
   echo "USAGE:"
-  echo "  ./build.sh [OPTIONS]
-    "
+  echo "  ./docker/virtualplantimager/build.sh [OPTIONS]
+  "
 
   echo "DESCRIPTION:"
-  echo "  Build a docker image named 'plantimager' using Dockerfile in same location.
-    "
+  echo "  Build a docker image named 'virtualplantimager' using 'Dockerfile' in 'docker/virtualplantimager/'.
+  Must be run from the 'plant-imager' repository root folder as it will be copied during at image build time.
+  Do not forget to initialize or update the sub-modules if necessary!
+  "
 
   echo "OPTIONS:"
   echo "  -t, --tag
-    Docker image tag to use, default to '$vtag'.
-    "
+    Docker image tag to use, default to '$vtag'."
   echo "  -u, --user
-    User name to create inside docker image, default to '$user'.
-    "
+    User name to create inside docker image, default to '$user'."
   echo "  --uid
-    User id to use with 'user' inside docker image, default to '$uid'.
-    "
+    User id to use with 'user' inside docker image, default to '$uid'."
   echo "  -g, --group
-    Group name to create inside docker image, default to 'group'.
-    "
+    Group name to create inside docker image, default to '$group'."
   echo "  --gid
-    Group id to use with 'user' inside docker image, default to '$gid'.
-    "
+    Group id to use with 'user' inside docker image, default to '$gid'."
   # Docker options:
   echo "  --no-cache
-    Do not use cache when building the image, (re)start from scratch.
-    "
+    Do not use cache when building the image, (re)start from scratch."
   echo "  --pull
-    Always attempt to pull a newer version of the parent image.
-    "
+    Always attempt to pull a newer version of the parent image."
   # General options:
   echo "  -h, --help
-    Output a usage message and exit.
-    "
+    Output a usage message and exit."
 }
 
 while [ "$1" != "" ]; do
@@ -84,12 +78,12 @@ done
 start_time=`date +%s`
 
 # Start the docker image build:
-docker build -t plantimager:$vtag $docker_opts \
+docker build -t virtualplantimager:$vtag $docker_opts \
   --build-arg USER_NAME=$user \
   --build-arg USER_ID=$uid \
   --build-arg GROUP_NAME=$group \
   --build-arg GROUP_ID=$gid \
-  -f docker/Dockerfile .
+  -f docker/virtualplantimager/Dockerfile .
 
 # Print docker image build time:
 echo
