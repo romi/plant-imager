@@ -1,8 +1,8 @@
 # -Virtual- Plant Imager
 
-- Plant Imager: Gather hardware control of the ROMI _3D plant imager_.
-
-- Virtual Plant Imager: The romi _virtual plant imager_ is based on Blender. We recommend using it inside a docker container.
+To be as clear as possible, we define the following names:
+- _Plant Imager_: hardware control of the ROMI _3D plant imager_.
+- _Virtual Plant Imager_: simulate the plant imager using [LPY](https://github.com/fredboudon/lpy) to generate virtual plants and [Blender](https://www.blender.org/) for rendering. **We recommend using it inside a docker container.**
 
 
 ## Getting started
@@ -16,7 +16,7 @@ git submodule init  # only do this ONCE if the sub-module have not yet been init
 
 ## Docker
 For now, you have to first build the image locally, then you can use it.
-> :warning: We will change that soon, so you can use pre-built image!
+> :warning: We will change that soon, so you can use pre-built images!
 
 Obviously you first have to follow the [getting started](https://github.com/romi/plant-imager#getting-started) instructions.
 
@@ -65,9 +65,10 @@ Now you can use the provided build script.
 ./docker/virtualplantimager/build.sh
 ```
 By default, this build script will create a docker image named `virtualplantimager:latest`.
-If you want more build options (specific branches, tags...etc), type `./docker/virtualplantimager/build.sh --help`.
+If you want more build options (specific branches, tags...etc), type `./docker/virtualplantimager/build.sh -h`.
 
-> :warning: by default the docker user is the same as the one currently used by your system. Use `echo $USER` to check the active username.
+> :warning: by default the docker user is the same as the one currently used by your system.
+> Use `echo $USER` to check the active username.
 
 
 #### Run a `virtualplantimager` container
@@ -110,8 +111,8 @@ After a while, if the generation has succeeded, you can check the generated data
 
 For more information have a look at the official ROMI documentation [website](https://docs.romi-project.eu/Scanner/).
 
-## Install from sources
 
+## Install from sources
 We **highly** recommend using the docker image for the _virtual plant imager_ as installing things can get messy!
 
 ### Getting started
@@ -124,7 +125,6 @@ cd plant-imager
 git submodule init  # only do this ONCE if the sub-module have not yet been initialized!
 git submodule update
 ```
-
 
 ### Install from sources to use the _plant imager_
 
@@ -147,9 +147,7 @@ python -m pip install -e ./romitask/
 # Install `plant-imager`:
 python -m pip install -e .
 ```
-
 > :information_source: Please notice that we here use the git sub-modules to clone and install `romitask` and `plantdb`.
-
 
 ### Install from sources to use the _virtual plant imager_
 
