@@ -1,25 +1,36 @@
-"""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# plantimager - Python tools for the ROMI 3D Plant Imager
+#
+# Copyright (C) 2018 Sony Computer Science Laboratories
+# Authors: D. Colliaux, T. Wintz, P. Hanappe
+#
+# This file is part of plantimager.
+#
+# plantimager is free software: you can redistribute it
+# and/or modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation, either
+# version 3 of the License, or (at your option) any later version.
+#
+# plantimager is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with plantimager.  If not, see
+# <https://www.gnu.org/licenses/>.
 
-    plantimager - Python tools for the ROMI 3D Plant Imager
+"""Implementation of a class dedicated to controlling a Gimbal.
 
-    Copyright (C) 2018 Sony Computer Science Laboratories
-    Authors: D. Colliaux, T. Wintz, P. Hanappe
-
-    This file is part of plantimager.
-
-    plantimager is free software: you can redistribute it
-    and/or modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation, either
-    version 3 of the License, or (at your option) any later version.
-
-    plantimager is distributed in the hope that it will be
-    useful, but WITHOUT ANY WARRANTY; without even the implied
-    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with plantimager.  If not, see
-    <https://www.gnu.org/licenses/>.
+This Gimbal implementation is based on a custom built controller.
+The gimbal is used to orient a camera by controlling _pan_ & _tilt_ orientations.
+The control is done by a serial port that has to be defined.
+Note that this module offer the ability to use one or two motors.
+With one, you control the pan orientation, this is like turning your head left or right.
+With two, you can also control the tilt, this is like looking up or down.
+In conjunction with a 3-axis CNC, that gives a total of 5 degrees of freedom and thus the ability to scan the whole volume around the plant.
 
 """
 
@@ -27,13 +38,14 @@ import atexit
 import time
 
 import serial
+from plantimager.error import Error
+from plantimager.hal import AbstractGimbal
 
-from plantimager import hal
 
-
-class Gimbal(hal.AbstractGimbal):
+class Gimbal(AbstractGimbal):
     def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=360,
-                zero_pan=0, zero_tilt=0, invert_rotation=False):
+                 zero_pan=0, zero_tilt=0, invert_rotation=False):
+        super().__init__()
         self.port = port
         self.status = "idle"
         self.p = [0, 0]
@@ -59,7 +71,6 @@ class Gimbal(hal.AbstractGimbal):
     def has_position_control(self):
         return True
 
-
     def async_enabled(self):
         return True
 
@@ -67,11 +78,9 @@ class Gimbal(hal.AbstractGimbal):
         self.update_status()
         return self.p
 
-
     def get_status(self):
         self.update_status()
         return self.status
-
 
     def set_target_pos(self, pan, tilt):
         if self.invert_rotation:
@@ -106,7 +115,7 @@ class Gimbal(hal.AbstractGimbal):
             time.sleep(0.01)
             r = self.serial_port.readline()
         finally:
-            pass # dummy statement to avoid empty 'finally' clause
+            pass  # dummy statement to avoid empty 'finally' clause
         if r == False:
             print('cmd=%s: failed' % (s))
-        return r;
+        return r

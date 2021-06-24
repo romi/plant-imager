@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# plantimager - Python tools for the ROMI 3D Scanner
+# plantimager - Python tools for the ROMI 3D Plant Imager
 #
 # Copyright (C) 2018 Sony Computer Science Laboratories
 # Authors: D. Colliaux, T. Wintz, P. Hanappe
@@ -29,7 +29,6 @@ import subprocess
 import tempfile
 
 import luigi
-
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.lpy import LpyFileset
 from romitask import RomiTask
@@ -81,7 +80,7 @@ class VirtualPlant(RomiTask):
             classes = luigi.DictParameter().serialize(VirtualPlantConfig().classes).replace(" ", "")
             subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
 
-            #subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+            # subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
             subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
             output_file.import_file(fname)
 

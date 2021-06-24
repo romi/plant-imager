@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# plantimager - Python tools for the ROMI 3D Scanner
+# plantimager - Python tools for the ROMI 3D Plant Imager
 #
 # Copyright (C) 2018 Sony Computer Science Laboratories
 # Authors: D. Colliaux, T. Wintz, P. Hanappe
@@ -21,14 +21,13 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with plantimager.  If not, see
 # <https://www.gnu.org/licenses/>.
+
 import importlib
 import json
 import os
 import random
 
 import luigi
-from romitask.task import FilesetExists
-
 from plantdb import io
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
@@ -39,6 +38,7 @@ from plantimager.vscan import VirtualScanner
 from romitask import DatabaseConfig
 from romitask import FilesetTarget
 from romitask import RomiTask
+from romitask.task import FilesetExists
 
 
 class ObjFileset(FilesetExists):

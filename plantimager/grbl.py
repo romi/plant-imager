@@ -1,35 +1,42 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# plantimager - Python tools for the ROMI 3D Plant Imager
+#
+# Copyright (C) 2018 Sony Computer Science Laboratories
+# Authors: D. Colliaux, T. Wintz, P. Hanappe
+#
+# This file is part of plantimager.
+#
+# plantimager is free software: you can redistribute it
+# and/or modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation, either
+# version 3 of the License, or (at your option) any later version.
+#
+# plantimager is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with plantimager.  If not, see
+# <https://www.gnu.org/licenses/>.
+
+"""Implementation of a CNC module adapted to grbl motherboard.
+
+The CNC is used to move a multi-purpose arm.
+It offers 3-axis of movements.
+
 """
 
-    plantimager - Python tools for the ROMI 3D Plant Imager
-
-    Copyright (C) 2018 Sony Computer Science Laboratories
-    Authors: D. Colliaux, T. Wintz, P. Hanappe
-
-    This file is part of plantimager.
-
-    plantimager is free software: you can redistribute it
-    and/or modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation, either
-    version 3 of the License, or (at your option) any later version.
-
-    plantimager is distributed in the hope that it will be
-    useful, but WITHOUT ANY WARRANTY; without even the implied
-    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with plantimager.  If not, see
-    <https://www.gnu.org/licenses/>.
-
-"""
 import atexit
 import time
 
 import serial
-from plantimager import hal
+from plantimager.hal import AbstractCNC
+from plantimager.log import logger
 
-from .log import logger
-
+#: Dictionary mapping the grbl codes to their meaning and units.
 GRBL_SETTINGS = {
     "$0": ("Step pulse", "microseconds"),
     "$1": ("Step idle delay", "milliseconds"),
@@ -68,7 +75,7 @@ GRBL_SETTINGS = {
 }
 
 
-class CNC(hal.AbstractCNC):
+class CNC(AbstractCNC):
     """CNC functionalities.
 
     Attributes
@@ -106,9 +113,8 @@ class CNC(hal.AbstractCNC):
 
     """
 
-    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True,
-                 x_lims=None, y_lims=None, z_lims=None, safe_start=True,
-                 invert_x=True, invert_y=True, invert_z=True):
+    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, x_lims=None, y_lims=None, z_lims=None, safe_start=True, invert_x=True, invert_y=True,
+                 invert_z=True):
         """Constructor.
 
         Parameters
@@ -142,6 +148,7 @@ class CNC(hal.AbstractCNC):
         >>> cnc.print_grbl_settings()
 
         """
+        super().__init__()
         self.port = port
         self.baud_rate = baud_rate
         self.homing = homing

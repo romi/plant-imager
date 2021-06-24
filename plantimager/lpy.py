@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# plantimager - Python tools for the ROMI 3D Scanner
+# plantimager - Python tools for the ROMI 3D Plant Imager
 #
 # Copyright (C) 2018 Sony Computer Science Laboratories
 # Authors: D. Colliaux, T. Wintz, P. Hanappe
@@ -23,14 +23,8 @@
 # <https://www.gnu.org/licenses/>.
 
 
-
-from romitask.task import FilesetExists
-
 import luigi
-
-import logging
-
-logger = logging.getLogger('plantimager')
+from romitask.task import FilesetExists
 
 
 class LpyFileset(FilesetExists):
