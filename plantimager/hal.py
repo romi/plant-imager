@@ -22,34 +22,34 @@
 # License along with plantimager.  If not, see
 # <https://www.gnu.org/licenses/>.
 
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC
+from abc import ABCMeta
+from abc import abstractmethod
+from typing import List
+from typing import Tuple
+
 import numpy as np
-
-from .units import *
-from . import path
-from typing import Tuple, List
-from plantdb.db import Fileset
 from plantdb import io
-import logging
+from plantdb.db import Fileset
+from plantimager.log import logger
+from plantimager.path import Path
+from plantimager.path import PathElement
+from plantimager.path import Pose
+from plantimager.units import deg
+from plantimager.units import length_mm
 
-logger = logging.getLogger("plantimager")
 
-class ScannerError(Exception):
-    pass
-
-class PathError(ScannerError):
-    pass
-
-class ChannelData():
+class ChannelData(object):
     def __init__(self, name: str, data: np.array, idx: int):
         self.data = data
         self.idx = idx
         self.name = name
 
     def format_id(self):
-        return "%05d_%s"%(self.idx, self.name)
+        return "%05d_%s" % (self.idx, self.name)
 
-class DataItem():
+
+class DataItem(object):
     def __init__(self, idx: int, metadata=None):
         self.channels = {}
         self.metadata = metadata
@@ -61,35 +61,41 @@ class DataItem():
     def channel(self, channel_name: str) -> ChannelData:
         return self.channels[channel_name]
 
+
 class AbstractCNC(metaclass=ABCMeta):
+    """Abstract CNC class."""
+
     def __init__(self):
         pass
 
-    @abstractmethod    
+    @abstractmethod
     def home(self) -> None:
         pass
 
-    @abstractmethod    
+    @abstractmethod
     def get_position(self) -> Tuple[length_mm, length_mm, length_mm]:
         pass
 
-    @abstractmethod    
+    @abstractmethod
     def moveto(self, x: length_mm, y: length_mm, z: length_mm) -> None:
         pass
 
-    @abstractmethod    
+    @abstractmethod
     def async_enabled(self):
         pass
 
-    @abstractmethod    
+    @abstractmethod
     def moveto_async(self, x: length_mm, y: length_mm, z: length_mm) -> None:
         pass
 
-    @abstractmethod    
+    @abstractmethod
     def wait(self) -> None:
         pass
 
+
 class AbstractGimbal(ABC):
+    """Abstract Gimbal class."""
+
     @abstractmethod
     def has_position_control(self) -> bool:
         pass
@@ -114,10 +120,26 @@ class AbstractGimbal(ABC):
     def wait(self) -> None:
         pass
 
-    
-class AbstractCamera():
+
+class AbstractCamera(ABC):
+    """Abstract Camera class."""
+
     @abstractmethod
-    def grab(self, idx: int, metadata: dict=None):
+    def grab(self, idx: int, metadata: dict = None):
+        """Grab data with an id and metadata.
+        
+        Parameters
+        ----------
+        idx : int
+            Id of the data `DataItem` to create.
+        metadata : dict, optional
+            Dictionary of metadata associated to the camera data.
+
+        Returns
+        -------
+        plantimager.hal.DataItem
+            The image data.
+        """
         pass
 
     @abstractmethod
@@ -126,43 +148,85 @@ class AbstractCamera():
 
 
 class AbstractScanner(metaclass=ABCMeta):
+    """Abstract Scanner class.
+
+    Attributes
+    ----------
+    scan_count : int
+        The incremental counter saving last id for grab method.
+    ext : str
+        Extension to use to write data from grab method.
+    """
+
     def __init__(self):
         self.scan_count = 0
         self.ext = 'jpg'
         super().__init__()
 
     @abstractmethod
-    def get_position(self) -> path.Pose:
+    def get_position(self) -> Pose:
+        """Get the current position of the scanner."""
         pass
 
     @abstractmethod
-    def set_position(self, pose: path.Pose) -> None:
+    def set_position(self, pose: Pose) -> None:
+        """Set the position of the scanner from a 5D Pose."""
         pass
 
     @abstractmethod
-    def grab(self, idx:int, metadata: dict) -> DataItem:
+    def grab(self, idx: int, metadata: dict) -> DataItem:
+        """Grab data with an id and metadata.
+
+        Parameters
+        ----------
+        idx : int
+            Id of the data `DataItem` to create.
+        metadata : dict, optional
+            Dictionary of metadata associated to the camera data.
+
+        Returns
+        -------
+        plantimager.hal.DataItem
+            The image data.
+
+        See Also
+        --------
+        plantimager.hal.AbstractCamera
+        """
         pass
 
     @abstractmethod
     def channels(self) -> List[str]:
+        """Channel names associated to data from `grab` method.
+
+        Returns
+        -------
+        List[str]
+            The image data.
+
+        See Also
+        --------
+        plantimager.hal.AbstractCamera
+        """
         pass
 
     def inc_count(self) -> int:
+        """Incremental counter used to return id for `grab` method. """
         x = self.scan_count
         self.scan_count += 1
         return x
 
-    def get_target_pose(self, x : path.PathElement) -> path.Pose:
+    def get_target_pose(self, x: PathElement) -> Pose:
         pos = self.get_position()
-        target_pose = path.Pose()
+        target_pose = Pose()
         for attr in pos.attributes():
             if getattr(x, attr) is None:
                 setattr(target_pose, attr, getattr(pos, attr))
             else:
                 setattr(target_pose, attr, getattr(x, attr))
-        return target_pose 
+        return target_pose
 
-    def scan(self, path: path.Path, fileset: Fileset) -> None:
+    def scan(self, path: Path, fileset: Fileset) -> None:
         for x in path:
             pose = self.get_target_pose(x)
             print(pose)
@@ -172,16 +236,15 @@ class AbstractScanner(metaclass=ABCMeta):
                 io.write_image(f, data_item.channels[c].data, ext=self.ext)
                 if data_item.metadata is not None:
                     f.set_metadata(data_item.metadata)
-                f.set_metadata("shot_id", "%06i"%data_item.idx) 
-                f.set_metadata("channel", c) 
-    
-    def scan_at(self, pose: path.Pose, exact_pose: bool=True, metadata: dict={}) -> DataItem:
-        logger.debug("scanning at")
-        logger.debug(pose)
+                f.set_metadata("shot_id", "%06i" % data_item.idx)
+                f.set_metadata("channel", c)
+
+    def scan_at(self, pose: Pose, exact_pose: bool = True, metadata: dict = {}) -> DataItem:
+        logger.debug(f"scanning at: {pose}")
         if exact_pose:
-            metadata = {**metadata, "pose": [pose.x,pose.y,pose.z,pose.pan,pose.tilt]}
+            metadata = {**metadata, "pose": [pose.x, pose.y, pose.z, pose.pan, pose.tilt]}
         else:
-            metadata = {**metadata, "approximate_pose": [pose.x,pose.y,pose.z,pose.pan,pose.tilt]}
-        logger.debug(metadata)
+            metadata = {**metadata, "approximate_pose": [pose.x, pose.y, pose.z, pose.pan, pose.tilt]}
+        logger.debug(f"with metadata: {metadata}")
         self.set_position(pose)
         return self.grab(self.inc_count(), metadata=metadata)

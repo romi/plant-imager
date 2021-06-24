@@ -26,31 +26,44 @@ import math
 from collections.abc import Iterable
 
 import numpy as np
-
+from plantimager.units import length_mm
+from plantimager.units import deg
 
 class Pose(object):
-    """Abstract representation of a 'camera pose' as its 5D coordinates. """
+    """Abstract representation of a 'camera pose' as its 5D coordinates.
+
+    Examples
+    --------
+    >>> from plantimager.path import Pose
+    >>> p = Pose(50, 250, 80, 270, 0)
+    >>> print(p)
+
+    """
 
     def __init__(self, x=None, y=None, z=None, pan=None, tilt=None):
-        """
+        """Pose constructor.
+
         Parameters
         ----------
-        x : plantimager.units.length_mm, optional
+        x : length_mm, optional
             Relative distance to the origin along the x-axis.
-        y : plantimager.units.length_mm, optional
+        y : length_mm, optional
             Relative distance to the origin along the y-axis.
-        z : plantimager.units.length_mm, optional
+        z : length_mm, optional
             Relative distance to the origin along the z-axis.
-        pan : plantimager.units.deg, optional
+        pan : deg, optional
             Relative rotation to the origin along the xy-plane.
-        tilt : plantimager.units.deg, optional
-            Relative rotation to the origin along the xy-plane.
+        tilt : deg, optional
+            Relative rotation to the origin orthogonal to the xy-plane.
         """
         self.x = x
         self.y = y
         self.z = z
         self.pan = pan
         self.tilt = tilt
+
+    def __repr__(self):
+        return ", ".join(f"{k}: {v}" for k, v in self.__dict__.items())
 
     def attributes(self):
         return ["x", "y", "z", "pan", "tilt"]
@@ -71,15 +84,15 @@ class PathElement(Pose):
         """
         Parameters
         ----------
-        x : plantimager.units.length_mm, optional
+        x : length_mm, optional
             Relative distance, in millimeters, to the origin along the x-axis.
-        y : plantimager.units.length_mm, optional
+        y : length_mm, optional
             Relative distance, in millimeters, to the origin along the y-axis.
-        z : plantimager.units.length_mm, optional
+        z : length_mm, optional
             Relative distance, in millimeters, to the origin along the z-axis.
-        pan : plantimager.units.deg, optional
+        pan : deg, optional
             Relative rotation, in degrees, to the origin along the xy-plane.
-        tilt : plantimager.units.deg, optional
+        tilt : deg, optional
             Relative rotation, in degrees, to the origin along the xy-plane.
         exact_pose : bool, optional
             If ``True``, the above parameter values are exact, else they are approximations.
@@ -89,11 +102,7 @@ class PathElement(Pose):
         self.exact_pose = exact_pose
 
     def __repr__(self):
-        res = []
-        for attr in self.attributes():
-            if getattr(self, attr) is not None:
-                res.append("%s = %.2f" % (attr, getattr(self, attr)))
-        return ", ".join(res)
+        return ", ".join(f"{k}: {v}" for k, v in self.__dict__.items())
 
 
 class Path(list):
@@ -119,6 +128,39 @@ class Path(list):
 
 
 def circle(center_x, center_y, radius, n_points):
+    """Create a 2D circle of N points with given center and radius.
+
+    Pan orientations are also computed to always face the center of the circle.
+
+    Parameters
+    ----------
+    center_x : length_mm
+        Relative position of the circle center along the X-axis.
+    center_y : length_mm
+        Relative position of the circle center along the Y-axis.
+    radius : length_mm
+        Radius of the circle to create.
+    n_points : int
+        Number of points used to create the circle.
+
+    Returns
+    -------
+    list of length_mm
+        Sequence of x positions.
+    list of length_mm
+        Sequence of y positions.
+    list of deg
+        Sequence of pan orientations.
+
+    Examples
+    --------
+    >>> from plantimager.path import circle
+    >>> circle(10, 10, 5, 3)
+    ([5.0, 12.5, 12.500000000000002],
+     [10.0, 5.669872981077806, 14.330127018922191],
+     [270.0, 29.999999999999986, 149.99999999999997])
+
+    """
     x, y, p = [], [], []
     for i in range(n_points):
         pan = 2 * i * math.pi / n_points
@@ -131,7 +173,7 @@ def circle(center_x, center_y, radius, n_points):
 
 
 class Circle(Path):
-    """Creates a circular path for the CNC.
+    """Creates a circular path for the scanner.
 
     Compute the `x`, `y` & `pan` ``PathElement`` values to create that circle.
 
@@ -155,7 +197,7 @@ class Circle(Path):
      x = 165.27, y = 396.96, z = 50.00, pan = 190.00, tilt = 0.00,
      x = 46.79, y = 328.56, z = 50.00, pan = 230.00, tilt = 0.00]
     >>> circular_path = Circle(200, 200, 50, (0, 10), 200, 9)
-    >>> circular_path[:4]
+    >>> circular_path[:4]  # print the first 4 position to show tilt change at given xyzp position
     [x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
      x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 10.00,
      x = 46.79, y = 71.44, z = 50.00, pan = 310.00, tilt = 0.00,
@@ -167,16 +209,16 @@ class Circle(Path):
         """
         Parameters
         ----------
-        center_x : plantimager.units.length_mm
+        center_x : length_mm
             X-axis position, in millimeters, of the circle's center, relative to the origin.
-        center_y : plantimager.units.length_mm
+        center_y : length_mm
             Y-axis position, in millimeters, of the circle's center, relative to the origin.
-        z : plantimager.units.length_mm
+        z : length_mm
             Height at which to make the circle.
-        tilt : plantimager.units.deg or list(plantimager.units.deg)
+        tilt : deg or list(deg)
             Camera tilt(s), in degrees, to use for this circle.
             If an iterable is given, performs more than one camera acquisition at same xyz position.
-        radius : plantimager.units.length_mm
+        radius : length_mm
             Radius, in millimeters, of the circular path to create.
         n_points : int
             Number of points (``PathElement``) used to generate the circular path.
@@ -193,7 +235,7 @@ class Circle(Path):
 
 
 class Cylinder(Path):
-    """Creates a z-axis aligned cylinder path for the CNC.
+    """Creates a z-axis aligned cylinder path for the scanner.
 
     Makes as much circular paths as `n_circles` within the given z range.
 
@@ -220,16 +262,16 @@ class Cylinder(Path):
         """
         Parameters
         ----------
-        center_x : plantimager.units.length_mm
+        center_x : length_mm
             X-axis position, in millimeters, of the circle's center, relative to the origin.
-        center_y : plantimager.units.length_mm
+        center_y : length_mm
             Y-axis position, in millimeters, of the circle's center, relative to the origin.
-        z_range : (plantimager.units.length_mm, plantimager.units.length_mm)
+        z_range : (length_mm, length_mm)
             Height range, in millimeters, at which to make the cylinder.
-        tilt : plantimager.units.deg or list(plantimager.units.deg)
+        tilt : deg or list of deg
             Camera tilt(s), in degrees, to use for this circle.
             If an iterable is given, performs more than one camera acquisition at same xyz position.
-        radius : plantimager.units.length_mm
+        radius : length_mm
             Radius of the circular path to create.
         n_points : int
             Number of points (``PathElement``) used to generate the circular path.
@@ -246,22 +288,28 @@ class Cylinder(Path):
             self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points))
 
 
-def line_1d(start, stop, n_points):
+def line1d(start, stop, n_points):
     """Create a 1D line of N points between start and stop position (included).
 
     Parameters
     ----------
-    start : plantimager.units.length_mm
+    start : length_mm
         Line starting position, in millimeters.
-    stop : plantimager.units.length_mm
+    stop : length_mm
         Line ending position, in millimeters.
     n_points : int
         Number of points used to create the line of points.
 
     Returns
     -------
-    list
+    list of length_mm
         Sequence of 1D positions.
+
+    Examples
+    --------
+    >>> from plantimager.path import line1d
+    >>> line1d(0,10,5)
+    [0.0, 2.5, 5.0, 7.5, 10.0]
 
     """
     return [(1 - i / (n_points - 1)) * start + (i / (n_points - 1)) * stop for i in range(n_points)]
@@ -272,37 +320,44 @@ def line3d(x_0, y_0, z_0, x_1, y_1, z_1, n_points):
 
     Parameters
     ----------
-    x_0 : plantimager.units.length_mm
+    x_0 : length_mm
         Line starting position, in millimeters, for the x-axis.
-    y_0 : plantimager.units.length_mm
+    y_0 : length_mm
         Line starting position, in millimeters, for the y-axis.
-    z_0 : plantimager.units.length_mm
+    z_0 : length_mm
         Line starting position, in millimeters, for the z-axis.
-    x_1 : plantimager.units.length_mm
+    x_1 : length_mm
         Line ending position, in millimeters, for the x-axis.
-    y_1 : plantimager.units.length_mm
+    y_1 : length_mm
         Line ending position, in millimeters, for the y-axis.
-    z_1 : plantimager.units.length_mm
+    z_1 : length_mm
         Line ending position, in millimeters, for the z-axis.
     n_points : int
         Number of points used to create the linear path.
 
     Returns
     -------
-    list
+    list of length_mm
         Sequence of x positions.
-    list
+    list of length_mm
         Sequence of y positions.
-    list
+    list of length_mm
         Sequence of z positions.
 
+    Examples
+    --------
+    >>> from plantimager.path import line3d
+    >>> line3d(0, 0, 0, 10, 10, 10, 5)
+    ([0.0, 2.5, 5.0, 7.5, 10.0],
+     [0.0, 2.5, 5.0, 7.5, 10.0],
+     [0.0, 2.5, 5.0, 7.5, 10.0])
+
     """
-    return line_1d(x_0, x_1, n_points), line_1d(y_0, y_1, n_points), line_1d(z_0, z_1, n_points)
+    return line1d(x_0, x_1, n_points), line1d(y_0, y_1, n_points), line1d(z_0, z_1, n_points)
 
 
 class Line(Path):
-    """
-    Creates a linear path for the CNC.
+    """Creates a linear path for the scanner.
 
     Examples
     --------
@@ -319,21 +374,21 @@ class Line(Path):
         """
         Parameters
         ----------
-        x_0 : plantimager.units.length_mm
+        x_0 : length_mm
             Line starting position, in millimeters for the x-axis.
-        y_0 : plantimager.units.length_mm
+        y_0 : length_mm
             Line starting position, in millimeters for the y-axis.
-        z_0 : plantimager.units.length_mm
+        z_0 : length_mm
             Line starting position, in millimeters for the z-axis.
-        x_1 : plantimager.units.length_mm
+        x_1 : length_mm
             Line ending position, in millimeters for the x-axis.
-        y_1 : plantimager.units.length_mm
+        y_1 : length_mm
             Line ending position, in millimeters for the y-axis.
-        z_1 : plantimager.units.length_mm
+        z_1 : length_mm
             Line ending position, in millimeters for the z-axis.
-        pan : plantimager.units.deg
+        pan : deg
             Camera pan value, in degrees, to use for the linear path.
-        tilt : plantimager.units.deg or list(plantimager.units.deg)
+        tilt : deg or list(deg)
             Camera tilt(s), in degrees, to use for this circle.
             If an iterable is given, performs more than one camera acquisition at same xyz position.
         n_points : int
@@ -355,8 +410,7 @@ class Line(Path):
 
 
 class CalibrationPath(Path):
-    """
-    Creates a calibration path for the CNC.
+    """Creates a calibration path for the scanner.
 
     This build two lines spanning the X & Y axes extent of the given path.
 
