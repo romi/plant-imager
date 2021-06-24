@@ -7,8 +7,7 @@ ARG GROUP_ID=1000
 
 ENV DB_LOCATION="/home/${USER_NAME}/db"
 ENV PATH=$PATH:"/home/${USER_NAME}}/.local/bin"
-ENV PATH="/opt/blender:${PATH}"
-ENV PATH="/opt/blender:${PATH}"
+
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nano && \
