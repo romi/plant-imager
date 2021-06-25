@@ -7,7 +7,7 @@ center_y = 375
 z = 0
 tilt = 0
 radius = 375
-n_points = 20
+n_points = 36
 
 [Scan.scanner.camera]
 module = "plantimager.urlcam"

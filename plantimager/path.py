@@ -479,5 +479,5 @@ class CalibrationPath(Path):
         x_max = path[np.argmax([pelt.x - el0.x for pelt in path])].x
         # y-axis line, from the first `ElementPath` xyz position to the most distant point from the origin along this y-axis
         y_max = path[np.argmax([pelt.y - el0.y for pelt in path])].y
-        self.extend(Line(el0.x, el0.y, el0.z, x_max, el0.y, el0.z, el0.pan, el0.tilt, n_points_line))
+        self.extend(Line(el0.x, el0.y, el0.z, x_max//2, el0.y, el0.z, el0.pan, el0.tilt, n_points_line))
         self.extend(Line(el0.x, el0.y, el0.z, el0.x, y_max, el0.z, el0.pan, el0.tilt, n_points_line))
