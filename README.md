@@ -49,6 +49,15 @@ To get usage information and options list, use `./run.sh -h` or from the `plant-
 ./docker/plantimager/run.sh -h
 ```
 
+#### Example: plant acquisitions
+To generate a new plant dataset, here named `test2`, we have to:
+- mount the local (host) database to the docker container with the `-db` option
+- provide the ROMI command to start a `Scan` task
+```shell
+./docker/plantimager/run.sh -db /home/remisans/romi_db/\
+  -c "romi_run_task Scan /home/remisans/db/test_2 --config /home/remisans/plant-imager/config/hardware_scan_rx0.toml"
+```
+
 ### Using the `virtualplantimager` docker image
 
 #### Build the `virtualplantimager` image
