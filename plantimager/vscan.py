@@ -183,6 +183,19 @@ class VirtualScanner(AbstractScanner):
             files = { "file" : open(file_path, "rb")}
             return self.request_post("upload_background", {}, files)
 
+    def scan(self, path: path.Path, fileset: Fileset, channels) -> None:
+        for x in path:
+            pose = self.get_target_pose(x)
+            print(pose)
+            data_item = self.scan_at(pose, x.exact_pose)
+            for c in channels:
+                f = fileset.create_file(data_item.channels[c].format_id())
+                io.write_image(f, data_item.channels[c].data, ext=self.ext)
+                if data_item.metadata is not None:
+                    f.set_metadata(data_item.metadata)
+                f.set_metadata("shot_id", "%06i"%data_item.idx)
+                f.set_metadata("channel", c)
+
     def request_get_bytes(self, endpoint: str) -> bytes:
         x = requests.get("http://%s:%s/%s"%(self.host, self.port, endpoint))
         if x.status_code != 200:

@@ -168,6 +168,30 @@ class VirtualScan(Scan):
         self.output().get().set_metadata("bounding_box", bb)
         return vscan
 
+    def run(self, path = None):
+        if path is None:
+            path = self.get_path()
+
+        scanner = self.load_scanner()
+        metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
+
+        output_fileset = self.output().get()
+        all_channels = scanner.channels()
+
+        rgb_channel = ['rgb']
+        other_channels = [x for x in all_channels if x!='rgb']
+
+        scanner.scan(path, output_fileset, rgb_channel)
+        output_fileset.set_metadata(metadata)
+        output_fileset.set_metadata("channels", rgb_channel)
+
+        if self.render_ground_truth:
+        # Create an other target fileset to put in ground truth images (Segmentation2DGroundTruth)
+            seg2dgt_ft = FilesetTarget(DatabaseConfig().scan, "Segmentation2DGroundTruth").create()
+            scanner.scan(path, seg2dgt_ft, other_channels)
+            seg2dgt_ft.set_metadata(metadata)
+            seg2dgt_ft.set_metadata("channels", other_channels)
+
 
 class CalibrationScan(RomiTask):
     """ A task for running a scan, real or virtual, with a calibration path.
