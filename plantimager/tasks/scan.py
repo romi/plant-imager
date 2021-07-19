@@ -181,14 +181,15 @@ class VirtualScan(Scan):
         rgb_channel = ['rgb']
         other_channels = [x for x in all_channels if x!='rgb']
 
-        scanner.scan(path, output_fileset, rgb_channel)
+        if self.render_ground_truth: # Create an other target fileset to put in ground truth images (Segmentation2DGroundTruth)
+            seg2dgt_ft = FilesetTarget(DatabaseConfig().scan, "Segmentation2DGroundTruth").create()
+
+        scanner.scan(path, output_fileset, seg2dgt_ft)
+
         output_fileset.set_metadata(metadata)
         output_fileset.set_metadata("channels", rgb_channel)
 
-        if self.render_ground_truth:
-        # Create an other target fileset to put in ground truth images (Segmentation2DGroundTruth)
-            seg2dgt_ft = FilesetTarget(DatabaseConfig().scan, "Segmentation2DGroundTruth").create()
-            scanner.scan(path, seg2dgt_ft, other_channels)
+        if self.render_ground_truth: # Set metadata for other channels
             seg2dgt_ft.set_metadata(metadata)
             seg2dgt_ft.set_metadata("channels", other_channels)
 
