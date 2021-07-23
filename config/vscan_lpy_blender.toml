@@ -19,7 +19,7 @@ class_name = "Circle"
 [VirtualScan]
 obj_fileset = "VirtualPlant"
 use_palette = true
-use_hdri = true
+use_hdri = false
 load_scene = false
 scene_file_id = "pot"
 render_ground_truth = true
