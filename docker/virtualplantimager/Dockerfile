@@ -10,7 +10,7 @@ ENV PATH=$PATH:"/home/${USER_NAME}}/.local/bin"
 ENV PATH="/opt/blender:${PATH}"
 ENV PATH="/opt/blender:${PATH}"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get --allow-releaseinfo-change-suite update && apt-get install -y --no-install-recommends \
     libgl1-mesa-dev \
     libxi6 \
     libc++-dev \
@@ -44,9 +44,8 @@ WORKDIR /home/${USER_NAME}
 # Create the appropriate conda python environment
 RUN conda create -n lpyEnv python=3.7
 
-RUN conda install -n lpyEnv -c conda-forge flask imageio toml luigi boost=1.70.0 qhull=2015.2
-RUN conda install -n lpyEnv -c conda-forge -c fredboudon openalea.lpy
-RUN conda install -n lpyEnv -c open3d-admin open3d=0.10
+RUN conda install -n lpyEnv -c conda-forge flask imageio toml luigi
+RUN conda install -n lpyEnv -c fredboudon -c conda-forge openalea.lpy
 
 # Copy python libraries to the python's blender site-packages
 USER root
