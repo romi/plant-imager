@@ -9,8 +9,10 @@ def load_obj(fname):
     bpy.ops.object.select_all( action = 'SELECT' )
     bpy.data.objects['Cube']
     bpy.ops.object.delete()
-   
-    bpy.ops.import_scene.obj(filepath=fname)
+
+    # Import obj file and make sure it is not splitted by groups or by objects in order to perform
+    # further a split by materials
+    bpy.ops.import_scene.obj(filepath=fname, use_split_objects=False, use_split_groups=False)
     o = bpy.data.objects[list(bpy.data.objects.keys())[0]]
     bpy.context.view_layer.objects.active = o
 
