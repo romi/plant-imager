@@ -1,0 +1,83 @@
+[CalibrationScan]
+n_points_line = 10
+
+[ScanPath]
+class_name = "Circle"
+
+[retcode]
+already_running = 10
+missing_data = 20
+not_run = 25
+task_failed = 30
+scheduling_error = 35
+unhandled_exception = 40
+
+[ScanPath.kwargs]
+center_x = 300
+center_y = 300
+z = 0
+tilt = 0
+radius = 150
+n_points = 20
+
+[Scan.scanner.camera]
+#module = "plantimager.sony" #do not change. Works with Rx0 camera
+module = "plantimager.picam" 
+
+[Scan.scanner.gimbal]
+#module = "plantimager.blgimbal"
+module = "plantimager.oquamGimbal"
+
+[Scan.scanner.cnc]
+#module = "plantimager.grbl"
+module = "plantimager.oquamCNC"
+
+[Scan.metadata.object]
+species = "none"
+seed_stock = "none"
+plant_id = "test"
+growth_environment = "none"
+growth_conditions = "None"
+treatment = "none"
+DAG = 0
+sample = "test_sample"
+experiment_id = "None"
+dataset_id = "test"
+
+[Scan.metadata.hardware]
+frame = "30profile v1"
+X_motor = "X-Carve NEMA23"
+Y_motor = "X-Carve NEMA23"
+Z_motor = "X-Carve NEMA23"
+pan_motor = "NEMA23"
+tilt_motor = "None"
+sensor = "Raspberry Pi HQ"
+
+[Scan.metadata.workspace]
+x = [ 200, 600,]
+y = [ 200, 600,]
+z = [ -100, 300,]
+
+[Scan.scanner.camera.kwargs]
+#device_ip = "192.168.122.1"
+#api_port = "10000"
+#postview = true
+#use_flashair = false
+#rotation = 270
+topic = "bottom-camera"
+registry = "10.42.0.1"
+
+[Scan.scanner.gimbal.kwargs]
+#port = "/dev/ttyACM1"
+#has_tilt = false
+#zero_pan = 0
+#invert_rotation = true
+registry = "10.42.0.1"
+speed = 0.4
+
+[Scan.scanner.cnc.kwargs]
+#port = "/dev/ttyACM0"
+#baud_rate = 115200
+#homing = true
+registry = "10.42.0.1"
+speed = 0.4
