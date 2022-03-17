@@ -3,7 +3,9 @@
 This version aim to make work together the Plant Imager Software and [romi-rover-buid-and-test](https://github.com/romi/romi-rover-build-and-test)
 
 > :warning: This a test version
-> :warning: THis branch only work with the branch **NAME OF THE BRANCH** of romi-rover-buid-and-test
+
+> :warning: This branch only work with the branch **NAME OF THE BRANCH** of romi-rover-buid-and-test
+
 > :warning: For now only **ONE** pi camera can be used to make a scan
 
 ## Run an acquisition
