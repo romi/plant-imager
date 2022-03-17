@@ -6,3 +6,5 @@
 ./examples/*.zip
 *~
 /doc/build/
+./eggs
+./idea
