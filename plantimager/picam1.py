@@ -6,7 +6,7 @@ from romi.remote_device import RomiCamera
 
 import numpy as np
 
-class Camera(hal.AbstractCamera):
+class Camera1(hal.AbstractCamera):
     def __init__(self, topic, registry="10.42.0.1"):
         self.topic = topic
         self.registry = registry
@@ -14,15 +14,15 @@ class Camera(hal.AbstractCamera):
 
     def start(self):
         self.romi_cam = RomiCamera(self.topic, self.registry)
-        print("picam start")
+        print("picam1 start")
 
     def channels(self):
-        return ["rgb"]
+        return ["rgb1"]
 
     def grab(self, idx: int, metadata: dict=None):
         data_item = hal.DataItem(idx, metadata)
         data = self.romi_cam.grab_img()
         data = np.array(data)
         data_item.add_channel(self.channels()[0], data)
-        print("picam grab")
+        print("picam1 grab")
         return data_item 

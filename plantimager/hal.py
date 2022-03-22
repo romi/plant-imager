@@ -230,14 +230,26 @@ class AbstractScanner(metaclass=ABCMeta):
         for x in path:
             pose = self.get_target_pose(x)
             print(pose)
-            data_item = self.scan_at(pose, x.exact_pose)
-            for c in self.channels():
-                f = fileset.create_file(data_item.channels[c].format_id())
-                io.write_image(f, data_item.channels[c].data, ext=self.ext)
-                if data_item.metadata is not None:
-                    f.set_metadata(data_item.metadata)
-                f.set_metadata("shot_id", "%06i" % data_item.idx)
-                f.set_metadata("channel", c)
+
+            data_item1, data_item2 = self.scan_at(pose, x.exact_pose)
+            ch1, ch2 = self.channels()
+
+            for c1 in ch1:
+                f1 = fileset.create_file(data_item1.channels[c1].format_id())
+                io.write_image(f1, data_item1.channels[c1].data, ext=self.ext)
+                if data_item1.metadata is not None:
+                    f1.set_metadata(data_item1.metadata)
+                f1.set_metadata("shot_id", "%06i" % data_item1.idx)
+                f1.set_metadata("channel", c1)
+
+            for c2 in ch2:
+                f2 = fileset.create_file(data_item2.channels[c2].format_id())
+                io.write_image(f2, data_item2.channels[c2].data, ext=self.ext)
+                if data_item2.metadata is not None:
+                    f2.set_metadata(data_item2.metadata)
+                f2.set_metadata("shot_id", "%06i" % data_item2.idx)
+                f2.set_metadata("channel", c2)
+
 
     def scan_at(self, pose: Pose, exact_pose: bool = True, metadata: dict = {}) -> DataItem:
         logger.debug(f"scanning at: {pose}")

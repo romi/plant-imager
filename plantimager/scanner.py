@@ -48,7 +48,7 @@ class Scanner(AbstractScanner):
 
     """
 
-    def __init__(self, cnc, gimbal, camera, waiting_time=1.):
+    def __init__(self, cnc, gimbal, camera1, camera2, waiting_time=1.):
         """Scanner constructor.
 
         Parameters
@@ -65,7 +65,8 @@ class Scanner(AbstractScanner):
         super().__init__()
         self.cnc = cnc
         self.gimbal = gimbal
-        self.camera = camera
+        self.camera1 = camera1
+        self.camera2 = camera2
         self.waiting_time = waiting_time  # time to wait for stabilization after setting position
 
     def get_position(self) -> Pose:
@@ -109,7 +110,7 @@ class Scanner(AbstractScanner):
         plantimager.hal.AbstractCamera
         plantimager.hal.AbstractScanner
         """
-        return self.camera.grab(idx, metadata)
+        return self.camera1.grab(idx, metadata), self.camera2.grab(idx, metadata)
 
     def channels(self) -> List[str]:
         """Channel names associated to grabbed data with the grab method.
@@ -123,4 +124,4 @@ class Scanner(AbstractScanner):
         --------
         plantimager.hal.AbstractCamera
         """
-        return self.camera.channels()
+        return self.camera1.channels(), self.camera2.channels()

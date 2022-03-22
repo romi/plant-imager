@@ -20,9 +20,13 @@ tilt = 0
 radius = 150
 n_points = 20
 
-[Scan.scanner.camera]
+[Scan.scanner.camera1]
 #module = "plantimager.sony" #do not change. Works with Rx0 camera
-module = "plantimager.picam" 
+module = "plantimager.picam1" 
+
+[Scan.scanner.camera2]
+#module = "plantimager.sony" #do not change. Works with Rx0 camera
+module = "plantimager.picam2" 
 
 [Scan.scanner.gimbal]
 #module = "plantimager.blgimbal"
@@ -58,13 +62,22 @@ x = [ 200, 600,]
 y = [ 200, 600,]
 z = [ -100, 300,]
 
-[Scan.scanner.camera.kwargs]
+[Scan.scanner.camera1.kwargs]
 #device_ip = "192.168.122.1"
 #api_port = "10000"
 #postview = true
 #use_flashair = false
 #rotation = 270
 topic = "bottom-camera"
+registry = "10.42.0.1"
+
+[Scan.scanner.camera2.kwargs]
+#device_ip = "192.168.122.1"
+#api_port = "10000"
+#postview = true
+#use_flashair = false
+#rotation = 270
+topic = "top-camera"
 registry = "10.42.0.1"
 
 [Scan.scanner.gimbal.kwargs]

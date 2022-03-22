@@ -109,11 +109,16 @@ class Scan(RomiTask):
         gimbal_module = importlib.import_module(gimbal_module)
         gimbal = getattr(gimbal_module, "Gimbal")(**gimbal_kwargs)
 
-        camera_module = scanner_config["camera"]["module"]
-        camera_kwargs = scanner_config["camera"]["kwargs"]
-        camera_module = importlib.import_module(camera_module)
-        camera = getattr(camera_module, "Camera")(**camera_kwargs)
-        return Scanner(cnc, gimbal, camera)
+        camera1_module = scanner_config["camera1"]["module"]
+        camera1_kwargs = scanner_config["camera1"]["kwargs"]
+        camera1_module = importlib.import_module(camera1_module)
+        camera1 = getattr(camera1_module, "Camera1")(**camera1_kwargs)
+
+        camera2_module = scanner_config["camera2"]["module"]
+        camera2_kwargs = scanner_config["camera2"]["kwargs"]
+        camera2_module = importlib.import_module(camera2_module)
+        camera2 = getattr(camera2_module, "Camera2")(**camera2_kwargs)
+        return Scanner(cnc, gimbal, camera1, camera2)
 
     def run(self, path=None):
         if path is None:
