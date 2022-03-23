@@ -17,14 +17,14 @@ This version aim to make work together the Plant Imager Software and [romi-rover
 ```shell
 conda activate env-name
 cd ~romi-rover-build-and-test/
-./build/bin/rcdiscover /tests-hardware/20-plant-imager/config.json #This will detect the port where the CNC is pluged but you still need to pass the port in the TOML for romi task
+./build/bin/rcdiscover tests-hardware/20-plant-imager/config.json #This will detect the port where the CNC is pluged but you still need to pass the port in the TOML for romi task
 ./build/bin/rcom-registry #wait for a moment you should see the camera register here
 ```
 - In an other terminal:
 ```shell
 conda activate env-name
 cd ~romi-rover-build-and-test/
-./build/bin/oquam --config /tests-hardware/20-plant-imager/config.json
+./build/bin/oquam --config tests-hardware/20-plant-imager/config.json
 ```
 - In an other terminal:
 ```shell
@@ -33,7 +33,7 @@ cd ~romi-rover-build-and-test/
 firefox applications/romi-monitor/camera.html & #check the camera topic name and the registry IP
 cd ~plant-imager/
 python3 /preview/preview.py --registry IP-of-the-registry
-romi_run_task --config /config/hardware_scan_v3.toml Scan ~/romi_db/dir-name/
+romi_run_task --config config/hardware_scan_v3.toml Scan ~/romi_db/dir-name/
 ```
 
 # -Virtual- Plant Imager
