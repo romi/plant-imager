@@ -26,8 +26,7 @@ import math
 from collections.abc import Iterable
 
 import numpy as np
-from plantimager.units import length_mm
-from plantimager.units import deg
+
 
 class Pose(object):
     """Abstract representation of a 'camera pose' as its 5D coordinates.
@@ -37,6 +36,7 @@ class Pose(object):
     >>> from plantimager.path import Pose
     >>> p = Pose(50, 250, 80, 270, 0)
     >>> print(p)
+    x: 50, y: 250, z: 80, pan: 270, tilt: 0
 
     """
 
@@ -72,11 +72,16 @@ class Pose(object):
 class PathElement(Pose):
     """Singleton for a `Path` class.
 
+    See Also
+    --------
+    plantimager.path.Pose
+
     Examples
     --------
     >>> from plantimager.path import PathElement
     >>> elt = PathElement(50, 250, 80, 270, 0, True)
     >>> print(elt)
+    x: 50, y: 250, z: 80, pan: 270, tilt: 0, exact_pose: True
 
     """
 
@@ -106,22 +111,7 @@ class PathElement(Pose):
 
 
 class Path(list):
-    """A path is a list of ``PathElement`` instances.
-
-    Examples
-    --------
-    >>> from plantimager.path import PathElement
-    >>> elt = PathElement(0, 0, 0, 0, 0, True)
-    >>> from plantimager.path import Path
-    >>> p = Path()
-    >>> type(p)
-    >>> p.append(elt)
-    >>> p2 = Path()
-    >>> p2.append(elt)
-    >>> p == p2
-    >>> p != p2
-
-    """
+    """A path is an abstract class that should be a list of ``PathElement`` instances."""
 
     def __init__(self):
         super().__init__()
@@ -155,10 +145,13 @@ def circle(center_x, center_y, radius, n_points):
     Examples
     --------
     >>> from plantimager.path import circle
-    >>> circle(10, 10, 5, 3)
-    ([5.0, 12.5, 12.500000000000002],
-     [10.0, 5.669872981077806, 14.330127018922191],
-     [270.0, 29.999999999999986, 149.99999999999997])
+    >>> x, y, p = circle(0, 0, 5, 5)
+    >>> list(zip(x, y, p))  # to get set of 2D coordinates (x, y) and associated pan.
+    [(-5.0, 0.0, 270.0),
+     (-1.5450849718747373, -4.755282581475767, 342.0),
+     (4.045084971874736, -2.9389262614623664, 54.0),
+     (4.045084971874738, 2.938926261462365, 126.0),
+     (-1.5450849718747361, 4.755282581475768, 198.0)]
 
     """
     x, y, p = [], [], []
@@ -182,26 +175,30 @@ class Circle(Path):
     The `pan` is computed to always face the center of the circle.
     If an iterable is given for `tilt`, performs more than one camera acquisition at same xyz position.
 
+    See Also
+    --------
+    plantimager.path.circle
+
     Examples
     --------
     >>> from plantimager.path import Circle
     >>> circular_path = Circle(200, 200, 50, 0, 200, 9)
     >>> circular_path
-    [x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 46.79, y = 71.44, z = 50.00, pan = 310.00, tilt = 0.00,
-     x = 165.27, y = 3.04, z = 50.00, pan = 350.00, tilt = 0.00,
-     x = 300.00, y = 26.79, z = 50.00, pan = 30.00, tilt = 0.00,
-     x = 387.94, y = 131.60, z = 50.00, pan = 70.00, tilt = 0.00,
-     x = 387.94, y = 268.40, z = 50.00, pan = 110.00, tilt = 0.00,
-     x = 300.00, y = 373.21, z = 50.00, pan = 150.00, tilt = 0.00,
-     x = 165.27, y = 396.96, z = 50.00, pan = 190.00, tilt = 0.00,
-     x = 46.79, y = 328.56, z = 50.00, pan = 230.00, tilt = 0.00]
-    >>> circular_path = Circle(200, 200, 50, (0, 10), 200, 9)
-    >>> circular_path[:4]  # print the first 4 position to show tilt change at given xyzp position
-    [x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 10.00,
-     x = 46.79, y = 71.44, z = 50.00, pan = 310.00, tilt = 0.00,
-     x = 46.79, y = 71.44, z = 50.00, pan = 310.00, tilt = 10.00]
+    [x: 0.0, y: 200.0, z: 50, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 46.791111376204384, y: 71.44247806269215, z: 50, pan: 310.0, tilt: 0, exact_pose: False,
+     x: 165.27036446661393, y: 3.038449397558395, z: 50, pan: 350.0, tilt: 0, exact_pose: False,
+     x: 299.99999999999994, y: 26.794919243112247, z: 50, pan: 29.999999999999986, tilt: 0, exact_pose: False,
+     x: 387.93852415718163, y: 131.59597133486622, z: 50, pan: 70.0, tilt: 0, exact_pose: False,
+     x: 387.9385241571817, y: 268.40402866513375, z: 50, pan: 110.0, tilt: 0, exact_pose: False,
+     x: 300.0000000000001, y: 373.2050807568877, z: 50, pan: 149.99999999999997, tilt: 0, exact_pose: False,
+     x: 165.270364466614, y: 396.96155060244166, z: 50, pan: 190.0, tilt: 0, exact_pose: False,
+     x: 46.79111137620444, y: 328.5575219373079, z: 50, pan: 230.0, tilt: 0, exact_pose: False]
+    >>> circular_path = Circle(200, 200, 50, (0, 10), 200, 2)
+    >>> circular_path
+    [x: 0.0, y: 200.0, z: 50, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 0.0, y: 200.0, z: 50, pan: 270.0, tilt: 10, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 50, pan: 90.0, tilt: 0, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 50, pan: 90.0, tilt: 10, exact_pose: False]
 
     """
 
@@ -244,17 +241,27 @@ class Cylinder(Path):
     The `pan` is computed to always face the center of the circle.
     If an iterable is given for `tilt`, performs more than one camera acquisition at same xyz position.
 
+    See Also
+    --------
+    plantimager.path.circle
+
     Examples
     --------
     >>> from plantimager.path import Cylinder
-    >>> n_points = 9
-    >>> cylinder_path = Cylinder(200, 200, (0, 50), 0, 200, n_points, 2)
-    >>> cylinder_path[:2]
-    [x = 0.00, y = 200.00, z = 0.00, pan = 270.00, tilt = 0.00,
-     x = 46.79, y = 71.44, z = 0.00, pan = 310.00, tilt = 0.00]
-    >>> cylinder_path[n_points:2+n_points]
-    [x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 46.79, y = 71.44, z = 50.00, pan = 310.00, tilt = 0.00]
+    >>> cylinder_path = Cylinder(200, 200, (0, 50), 0, 200, n_points=2, n_circles=2)
+    >>> cylinder_path
+    [x: 0.0, y: 200.0, z: 0, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 0, pan: 90.0, tilt: 0, exact_pose: False,
+     x: 0.0, y: 200.0, z: 50, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 50, pan: 90.0, tilt: 0, exact_pose: False]
+    >>> cylinder_path = Cylinder(200, 200, (0, 50), 0, 200, n_points=2, n_circles=3)
+    >>> cylinder_path
+    [x: 0.0, y: 200.0, z: 0.0, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 0.0, pan: 90.0, tilt: 0, exact_pose: False,
+     x: 0.0, y: 200.0, z: 25.0, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 25.0, pan: 90.0, tilt: 0, exact_pose: False,
+     x: 0.0, y: 200.0, z: 50.0, pan: 270.0, tilt: 0, exact_pose: False,
+     x: 400.0, y: 199.99999999999997, z: 50.0, pan: 90.0, tilt: 0, exact_pose: False]
 
     """
 
@@ -277,14 +284,22 @@ class Cylinder(Path):
             Number of points (``PathElement``) used to generate the circular path.
         n_circles : int, optional
             Number of circular path to make within the cylinder, minimum value is 2.
+
+        Raises
+        ------
+        ValueError
+            If the number of circles `n_circles` is not superior or equal to `2`.
+
         """
         super().__init__()
+
         try:
             assert n_circles >= 2
         except AssertionError:
             raise ValueError("You need a minimum of two circles to make a cylinder!")
+
         min_z, max_z = z_range
-        for z_circle in range(min_z, max_z + 1, int((max_z - min_z) / (n_circles - 1))):
+        for z_circle in np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles-1)):
             self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points))
 
 
@@ -308,29 +323,29 @@ def line1d(start, stop, n_points):
     Examples
     --------
     >>> from plantimager.path import line1d
-    >>> line1d(0,10,5)
+    >>> line1d(0, 10, n_points=5)
     [0.0, 2.5, 5.0, 7.5, 10.0]
 
     """
     return [(1 - i / (n_points - 1)) * start + (i / (n_points - 1)) * stop for i in range(n_points)]
 
 
-def line3d(x_0, y_0, z_0, x_1, y_1, z_1, n_points):
+def line3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points):
     """Create a 3D line of N points between start and stop position (included).
 
     Parameters
     ----------
-    x_0 : length_mm
+    x_start : length_mm
         Line starting position, in millimeters, for the x-axis.
-    y_0 : length_mm
+    y_start : length_mm
         Line starting position, in millimeters, for the y-axis.
-    z_0 : length_mm
+    z_start : length_mm
         Line starting position, in millimeters, for the z-axis.
-    x_1 : length_mm
+    x_stop : length_mm
         Line ending position, in millimeters, for the x-axis.
-    y_1 : length_mm
+    y_stop : length_mm
         Line ending position, in millimeters, for the y-axis.
-    z_1 : length_mm
+    z_stop : length_mm
         Line ending position, in millimeters, for the z-axis.
     n_points : int
         Number of points used to create the linear path.
@@ -347,44 +362,47 @@ def line3d(x_0, y_0, z_0, x_1, y_1, z_1, n_points):
     Examples
     --------
     >>> from plantimager.path import line3d
-    >>> line3d(0, 0, 0, 10, 10, 10, 5)
+    >>> line3d(0, 0, 0, 10, 10, 10, n_points=5)
     ([0.0, 2.5, 5.0, 7.5, 10.0],
      [0.0, 2.5, 5.0, 7.5, 10.0],
      [0.0, 2.5, 5.0, 7.5, 10.0])
 
     """
-    return line1d(x_0, x_1, n_points), line1d(y_0, y_1, n_points), line1d(z_0, z_1, n_points)
+    return line1d(x_start, x_stop, n_points), line1d(y_start, y_stop, n_points), line1d(z_start, z_stop, n_points)
 
 
 class Line(Path):
     """Creates a linear path for the scanner.
 
+    See Also
+    --------
+    plantimager.path.line3d
+
     Examples
     --------
     >>> from plantimager.path import Line
-    >>> n_points = 2
-    >>> linear_path = Line(0, 0, 0, 10, 10, 0, 180, 0, n_points)
+    >>> linear_path = Line(0, 0, 0, 10, 10, 0, 180, 0, n_points=2)
     >>> linear_path
-    [x = 0.00, y = 0.00, z = 0.00, pan = 180.00, tilt = 0.00,
-     x = 10.00, y = 10.00, z = 0.00, pan = 180.00, tilt = 0.00]
+    [x: 0.0, y: 0.0, z: 0.0, pan: 180, tilt: 0, exact_pose: True,
+     x: 10.0, y: 10.0, z: 0.0, pan: 180, tilt: 0, exact_pose: True]
 
     """
 
-    def __init__(self, x_0, y_0, z_0, x_1, y_1, z_1, pan, tilt, n_points):
+    def __init__(self, x_start, y_start, z_start, x_stop, y_stop, z_stop, pan, tilt, n_points):
         """
         Parameters
         ----------
-        x_0 : length_mm
+        x_start : length_mm
             Line starting position, in millimeters for the x-axis.
-        y_0 : length_mm
+        y_start : length_mm
             Line starting position, in millimeters for the y-axis.
-        z_0 : length_mm
+        z_start : length_mm
             Line starting position, in millimeters for the z-axis.
-        x_1 : length_mm
+        x_stop : length_mm
             Line ending position, in millimeters for the x-axis.
-        y_1 : length_mm
+        y_stop : length_mm
             Line ending position, in millimeters for the y-axis.
-        z_1 : length_mm
+        z_stop : length_mm
             Line ending position, in millimeters for the z-axis.
         pan : deg
             Camera pan value, in degrees, to use for the linear path.
@@ -403,7 +421,7 @@ class Line(Path):
         if not isinstance(tilt, Iterable):
             tilt = [tilt]
 
-        x, y, z = line3d(x_0, y_0, z_0, x_1, y_1, z_1, n_points)
+        x, y, z = line3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points)
         for i in range(n_points):
             for t in tilt:
                 self.append(PathElement(x[i], y[i], z[i], pan, t, exact_pose=True))
@@ -427,7 +445,7 @@ class CalibrationPath(Path):
 
     See Also
     --------
-    romiscan.tasks.colmap.use_calibrated_poses
+    plant3dvision.tasks.colmap.use_calibrated_poses
 
     Examples
     --------
@@ -479,5 +497,5 @@ class CalibrationPath(Path):
         x_max = path[np.argmax([pelt.x - el0.x for pelt in path])].x
         # y-axis line, from the first `ElementPath` xyz position to the most distant point from the origin along this y-axis
         y_max = path[np.argmax([pelt.y - el0.y for pelt in path])].y
-        self.extend(Line(el0.x, el0.y, el0.z, x_max//2, el0.y, el0.z, el0.pan, el0.tilt, n_points_line))
+        self.extend(Line(el0.x, el0.y, el0.z, x_max // 2, el0.y, el0.z, el0.pan, el0.tilt, n_points_line))
         self.extend(Line(el0.x, el0.y, el0.z, el0.x, y_max, el0.z, el0.pan, el0.tilt, n_points_line))
