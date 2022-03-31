@@ -4,7 +4,7 @@ This version aim to make work together the Plant Imager Software and [romi-rover
 
 > :warning: This a test version
 
-> :warning: This branch only work with the branch **[ci_dev]**(https://github.com/romi/romi-rover-build-and-test) of romi-rover-buid-and-test and the branch **[encoder_z]**(https://github.com/romi/libromi/tree/encoder_z) of libromi 
+> :warning: This branch only work with the branch **[ci_dev](https://github.com/romi/romi-rover-build-and-test)** of romi-rover-buid-and-test and the branch **[encoder_z](https://github.com/romi/libromi/tree/encoder_z)** of libromi 
 
 > :warning: This branch only work with **ONE pi camera**
 
