@@ -20,9 +20,9 @@ cd ~romi-rover-build-and-test/
 ./build/bin/rcdiscover tests-hardware/20-plant-imager/config.json
 ./build/bin/rcom-registry
 ```
-rcdicover : detect the USB port where the CNC is pluged and write it to Oquam configuration file but you still need to pass the port name in the TOML for romi run task
-rcom-registry : start [rcom](https://github.com/romi/rcom) maintainer of the list of all the rcom end-points, inluding their type, topic, and address.
-The IP of the registry is visible in the terminal print, it's needed for the toml file and camera live feed
+rcdicover : detect the USB port where the CNC is pluged and write it to Oquam configuration file but you still need to pass the port name in the TOML for romi run task \
+rcom-registry : start [rcom](https://github.com/romi/rcom) maintainer of the list of all the rcom end-points, inluding their type, topic, and address. \
+The IP of the registry is visible in the terminal print, it's needed for the toml file and camera live feed \
 Wait for a moment you should see the camera register here, with its topic name
 
 - In an other terminal:
@@ -42,7 +42,7 @@ cd ~plant-imager/
 python3 /preview/preview.py --registry IP-of-the-registry
 romi_run_task --config config/hardware_scan_v3.toml Scan ~/romi_db/dir-name/
 ```
-camera.html : Live feed of camera, the camera topic name and the registry IP need to be changed in the file
+camera.html : Live feed of camera, the camera topic name and the registry IP need to be changed in the file \
 preview.py : give you the possibility to move the camera and see if the camera is well positioned before starting a scan. Size, center of the circle and number of point need to be put in the file
 
 # -Virtual- Plant Imager
