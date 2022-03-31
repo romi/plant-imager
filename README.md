@@ -4,35 +4,47 @@ This version aim to make work together the Plant Imager Software and [romi-rover
 
 > :warning: This a test version
 
-> :warning: This branch only work with the branch **NAME-OF-THE-BRANCH** of romi-rover-buid-and-test
+> :warning: This branch only work with the branch **[ci_dev](https://github.com/romi/romi-rover-build-and-test)** of romi-rover-buid-and-test and the branch **[encoder_z](https://github.com/romi/libromi/tree/encoder_z)** of libromi 
+
+> :warning: This branch work with **two pi camera**
 
 ## Run an acquisition
 
-- Start the wifi hotspot on your computer witch the pi cam is configured for 
-- Power on the x-carve (it's should also power the pi camera)
-- Plug the usb of the x-care to your computer
+- Start the wifi hotspot on your computer that the pi cam are configured for
+- Power the x-carve (it's should also power the pi camera)
+- Plug the usb of the x-care on your computer
 - In a terminal:
 ```shell
 conda activate env-name
 cd ~romi-rover-build-and-test/
-./build/bin/rcdiscover tests-hardware/20-plant-imager/config.json #This will detect the port where the CNC is pluged but you still need to pass the port in the TOML for romi task
-./build/bin/rcom-registry #wait for a moment you should see the camera register here
+./build/bin/rcdiscover tests-hardware/20-plant-imager/config.json
+./build/bin/rcom-registry
 ```
+rcdicover : detect the USB port where the CNC is pluged and write it to Oquam configuration file but you still need to pass the port name in the TOML for romi run task
+rcom-registry : start [rcom](https://github.com/romi/rcom) maintainer of the list of all the rcom end-points, inluding their type, topic, and address.
+The IP of the registry is visible in the terminal print, it's needed for the toml file and camera live feed
+Wait for a moment you should see the camera register here, with its topic name
+
 - In an other terminal:
 ```shell
 conda activate env-name
 cd ~romi-rover-build-and-test/
 ./build/bin/oquam --config tests-hardware/20-plant-imager/config.json
 ```
+Oquam : application to control the CNC and to convert a polygone path given by the user into a smooth, continuous path.
+
 - In an other terminal:
 ```shell
 conda activate env-name
 cd ~romi-rover-build-and-test/
-firefox applications/romi-monitor/camera.html & #check the camera topic name and the registry IP
+firefox applications/romi-monitor/camera1.html &
+firefox applications/romi-monitor/camera2.html &
 cd ~plant-imager/
 python3 /preview/preview.py --registry IP-of-the-registry
 romi_run_task --config config/hardware_scan_v3.toml Scan ~/romi_db/dir-name/
 ```
+camera.html : Live feed of camera, the camera topic name and the registry IP need to be changed in the file (You must first create the second file)
+preview.py : give you the possibility to move the camera and see if the camera is well positioned before starting a scan. Size, center of the circle and number of point need to be put in the file
 
 # -Virtual- Plant Imager
 
