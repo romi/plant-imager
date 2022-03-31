@@ -15,8 +15,8 @@ unhandled_exception = 40
 [ScanPath.kwargs]
 center_x = 300
 center_y = 300
-z = 0
-tilt = 0
+z = 200 #Height of the camera read on the ruler on the z arm 
+tilt = 120 #Tilt angle of the camera on the manual gimbal
 radius = 150
 n_points = 20
 
