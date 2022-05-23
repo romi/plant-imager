@@ -1,8 +1,8 @@
-import subprocess
-import plantimager
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-from shutil import copyfile
-from setuptools import setup, Extension, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 s = setup(
     name='plantimager',
@@ -17,7 +17,6 @@ s = setup(
     author_email='timothee@timwin.fr',
     description='A plant imager',
     long_description='',
-    zip_safe=False,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     install_requires=[

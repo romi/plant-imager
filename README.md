@@ -146,13 +146,12 @@ conda create -n plant_imager python=3.7
 #### Install the sources
 You may now proceed to install the python requirements and packages:
 ```shell
-# Don't forget to activate the environment!
-conda activate plant_imager
+conda activate plant_imager # Don't forget to activate the environment!
 cd plant-imager
-# Install `plantdb` from sub-modules:
-python -m pip install -e ./plantdb/
-# Install `romitask` from sub-modules:
-python -m pip install -e ./romitask/
+# Install `plantdb` as sub-modules:
+cd plantdb/ && poetry install --no-interaction && cd ..
+# Install `romitask` as sub-modules:
+cd romitask/ && poetry install --no-interaction && cd ..
 # Install `plant-imager`:
 python -m pip install -e .
 ```
