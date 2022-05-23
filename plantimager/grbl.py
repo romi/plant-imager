@@ -243,15 +243,15 @@ class CNC(AbstractCNC):
     def _check_move(self, x, y, z):
         """ Make sure the `moveto` coordinates are within the axes limits."""
         try:
-            assert self.x_lims[0] < x < self.x_lims[1]
+            assert self.x_lims[0] <= x <= self.x_lims[1]
         except AssertionError:
             raise ValueError("Move command coordinates is outside the x-limits!")
         try:
-            assert self.y_lims[0] < y < self.y_lims[1]
+            assert self.y_lims[0] <= y <= self.y_lims[1]
         except AssertionError:
             raise ValueError("Move command coordinates is outside the y-limits!")
         try:
-            assert self.z_lims[0] < z < self.z_lims[1]
+            assert self.z_lims[0] <= z <= self.z_lims[1]
         except AssertionError:
             raise ValueError("Move command coordinates is outside the z-limits!")
 
