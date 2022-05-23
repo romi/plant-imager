@@ -434,14 +434,11 @@ class CalibrationPath(Path):
 
     Notes
     -----
-    The calibration path is made of the path to calibrate, plus two linear paths, X & Y, in that order.
-
-    Takes the first ``PathElement`` of the input path to calibrate as lines starting points
-
-    Takes the max distance to input path origin along x & y axes to create X & Y lines ending points.
-    Let x0, y0 & z0 be the first `ElementPath` xyz position, then:
-     - line #1: (x0, y0, z0, max_dist(xi, x0), y0, z0)
-     - line #2: (x0, y0, z0, x0, max_dist(yi, y0), z0)
+    The calibration path is made of the path to calibrate, plus four linear paths:
+      1. a y-line at x=0.
+      2. half x-line from x=0 to x_max/2.
+      3. a y-line at xmax.
+      4. half x-line from xmax to x_max/2.
 
     See Also
     --------
@@ -451,29 +448,13 @@ class CalibrationPath(Path):
     --------
     >>> from plantimager.path import CalibrationPath
     >>> from plantimager.path import Circle
-    >>> circular_path = Circle(200, 200, 50, 0, 200, 9)
+    >>> n_points_circle = 10
+    >>> circular_path = Circle(200, 200, 50, 0, 200, n_points_circle)
     >>> n_points_line = 5
     >>> calib_path = CalibrationPath(circular_path, n_points_line)
+    >>> len(calib_path) == n_points_circle + n_points_line*4
     >>> calib_path
-    [x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 167.86, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 135.72, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 103.58, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 71.44, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 11.70, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 23.40, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 35.09, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 46.79, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 0.00, y = 200.00, z = 50.00, pan = 270.00, tilt = 0.00,
-     x = 46.79, y = 71.44, z = 50.00, pan = 310.00, tilt = 0.00,
-     x = 165.27, y = 3.04, z = 50.00, pan = 350.00, tilt = 0.00,
-     x = 300.00, y = 26.79, z = 50.00, pan = 30.00, tilt = 0.00,
-     x = 387.94, y = 131.60, z = 50.00, pan = 70.00, tilt = 0.00,
-     x = 387.94, y = 268.40, z = 50.00, pan = 110.00, tilt = 0.00,
-     x = 300.00, y = 373.21, z = 50.00, pan = 150.00, tilt = 0.00,
-     x = 165.27, y = 396.96, z = 50.00, pan = 190.00, tilt = 0.00,
-     x = 46.79, y = 328.56, z = 50.00, pan = 230.00, tilt = 0.00]
+
     """
 
     def __init__(self, path, n_points_line):
@@ -497,5 +478,7 @@ class CalibrationPath(Path):
         x_max = path[np.argmax([pelt.x - el0.x for pelt in path])].x
         # y-axis line, from the first `ElementPath` xyz position to the most distant point from the origin along this y-axis
         y_max = path[np.argmax([pelt.y - el0.y for pelt in path])].y
-        self.extend(Line(el0.x, el0.y, el0.z, x_max // 2, el0.y, el0.z, el0.pan, el0.tilt, n_points_line))
-        self.extend(Line(el0.x, el0.y, el0.z, el0.x, y_max, el0.z, el0.pan, el0.tilt, n_points_line))
+        self.extend(Line(0., 0., el0.z, 0., y_max, el0.z, el0.pan, el0.tilt, n_points_line))
+        self.extend(Line(0., y_max//2., el0.z, x_max//2., y_max//2., el0.z, el0.pan, el0.tilt, n_points_line))
+        self.extend(Line(x_max, 0., el0.z, x_max, y_max, el0.z, el0.pan, el0.tilt, n_points_line))
+        self.extend(Line(x_max, y_max//2., el0.z, x_max//2., y_max//2., el0.z, el0.pan, el0.tilt, n_points_line))
