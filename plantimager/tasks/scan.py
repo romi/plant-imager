@@ -213,14 +213,34 @@ class CalibrationScan(Scan):
         scanner hardware configuration (TODO: see hardware documentation)
     path : DictParameter
         scanner path configuration (TODO: see hardware documentation)
-    n_line : int ?
-        number of shots taken on the orthogonal calibration lines
+    n_points_line : IntParameter, optional
+        Number of shots taken on the orthogonal calibration lines. Defaults to ``10``.
+    offset : IntParameter, optional
+        Offset to axes limits, in millimeters. Defaults to ``5``.
 
     """
-    n_points_line = luigi.IntParameter(default=5)
+    n_points_line = luigi.IntParameter(default=10)
+    offset = luigi.IntParameter(default=5)  # limits offset in mm
 
     def run(self):
         path = Scan().get_path()
+        # Load the Scanner instance to get axes limits:
+        hw_scanner = Scan().load_scanner()
+        # Get axes limits:
+        x_lims = getattr(hw_scanner.cnc, 'x_lims', None)
+        if x_lims is not None:
+            logger.info(f"Got X limits from scanner: {x_lims}")
+            # Avoid true limits, as you might get stuck in some cases:
+            x_lims = [x_lims[0] + self.offset, x_lims[1] - self.offset]
+        y_lims = getattr(hw_scanner.cnc, 'y_lims', None)
+        if y_lims is not None:
+            logger.info(f"Got Y limits from scanner: {y_lims}")
+            # Avoid true limits, as you might get stuck in some cases:
+            y_lims = [y_lims[0] + self.offset, y_lims[1] - self.offset]
+        # Get the ScanPath module:
         path_module = importlib.import_module(ScanPath().module)
-        calibration_path = getattr(path_module, "CalibrationPath")(path, self.n_points_line)
-        Scan().run(path=calibration_path)
+        # Create a CalibrationPath instance:
+        calibration_path = getattr(path_module, "CalibrationPath")(path, self.n_points_line,
+                                                                   x_lims=x_lims, y_lims=y_lims)
+        # Run the calibration procedure:
+        Scan().run(path=calibration_path, hw_scanner=hw_scanner)
