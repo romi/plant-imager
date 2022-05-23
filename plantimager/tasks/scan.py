@@ -28,6 +28,11 @@ import os
 import random
 
 import luigi
+from romitask import DatabaseConfig
+from romitask import FilesetTarget
+from romitask import RomiTask
+from romitask.task import FilesetExists
+
 from plantdb import io
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
@@ -35,10 +40,6 @@ from plantimager.log import logger
 from plantimager.scanner import Scanner
 from plantimager.tasks.lpy import VirtualPlant
 from plantimager.vscan import VirtualScanner
-from romitask import DatabaseConfig
-from romitask import FilesetTarget
-from romitask import RomiTask
-from romitask.task import FilesetExists
 
 
 class ObjFileset(FilesetExists):
@@ -115,17 +116,20 @@ class Scan(RomiTask):
         camera = getattr(camera_module, "Camera")(**camera_kwargs)
         return Scanner(cnc, gimbal, camera)
 
-    def run(self, path=None):
+    def run(self, path=None, hw_scanner=None):
         if path is None:
             path = self.get_path()
 
-        scanner = self.load_scanner()
+        if hw_scanner is None:
+            hw_scanner = self.load_scanner()
         metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
 
         output_fileset = self.output().get()
-        scanner.scan(path, output_fileset)
+        hw_scanner.scan(path, output_fileset)
         output_fileset.set_metadata(metadata)
-        output_fileset.set_metadata("channels", scanner.channels())
+        output_fileset.set_metadata("channels", hw_scanner.channels())
+        # Go back to home position:
+        hw_scanner.cnc.moveto(0., 0., 0.)
 
 
 class VirtualScan(Scan):
