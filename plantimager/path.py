@@ -299,7 +299,7 @@ class Cylinder(Path):
             raise ValueError("You need a minimum of two circles to make a cylinder!")
 
         min_z, max_z = z_range
-        for z_circle in np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles-1)):
+        for z_circle in np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles - 1)):
             self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points))
 
 
@@ -448,16 +448,16 @@ class CalibrationPath(Path):
     --------
     >>> from plantimager.path import CalibrationPath
     >>> from plantimager.path import Circle
-    >>> n_points_circle = 10
+    >>> n_points_circle = 36
     >>> circular_path = Circle(200, 200, 50, 0, 200, n_points_circle)
-    >>> n_points_line = 5
+    >>> n_points_line = 10
     >>> calib_path = CalibrationPath(circular_path, n_points_line)
-    >>> len(calib_path) == n_points_circle + n_points_line*4
+    >>> len(calib_path) == n_points_circle + n_points_line*3
     >>> calib_path
 
     """
 
-    def __init__(self, path, n_points_line):
+    def __init__(self, path, n_points_line, x_lims=None, y_lims=None):
         """
         Parameters
         ----------
@@ -468,17 +468,27 @@ class CalibrationPath(Path):
         """
         super().__init__()
         el0 = path[0]
-        # # TODO: find a better "algo" than this to select y-limit for line #1 and x-limit for line #2
-        # el1 = path[len(path) // 4 - 1]
-        # self.extend(Line(el0.x, el0.y, el0.z, el0.x, el1.y, el0.z, el0.pan, el0.tilt, n_points_line))
-        # self.extend(Line(el0.x, el0.y, el0.z, el1.x, el0.y, el0.z, el0.pan, el0.tilt, n_points_line))
         # - Start with the path to calibrate
         self.extend(path)
-        # x-axis line, from the first `ElementPath` xyz position to the most distant point from the origin along this x-axis
-        x_max = path[np.argmax([pelt.x - el0.x for pelt in path])].x
-        # y-axis line, from the first `ElementPath` xyz position to the most distant point from the origin along this y-axis
-        y_max = path[np.argmax([pelt.y - el0.y for pelt in path])].y
-        self.extend(Line(0., 0., el0.z, 0., y_max, el0.z, el0.pan, el0.tilt, n_points_line))
-        self.extend(Line(0., y_max//2., el0.z, x_max//2., y_max//2., el0.z, el0.pan, el0.tilt, n_points_line))
-        self.extend(Line(x_max, 0., el0.z, x_max, y_max, el0.z, el0.pan, el0.tilt, n_points_line))
-        self.extend(Line(x_max, y_max//2., el0.z, x_max//2., y_max//2., el0.z, el0.pan, el0.tilt, n_points_line))
+
+        if x_lims is None:
+            x_min = path[np.argmin([pelt.x - el0.x for pelt in path])].x
+            x_max = path[np.argmax([pelt.x - el0.x for pelt in path])].x
+        else:
+            x_min, x_max = x_lims
+        if y_lims is None:
+            y_min = path[np.argmin([pelt.y - el0.y for pelt in path])].y
+            y_max = path[np.argmax([pelt.y - el0.y for pelt in path])].y
+        else:
+            y_min, y_max = y_lims
+
+        n_first_half = n_points_line // 2
+        n_second_half = n_points_line - n_first_half
+        # Add the first Y-line at x-min
+        self.extend(Line(x_min, y_min, el0.z, x_min, y_max, el0.z, 270., el0.tilt, n_points_line))
+        # Add the first half X-line
+        self.extend(Line(x_min, y_max // 2., el0.z, x_max // 2., y_max // 2., el0.z, 270., el0.tilt, n_first_half))
+        # Add the second Y-line at x-max
+        self.extend(Line(x_max, y_min, el0.z, x_max, y_max, el0.z, 90., el0.tilt, n_points_line))
+        # Add the second half X-line
+        self.extend(Line(x_max, y_max // 2., el0.z, x_max // 2., y_max // 2., el0.z, 90., el0.tilt, n_second_half))
