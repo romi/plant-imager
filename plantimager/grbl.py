@@ -363,6 +363,7 @@ class CNC(AbstractCNC):
             except ValueError:
                 settings[param] = float(value)
 
+        logger.info("Grbl settings loaded from firmware!")
         return settings
 
     def print_grbl_settings(self):
