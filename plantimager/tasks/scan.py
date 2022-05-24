@@ -128,8 +128,8 @@ class Scan(RomiTask):
         hw_scanner.scan(path, output_fileset)
         output_fileset.set_metadata(metadata)
         output_fileset.set_metadata("channels", hw_scanner.channels())
-        # Go back to home position:
-        hw_scanner.cnc.moveto(0., 0., 0.)
+        # Go back close to home position:
+        hw_scanner.cnc.moveto(10., 10., 10.)
 
 
 class VirtualScan(Scan):
