@@ -28,18 +28,18 @@ import os
 import random
 
 import luigi
-from romitask import DatabaseConfig
-from romitask import FilesetTarget
-from romitask import RomiTask
-from romitask.task import FilesetExists
-
-from plantdb import io
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
 from plantimager.log import logger
 from plantimager.scanner import Scanner
 from plantimager.tasks.lpy import VirtualPlant
 from plantimager.vscan import VirtualScanner
+
+from plantdb import io
+from romitask import DatabaseConfig
+from romitask import FilesetTarget
+from romitask import RomiTask
+from romitask.task import FilesetExists
 
 
 class ObjFileset(FilesetExists):
@@ -87,17 +87,17 @@ class Scan(RomiTask):
         return []
 
     def output(self):
-        """Output for a RomiTask is a FileSetTarget, the fileset ID being
-        the task ID.
-        """
+        """The output fileset associated to a ``Scan`` is an 'images' dataset."""
         return FilesetTarget(DatabaseConfig().scan, "images")
 
-    def get_path(self):
+    def get_path(self) -> plantimager.path.Path:
+        """Load the ``ScanPath`` module & get the configuration from the TOML config file."""
         path_module = importlib.import_module(ScanPath().module)
         path = getattr(path_module, ScanPath().class_name)(**ScanPath().kwargs)
         return path
 
-    def load_scanner(self):
+    def load_scanner(self) -> plantimager.scanner.Scanner:
+        """Load the ``CNC``, ``Gimbal`` & ``Camera`` modules and create a ``Scanner`` configuration."""
         scanner_config = self.scanner
 
         cnc_module = scanner_config["cnc"]["module"]
@@ -116,20 +116,51 @@ class Scan(RomiTask):
         camera = getattr(camera_module, "Camera")(**camera_kwargs)
         return Scanner(cnc, gimbal, camera)
 
-    def run(self, path=None, hw_scanner=None):
+    def run(self, path=None, hw_scanner=None, extra_md=None):
+        """Run a scan
+
+        Parameters
+        ----------
+        path : plantimager.path.Path, optional
+            If ``None`` (default), load the ``ScanPath`` module & get the configuration from the TOML config file.
+            Else should be a ``plantimager.path.Path`` instance.
+        hw_scanner : plantimager.scanner.Scanner, optional
+            If ``None`` (default), load the ``CNC``, ``Gimbal`` & ``Camera`` modules & get the configuration from the
+            TOML config file.
+            Else should be a ``plantimager.scanner.Scanner`` instance.
+        extra_md : dict, optional
+            A dictionary of extra metadata to add to the 'images' fileset.
+
+        """
         if path is None:
             path = self.get_path()
-
         if hw_scanner is None:
             hw_scanner = self.load_scanner()
-        metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
 
+        metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
+        # Import the axes limits from the ``plantimager.scanner.Scanner`` instance & add them to the "hardware" metadata
+        if "hardware" not in metadata:
+            logger.warning("Metadata entry 'hardware' is missing from the configuration file!")
+            metadata["hardware"] = {}
+        metadata["hardware"]['x_lims'] = getattr(hw_scanner.cnc, "x_lims", None)
+        metadata["hardware"]['y_lims'] = getattr(hw_scanner.cnc, "y_lims", None)
+        metadata["hardware"]['z_lims'] = getattr(hw_scanner.cnc, "z_lims", None)
+        # Add the extra metadata to the metadata
+        if extra_md is not None:
+            metadata.update(extra_md)
+
+        # Get (create) the output 'images' fileset:
         output_fileset = self.output().get()
+        # Scan with the plant imager:
         hw_scanner.scan(path, output_fileset)
-        output_fileset.set_metadata(metadata)
-        output_fileset.set_metadata("channels", hw_scanner.channels())
         # Go back close to home position:
         hw_scanner.cnc.moveto(10., 10., 10.)
+
+        # Write the metadata to the JSON associated to the 'images' fileset:
+        output_fileset.set_metadata(metadata)
+        # Add a description of the type of scan data with a "channel" entry in the 'images' fileset metadata:
+        output_fileset.set_metadata("channels", hw_scanner.channels())
+        return
 
 
 class VirtualScan(Scan):
