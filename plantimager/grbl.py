@@ -22,7 +22,7 @@
 # License along with plantimager.  If not, see
 # <https://www.gnu.org/licenses/>.
 
-"""Implementation of a CNC module adapted to grbl motherboard.
+"""Implementation of a CNC module adapted to Grbl motherboard.
 
 The CNC is used to move a multi-purpose arm.
 It offers 3-axis of movements.
@@ -36,7 +36,7 @@ import serial
 from plantimager.hal import AbstractCNC
 from plantimager.log import logger
 
-#: Dictionary mapping the grbl codes to their meaning and units.
+#: Dictionary mapping the Grbl codes to their meaning and units.
 GRBL_SETTINGS = {
     "$0": ("Step pulse", "microseconds"),
     "$1": ("Step idle delay", "milliseconds"),
@@ -93,13 +93,13 @@ class CNC(AbstractCNC):
     z_lims : (int, int)
         The allowed range of Z-axis positions.
     serial_port : serial.Serial
-        The `Serial` instance used to send commands to the grbl.
+        The `Serial` instance used to send commands to the Grbl.
     x : int
-        The position of the CNC arm along the X-axis.
+        The current position, in millimeter, of the CNC arm on the X-axis.
     y : int
-        The position of the CNC arm along the Y-axis.
+        The current position, in millimeter, of the CNC arm on the Y-axis.
     z : int
-        The position of the CNC arm along the Z-axis.
+        The current position, in millimeter, of the CNC arm on the Z-axis.
     invert_x : bool
         If `True`, "mirror" the coordinates direction respectively to 0.
     invert_y : bool
@@ -113,8 +113,8 @@ class CNC(AbstractCNC):
 
     """
 
-    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, x_lims=None, y_lims=None, z_lims=None, safe_start=True, invert_x=True, invert_y=True,
-                 invert_z=True):
+    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, x_lims=None, y_lims=None, z_lims=None,
+                 safe_start=True, invert_x=True, invert_y=True, invert_z=True):
         """Constructor.
 
         Parameters
@@ -126,11 +126,11 @@ class CNC(AbstractCNC):
         homing : bool, optional
             If `True` (default), axes homing will be performed upon CNC object instantiation [RECOMMENDED].
         x_lims : (int, int), optional
-            The allowed range of X-axis positions, if `None` (default) use the settings from grbl ("$130", see GRBL_SETTINGS).
+            The allowed range of X-axis positions, if `None` (default) use the settings from Grbl ("$130", see GRBL_SETTINGS).
         y_lims : (int, int), optional
-            The allowed range of Y-axis positions, if `None` (default) use the settings from grbl ("$131", see GRBL_SETTINGS).
+            The allowed range of Y-axis positions, if `None` (default) use the settings from Grbl ("$131", see GRBL_SETTINGS).
         z_lims : (int, int), optional
-            The allowed range of Z-axis positions, if `None` (default) use the settings from grbl ("$132", see GRBL_SETTINGS).
+            The allowed range of Z-axis positions, if `None` (default) use the settings from Grbl ("$132", see GRBL_SETTINGS).
         invert_x : bool
             If `True` (default), "mirror" the coordinates direction respectively to 0.
         invert_y : bool
@@ -153,7 +153,6 @@ class CNC(AbstractCNC):
         super().__init__()
         self.port = port
         self.baud_rate = baud_rate
-        self.homing = homing
         self.x_lims = x_lims
         self.y_lims = y_lims
         self.z_lims = z_lims
@@ -165,19 +164,56 @@ class CNC(AbstractCNC):
         self.y = 0
         self.z = 0
         self.grbl_settings = None
-        self._start(safe_start)
+        self._start(homing, safe_start)
         atexit.register(self.stop)
 
-    def _check_axes_limits(self, axe_limits, grbl_limits, axes):
-        try:
-            assert axe_limits[0] >= grbl_limits[0] and axe_limits[1] <= grbl_limits[1]
-        except AssertionError:
-            msg = f"Given {axes}-axis limits are WRONG!\n"
-            msg += f"Should be in '{grbl_limits[0]}:{grbl_limits[1]}', but got '{axe_limits[0]}:{axe_limits[1]}'!"
-            raise ValueError(msg)
+    def _check_axes_limits(self, axis_limits, grbl_limits, axis_name):
+        """Make sure given `axe_limits` are within `grbl_limits` (firmware limits).
 
-    def _start(self, safe_start):
-        """ Start the serial connection with the Arduino & initialize the CNC (hardware).
+        Parameters
+        ----------
+        axis_limits : [float, float]
+            Axis limits to use.
+        grbl_limits : [float, float]
+            Limits knwon to Grbl firmaware ("$130", "$131" & "$132" in ``GRBL_SETTINGS``)
+        axis_name : str
+            Name of the axis currently checked.
+
+        See Also
+        --------
+        GRBL_SETTINGS
+
+        Raises
+        ------
+        ValueError
+            If given `axe_limits` do not respect `grbl_limits`.
+
+        Examples
+        --------
+        >>> from plantimager.grbl import CNC
+        >>> cnc = CNC("/dev/ttyACM0")
+        >>> grbl = cnc.get_grbl_settings()
+        >>> print(f"Grbl axes limits are: X=[0, {grbl['$130']}], Y=[0, {grbl['$131']}], Z=[0, {grbl['$132']}]")
+        >>> wrong_cnc = CNC("/dev/ttyACM0", x_lims=[-1, 780], y_lims=[0, 780], z_lims=[0, 90])
+
+        """
+        try:
+            assert axis_limits[0] >= grbl_limits[0] and axis_limits[1] <= grbl_limits[1]
+        except AssertionError:
+            msg = f"Given {axis_name}-axis limits are WRONG!\n"
+            msg += f"Should be in '{grbl_limits[0]}:{grbl_limits[1]}', but got '{axis_limits[0]}:{axis_limits[1]}'!"
+            raise ValueError(msg)
+        return None
+
+    def _start(self, homing=True, safe_start=True):
+        """Start the serial connection with the Arduino & initialize the CNC (hardware).
+
+        Parameters
+        ----------
+        homing : bool
+            If ``True``, performs homing procedure.
+        safe_start : bool
+            If ``True``, check the object have been initialized with proper axes limits.
 
         References
         ----------
@@ -190,8 +226,8 @@ class CNC(AbstractCNC):
         self.serial_port.write("\r\n\r\n".encode())
         time.sleep(2)
         self.serial_port.flushInput()
-        # Performs axes homing if required:
-        if self.homing:
+        # Performs homing procedure if required:
+        if homing:
             self.home()
         # Set to "absolute distance mode":
         self.send_cmd("g90")
@@ -199,7 +235,7 @@ class CNC(AbstractCNC):
         self.send_cmd("g21")
 
         if safe_start:
-            # Initialize axes limits with grbl settings if not set, else check given settings:
+            # Initialize axes limits with Grbl settings if not set, else check given settings:
             self.grbl_settings = self.get_grbl_settings()
             if self.x_lims is None:
                 self.x_lims = [0, self.grbl_settings["$130"]]
@@ -213,21 +249,23 @@ class CNC(AbstractCNC):
                 self.z_lims = [0, self.grbl_settings["$132"]]
             else:
                 self._check_axes_limits(self.z_lims, [0, self.grbl_settings["$132"]], 'Z')
+        return None
 
     def stop(self):
-        """ Close the serial connection."""
+        """Close the serial connection."""
         if (self.has_started):
             self.serial_port.close()
+        return None
 
     def get_position(self):
-        """ Returns the xyz position of the CNC."""
+        """Returns the xyz position of the CNC."""
         return self.x, self.y, self.z
 
     def async_enabled(self):
         return True
 
     def home(self):
-        """ Performs axes homing procedure.
+        """Performs axes homing procedure.
 
         References
         ----------
@@ -241,6 +279,7 @@ class CNC(AbstractCNC):
         # Set current position to [0, 0, 0] (origin)
         # Note that there is a 'homing pull-off' value ($27)!
         self.send_cmd("g92 x0 y0 z0")
+        return None
 
     def _check_move(self, x, y, z):
         """ Make sure the `moveto` coordinates are within the axes limits."""
@@ -256,35 +295,37 @@ class CNC(AbstractCNC):
             assert self.z_lims[0] <= z <= self.z_lims[1]
         except AssertionError:
             raise ValueError("Move command coordinates is outside the z-limits!")
+        return None
 
     def moveto(self, x, y, z):
-        """ Send a move command and wait until reaching target position.
+        """Send a 'G0' move command and wait until reaching target XYZ position.
 
         Parameters
         ----------
         x : int
-            The position of the CNC arm along the X-axis.
+            The target position, in millimeters, along the X-axis.
         y : int
-            The position of the CNC arm along the Y-axis.
+            The target position, in millimeters, along the Y-axis.
         z : int
-            The position of the CNC arm along the Z-axis.
+            The target position, in millimeters, along the Z-axis.
 
         """
         self._check_move(x, y, z)
         self.moveto_async(x, y, z)
         self.wait()
+        return None
 
     def moveto_async(self, x, y, z):
-        """ Send a 'G0' move command.
+        """Send a non-blocking 'G0' move command to target XYZ position.
 
         Parameters
         ----------
         x : int
-            The position of the CNC arm along the X-axis.
+            The target position, in millimeters, along the X-axis.
         y : int
-            The position of the CNC arm along the Y-axis.
+            The target position, in millimeters, along the Y-axis.
         z : int
-            The position of the CNC arm along the Z-axis.
+            The target position, in millimeters, along the Z-axis.
 
         References
         ----------
@@ -297,9 +338,10 @@ class CNC(AbstractCNC):
         self.send_cmd("g0 x%s y%s z%s" % (x, y, z))
         self.x, self.y, self.z = x, y, z
         time.sleep(0.1)  # Add a little sleep between calls
+        return None
 
     def wait(self):
-        """ Send a 1 second wait command to grbl.
+        """ Send a 1-second wait (dwell) command to Grbl.
 
         References
         ----------
@@ -307,14 +349,15 @@ class CNC(AbstractCNC):
 
         """
         self.send_cmd("g4 p1")
+        return None
 
     def send_cmd(self, cmd):
-        """ Send given command to grbl.
+        """ Send given command to Grbl.
 
         Parameters
         ----------
         cmd : str
-            A grbl compatible command.
+            A Grbl compatible command.
 
         References
         ----------
@@ -329,8 +372,8 @@ class CNC(AbstractCNC):
         time.sleep(0.1)
         return grbl_out
 
-    def get_status(self):
-        """ Returns grbl status."""
+    def get_status(self) -> dict:
+        """ Returns Grbl status."""
         self.serial_port.write("?".encode("utf-8"))
         try:
             res = self.serial_port.readline()
@@ -347,8 +390,8 @@ class CNC(AbstractCNC):
             return None
         return res_fmt
 
-    def get_grbl_settings(self):
-        """ Returns the grbl settings as a dictionary {'param': value}."""
+    def get_grbl_settings(self) -> dict:
+        """ Returns the Grbl settings as a dictionary {'param': value}."""
         self.serial_port.reset_input_buffer()
         self.serial_port.write(("$$" + "\n").encode())
         str_settings = self.serial_port.readlines()
@@ -369,7 +412,7 @@ class CNC(AbstractCNC):
         return settings
 
     def print_grbl_settings(self):
-        """ Print the grbl settings.
+        """ Print the Grbl settings.
 
         See Also
         --------
@@ -381,9 +424,10 @@ class CNC(AbstractCNC):
 
         """
         settings = self.get_grbl_settings()
-        print("Obtained grbl settings:")
+        print("Obtained Grbl settings:")
         for param, value in settings.items():
             param_name, param_unit = GRBL_SETTINGS[param]
             if param_unit in ['boolean', 'mask']:
                 param_unit = f"({param_unit})"
             print(f" - ({param}) {param_name}: {value} {param_unit}")
+        return None
