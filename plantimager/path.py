@@ -226,6 +226,7 @@ class Circle(Path):
         if not isinstance(tilt, Iterable):
             tilt = [tilt]
 
+        # FIXME: why do we set `exact_pose` to `False`?! What is the purpose of `exact_pose`?!
         for i in range(n_points):
             for t in tilt:
                 self.append(PathElement(x[i], y[i], z, pan[i], t, exact_pose=False))
