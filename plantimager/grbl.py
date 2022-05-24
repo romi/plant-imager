@@ -141,11 +141,13 @@ class CNC(AbstractCNC):
         Examples
         --------
         >>> from plantimager.grbl import CNC
-        >>> cnc = CNC("/dev/ttyACM1", x_lims=[0, 780], y_lims=[0, 790], z_lims=[0, 90])
-        >>> cnc.moveto(200, 200, 50)
+        >>> cnc = CNC("/dev/ttyACM0", x_lims=[0, 780], y_lims=[0, 780], z_lims=[0, 90])
+        >>> cnc.moveto(200, 200, 50)  # move the CNC to this XYZ coordinate (in mm)
+        >>> cnc.home()  # homing command (automatically called on startup)
         >>> cnc.moveto_async(200, 200, 50)
-        >>> cnc.send_cmd("$$")
-        >>> cnc.print_grbl_settings()
+        >>> cnc.send_cmd("$$")  # send a Grbl command, here "$$"
+        >>> cnc.print_grbl_settings()  # Get Grbl settings from the firmware
+        >>> cnc.stop()  # close the serial connection
 
         """
         super().__init__()
@@ -233,7 +235,7 @@ class CNC(AbstractCNC):
         http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92
 
         """
-        # Send grbl homming command:
+        # Send Grbl homing command:
         self.send_cmd("$H")
         # self.send_cmd("g28") #reaching workspace origin
         # Set current position to [0, 0, 0] (origin)
