@@ -22,11 +22,12 @@
 # License along with plantimager.  If not, see
 # <https://www.gnu.org/licenses/>.
 
-"""Implementation of a class dedicated to controlling a Gimbal.
+"""Implementation of a class dedicated to controlling a gimbal.
 
-This Gimbal implementation is based on a custom built controller.
+This gimbal implementation is based on a custom-built controller.
 The gimbal is used to orient a camera by controlling _pan_ & _tilt_ orientations.
 The control is done by a serial port that has to be defined.
+
 Note that this module offer the ability to use one or two motors.
 With one, you control the pan orientation, this is like turning your head left or right.
 With two, you can also control the tilt, this is like looking up or down.
@@ -43,13 +44,36 @@ from plantimager.hal import AbstractGimbal
 
 
 class Gimbal(AbstractGimbal):
+    """Custom-built gimbal controller.
+
+    Attributes
+    ----------
+    port : str
+        Serial port to use for communication with the CNC, `"/dev/ttyUSB0"` by default.
+    status : str
+        Describe the gimbal current status, "idle" or "moving".
+    p : [float, float]
+        Current pan and tilt positions.
+    serial_port :serial.Serial
+        The `Serial` instance used to send commands to the gimbal.
+    zero_pan : float
+        The angle, in degree, to use as zero for pan.
+    zero_tilt : float
+        The angle, in degree, to use as zero for tilt.
+    has_tilt : bool
+        Indicate if the gimbal has a tilt motor or just a pan motor.
+    steps_per_turn : int
+        Number of steps required to complete a full rotation.
+    invert_rotation : bool
+        Use it to invert the rotation of the motor.
+
+    """
     def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=360,
                  zero_pan=0, zero_tilt=0, invert_rotation=False):
         super().__init__()
         self.port = port
         self.status = "idle"
         self.p = [0, 0]
-        self.v = [0, 0]
         self.serial_port = None
         self.zero_pan = zero_pan
         self.zero_tilt = zero_tilt
@@ -60,18 +84,22 @@ class Gimbal(AbstractGimbal):
         atexit.register(self.stop)
 
     def start(self):
+        """Start the serial connection with the custom board."""
         self.serial_port = serial.Serial(self.port, 115200, timeout=1)
         self.update_status()
+        return None
 
     def stop(self):
+        """Stop the serial connection with the custom board."""
         if self.serial_port:
             self.serial_port.close()
             self.serial_port = None
+        return None
 
-    def has_position_control(self):
+    def has_position_control(self) -> bool:
         return True
 
-    def async_enabled(self):
+    def async_enabled(self) -> bool:
         return True
 
     def get_position(self):
@@ -88,6 +116,7 @@ class Gimbal(AbstractGimbal):
         self.__send("X%d" % (self.zero_pan + int(pan / 360 * self.steps_per_turn)))
         if self.has_tilt:
             self.__send("Y%d" % (self.zero_tilt + int(tilt / 360 * self.steps_per_turn)))
+        return None
 
     def wait(self):
         pass
@@ -95,19 +124,22 @@ class Gimbal(AbstractGimbal):
     def moveto(self, pan, tilt):
         self.moveto_async(pan, tilt)
         self.wait()
+        return None
 
     def moveto_async(self, pan, tilt):
         self.set_target_pos(pan, tilt)
+        return None
 
     def update_status(self):
         p = self.__send("p").decode('utf-8')
         p = p.split(":")[-1].split(",")
         self.p[0] = (int(p[0]) - self.zero_pan) / self.steps_per_turn * 360
         self.p[1] = (int(p[1]) - self.zero_tilt) / self.steps_per_turn * 360
+        return None
 
     def __send(self, s):
         if not self.serial_port:
-            raise Error("CNC has not been started")
+            raise Error("Serial connection to gimbal has not been started yet!")
         self.serial_port.reset_input_buffer()
         r = False
         try:
