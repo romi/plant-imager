@@ -1,4 +1,4 @@
-#!/usr/bin/env romi_bpy
+#!/usr/bin/env python3 romi_bpy
 import bpy
 import distutils
 import distutils.util
@@ -22,6 +22,7 @@ import imageio
 from random import randint
 from mathutils import Color
 from copy import copy
+from math import pi
 #---------------------------------------------------------------
 #
 # 3x4 P matrix from Blender camera
@@ -301,7 +302,7 @@ class VirtualPlant(MultiClassObject):
                 tex.noise_scale = 2.0
                 displace_modifier.texture = tex
 
-if __name__ == "__main__":
+def run():
     with tempfile.TemporaryDirectory() as tmpdir:
 
         if 'Cube' in bpy.data.objects:
@@ -532,3 +533,6 @@ if __name__ == "__main__":
         # bpy.context.scene.cycles.feature_set = "SUPPORTED"
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))
+
+if __name__ == "__main__":
+    run()

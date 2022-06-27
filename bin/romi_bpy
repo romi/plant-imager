@@ -1,3 +1,0 @@
-#!/bin/bash
-export PYTHONPATH=$(python -c "import sys; print(':'.join(x for x in sys.path if x))")
-blender -E CYCLES -b -P $@

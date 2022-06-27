@@ -10,7 +10,6 @@
 # 2. Run a command:
 # $ ./run.sh -t latest -db /abs/host/my_data_base -v /abs/host/dir:/abs/container/dir -c "romi_run_task --config /path/to/config.toml VirtualScan my_data_base/scan_id"
 
-user=$USER
 cmd=''
 db_path=''
 vtag="latest"
@@ -30,8 +29,6 @@ usage() {
     Docker image tag to use, default to '$vtag'."
   echo "  -db, --database_path
     Host database path to mount in docker container. Require definition of docker container user."
-  echo "  -u, --user
-    User name in docker container, default to '$user'."
   echo "  -v, --volume
     Volume mapping for docker, e.g. '/abs/host/dir:/abs/container/dir'. Multiple use is allowed."
   echo "  -c, --cmd
@@ -45,10 +42,6 @@ while [ "$1" != "" ]; do
   -t | --tag)
     shift
     vtag=$1
-    ;;
-  -u | --user)
-    shift
-    user=$1
     ;;
   -db | --database_path)
     shift
@@ -82,15 +75,15 @@ done
 # Use 'host database path' & 'docker user' to create a bind mount:
 if [ "$db_path" != "" ]
 then
-  mount_option="$mount_option -v $db_path:/home/$user/db"
+  mount_option="$mount_option -v $db_path:/myapp/db"
 fi
 
 if [ "$cmd" = "" ]
 then
     # Start in interactive mode. ~/.bashrc will be loaded.
-    docker run -it $mount_option --gpus all virtualplantimager:$vtag bash
+    docker run -it $mount_option --gpus all roboticsmicrofarms/virtual-plant-imager:$vtag bash
 else
     # Start in non-interactive mode (run the command). 
     # Request a login shell (-l) to load ~/.profile.
-    docker run $mount_option --gpus all virtualplantimager:$vtag bash -lc "$cmd"
+    docker run $mount_option --gpus all roboticsmicrofarms/virtual-plant-imager:$vtag bash -lc "$cmd"
 fi

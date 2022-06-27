@@ -40,12 +40,15 @@ class VirtualPlant(RomiTask):
             fname = os.path.join(tmpdir, "plant.obj")
             scene.save(fname)
             classes = luigi.DictParameter().serialize(VirtualPlantConfig().classes).replace(" ", "")
-            subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+            my_env = os.environ.copy()
+            python_path = subprocess.run("echo -n $(python -c \"import sys; print(':'.join(x for x in sys.path if x))\")", shell=True, text=True, stdout=subprocess.PIPE)
+            my_env["PYTHONPATH"] = python_path.stdout
+            subprocess.run(["blender", "-E", "CYCLES", "-b", "-P", "/opt/conda/envs/lpyEnv/bin/romi_split_by_material", "--", "--classes", classes, fname, fname], check=True, env=my_env)
 
-            #subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
-            subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
+            #subprocess.run(["blender", "-E", "CYCLES", "-b", "-P", "romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+            subprocess.run(["blender", "-E", "CYCLES", "-b", "-P", "/opt/conda/envs/lpyEnv/bin/romi_clean_mesh", "--", fname, fname], check=True, env=my_env)
+            
             output_file.import_file(fname)
-
             output_mtl_file = self.output().get().create_file(output_file.id + "_mtl")
             output_mtl_file.import_file(fname.replace("obj", "mtl"))
 

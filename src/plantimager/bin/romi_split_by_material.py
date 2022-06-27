@@ -1,4 +1,4 @@
-#!/usr/bin/env romi_bpy
+#!/usr/bin/env python3 romi_bpy
 import bpy
 import sys
 import argparse
@@ -42,7 +42,7 @@ def main(fname, out, material_class_corres):
 
     bpy.ops.export_scene.obj(filepath=out)
 
-if __name__ == "__main__":
+def run():
     try:
         idx = sys.argv.index('--')
         sys.argv = ["null"] + sys.argv[idx+1:]
@@ -59,3 +59,6 @@ if __name__ == "__main__":
 
     args.classes = json.loads(args.classes)
     main(args.input, args.output, args.classes)
+
+if __name__ == "__main__":
+    run()

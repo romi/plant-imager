@@ -53,11 +53,14 @@ class VirtualScannerRunner():
         port = 9001
         self.port = port
         logger.critical('came here')
-        proclist = ["romi_virtualplantimager", "--", "--port", str(self.port)]
+        my_env = os.environ.copy()
+        python_path = subprocess.run("echo -n $(python -c \"import sys; print(':'.join(x for x in sys.path if x))\")", shell=True, text=True, stdout=subprocess.PIPE)
+        my_env["PYTHONPATH"] = python_path.stdout
+        proclist = ["blender", "-E", "CYCLES", "-b", "-P", "/opt/conda/envs/lpyEnv/bin/romi_virtualplantimager", "--", "--port", str(self.port)]
         if self.scene is not None:
             logger.debug("scene = %s"%self.scene)
             proclist.extend(['--scene', self.scene])
-        self.process = subprocess.Popen(proclist)
+        self.process = subprocess.Popen(proclist, env=my_env)
         atexit.register(VirtualScannerRunner.stop, self)
         while True:
             try:

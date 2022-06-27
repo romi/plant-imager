@@ -1,4 +1,4 @@
-#!/usr/bin/env romi_bpy
+#!/usr/bin/env python3 romi_bpy
 print("hello")
 import bpy
 from sys import argv
@@ -26,5 +26,8 @@ def main(fname, out):
         bpy.ops.mesh.set_normals_from_faces()
     bpy.ops.export_scene.obj(filepath=out)
 
-if __name__ == "__main__":
+def run():
     main(argv[-2], argv[-1])
+
+if __name__ == "__main__":
+    run()

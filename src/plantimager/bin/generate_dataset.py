@@ -20,7 +20,7 @@ random.seed(0.1423432)
 param = sys.argv[-1]
 db = sys.argv[-2]
 
-def run(config, scan_name):
+def run_task(config, scan_name):
     with tempfile.TemporaryDirectory() as tempdir:
         toml.dump(config, open(os.path.join(tempdir, "config.toml"), "w"))
         subprocess.run(["romi_run_task", "--config", os.path.join(tempdir, "config.toml"), "VirtualScan", os.path.join(db, scan_name), "--local-scheduler", "--log-level", "WARNING"], check=True)
@@ -96,6 +96,11 @@ config_big_branch_on,
 config_big,
 config_big_scene]
 
-for i in range(k):
-    for j,c in enumerate(configs):
-        run(c, "%06d"%(i*len(configs) + j))
+def run():
+    for i in range(k):
+        for j,c in enumerate(configs):
+            run_task(c, "%06d"%(i*len(configs) + j))
+
+
+if __name__ == "__main__":
+    run()
