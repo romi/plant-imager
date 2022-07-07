@@ -7,7 +7,7 @@ from setuptools import setup, Extension, find_packages
 s = setup(
     name='plantimager',
     packages=find_packages(),
-    version='0.10.99',
+    version='0.11.0',
     scripts=[
         'bin/romi_bpy',
         'bin/romi_virtualplantimager',
