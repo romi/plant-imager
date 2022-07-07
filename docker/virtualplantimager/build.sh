@@ -3,17 +3,13 @@
 ###############################################################################
 # Example usages:
 ###############################################################################
-# 1. Default build options will create `virtualplantimager:latest`:
+# 1. Default build options will create `roboticsmicrofarms/virtual-plant-imager:latest`:
 # $ ./docker/virtualplantimager/build.sh
 #
 # 2. Build image with 'debug' tag
 # $ ./docker/virtualplantimager/build.sh -t debug
 
 vtag="latest"
-user=$USER
-uid=$(id -u)
-group=$(id -g -n)
-gid=$(id -g)
 docker_opts=""
 
 usage() {
@@ -30,14 +26,6 @@ usage() {
   echo "OPTIONS:"
   echo "  -t, --tag
     Docker image tag to use, default to '$vtag'."
-  echo "  -u, --user
-    User name to create inside docker image, default to '$user'."
-  echo "  --uid
-    User id to use with 'user' inside docker image, default to '$uid'."
-  echo "  -g, --group
-    Group name to create inside docker image, default to '$group'."
-  echo "  --gid
-    Group id to use with 'user' inside docker image, default to '$gid'."
   # Docker options:
   echo "  --no-cache
     Do not use cache when building the image, (re)start from scratch."
@@ -78,11 +66,7 @@ done
 start_time=`date +%s`
 
 # Start the docker image build:
-docker build -t virtualplantimager:$vtag $docker_opts \
-  --build-arg USER_NAME=$user \
-  --build-arg USER_ID=$uid \
-  --build-arg GROUP_NAME=$group \
-  --build-arg GROUP_ID=$gid \
+docker build -t roboticsmicrofarms/virtual-plant-imager:$vtag $docker_opts \
   -f docker/virtualplantimager/Dockerfile .
 
 # Print docker image build time:
