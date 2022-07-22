@@ -436,10 +436,12 @@ class CalibrationPath(Path):
     Notes
     -----
     The calibration path is made of the path to calibrate, plus four linear paths:
-      1. a y-line at x=0.
-      2. half x-line from x=0 to x_max/2.
-      3. a y-line at xmax.
-      4. half x-line from xmax to x_max/2.
+      1. a "y-line" (from `y_min` to `y_max`) at `x_min`, facing `x_max` with `n_points_line` poses
+      2. a first "half x-line" (from `x_min` to `x_max/2`) at `y_max/2`, facing `x_max` with `n_points_line/2` poses
+      3. a second "half x-line" (from `x_max/2` to `x_max`) at `y_max/2`, facing `x_min` with `n_points_line/2` poses
+      4. a "y-line" (from `y_min` to `y_max`) at `x_max`, facing `x_min` with `n_points_line` poses
+    The is also a full rotation by steps of 45° at the center.
+    All this is optimized in terms of travels to save time and remove duplicates.
 
     See Also
     --------
@@ -450,46 +452,77 @@ class CalibrationPath(Path):
     >>> from plantimager.path import CalibrationPath
     >>> from plantimager.path import Circle
     >>> n_points_circle = 36
-    >>> circular_path = Circle(200, 200, 50, 0, 200, n_points_circle)
-    >>> n_points_line = 10
+    >>> circular_path = Circle(250, 250, 50, 0, 200, n_points_circle)
+    >>> n_points_line = 5
     >>> calib_path = CalibrationPath(circular_path, n_points_line)
+    >>> calib_path[36:]  # the calibration lines
     >>> len(calib_path) == n_points_circle + n_points_line*3
-    >>> calib_path
 
     """
 
-    def __init__(self, path, n_points_line, x_lims=None, y_lims=None):
+    def __init__(self, path, n_points_line=11, x_lims=None, y_lims=None):
         """
         Parameters
         ----------
         path : Path
             A path to calibrate.
-        n_points_line : int
-            The number of points per line.
+        n_points_line : int, optional
+            The number of points per line, should be an odd number (or we will add one point).
+            Defaults to `11` and should be greater or equal to `5`.
+        x_lims : list of int, optional
+            Set the min/max `x` range for the calibration (do NOT apply to the path to calibrate).
+            Else, will be set from the min/max of the path to calibrate on the x-axis.
+        y_lims : list of int, optional
+            Set the min/max `y` range for the calibration (do NOT apply to the path to calibrate).
+            Else, will be set from the min/max of the path to calibrate on the y-axis.
         """
         super().__init__()
-        el0 = path[0]
-        # - Start with the path to calibrate
+        # Check the `n_points_line` parameter:
+        try:
+            assert n_points_line >=5
+        except:
+            raise ValueError(f"CalibrationPath require a number of point per line >= `5`, got {n_points_line}!")
+
+        # - Start the calibration path with the path to calibrate:
         self.extend(path)
 
+        p0 = path[0]  # get the first pose
+        # Compute the X & Y range for calibration lines:
         if x_lims is None:
-            x_min = path[np.argmin([pelt.x - el0.x for pelt in path])].x
-            x_max = path[np.argmax([pelt.x - el0.x for pelt in path])].x
+            x_coords = [pelt.x for pelt in path]
+            x_min, x_max = min(x_coords), max(x_coords)
+            # x_min = path[np.argmin([p_i.x - p0.x for p_i in path])].x
+            # x_max = path[np.argmax([p_i.x - p0.x for p_i in path])].x
         else:
             x_min, x_max = x_lims
         if y_lims is None:
-            y_min = path[np.argmin([pelt.y - el0.y for pelt in path])].y
-            y_max = path[np.argmax([pelt.y - el0.y for pelt in path])].y
+            y_coords = [pelt.y for pelt in path]
+            y_min, y_max = min(y_coords), max(y_coords)
+            # y_min = path[np.argmin([p_i.y - p0.y for p_i in path])].y
+            # y_max = path[np.argmax([p_i.y - p0.y for p_i in path])].y
         else:
             y_min, y_max = y_lims
 
-        n_first_half = n_points_line // 2
-        n_second_half = n_points_line - n_first_half
-        # Add the first Y-line at x-min
-        self.extend(Line(x_min, y_min, el0.z, x_min, y_max, el0.z, 270., el0.tilt, n_points_line))
-        # Add the first half X-line
-        self.extend(Line(x_min, y_max // 2., el0.z, x_max // 2., y_max // 2., el0.z, 270., el0.tilt, n_first_half))
-        # Add the second Y-line at x-max
-        self.extend(Line(x_max, y_min, el0.z, x_max, y_max, el0.z, 90., el0.tilt, n_points_line))
-        # Add the second half X-line
-        self.extend(Line(x_max, y_max // 2., el0.z, x_max // 2., y_max // 2., el0.z, 90., el0.tilt, n_second_half))
+        # Get the middle coordinates in X & Y:
+        mid_x = (x_max - x_min) // 2. + x_min
+        mid_y = (y_max - y_min) // 2. + y_min
+        # Make sure the number of point per line is an odd number:
+        if n_points_line % 2 == 0:
+            n_points_line += 1
+        # Get the number of point to make a "half line":
+        n_points_half_line = n_points_line // 2 + 1
+
+        # Add the first Y-line at x-min, facing the x-max:
+        self.extend(Line(x_min, y_min, p0.z, x_min, y_max, p0.z, 270., p0.tilt, n_points_line))
+        # Add the first half X-line facing the x-max:
+        #  - remove the first pose as it has been done during the first Y-line at x-min
+        self.extend(Line(x_min, mid_y, p0.z, mid_x, mid_y, p0.z, 270., p0.tilt, n_points_half_line)[1:])
+        # Add a full rotation by steps of 45°:
+        for n in range(1, 8):
+            self.extend([PathElement(mid_x, mid_y, p0.z, (270. + n * 45) % 360, p0.tilt)])
+        # Add the second half X-line facing the x-min:
+        #  - remove the first pose as it has been done during the rotation
+        #  - remove the last pose as it will be done during the second Y-line at x-max
+        self.extend(Line(mid_x, mid_y, p0.z, x_max, mid_y, p0.z, 90., p0.tilt, n_points_half_line)[1:-1])
+        # Add the second Y-line at x-max, facing the x-min:
+        self.extend(Line(x_max, y_min, p0.z, x_max, y_max, p0.z, 90., p0.tilt, n_points_line))
