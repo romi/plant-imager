@@ -88,9 +88,9 @@ fi
 if [ "$cmd" = "" ]
 then
     # Start in interactive mode. ~/.bashrc will be loaded.
-    docker run -it $mount_option --gpus all roboticsmicrofarms/virtual-plant-imager:$vtag bash
+    docker run --rm -it $mount_option --gpus all roboticsmicrofarms/virtual-plant-imager:$vtag bash
 else
     # Start in non-interactive mode (run the command). 
     # Request a login shell (-l) to load ~/.profile.
-    docker run $mount_option --gpus all roboticsmicrofarms/virtual-plant-imager:$vtag bash -lc "$cmd"
+    docker run --rm $mount_option --gpus all roboticsmicrofarms/virtual-plant-imager:$vtag bash -lc "$cmd"
 fi
