@@ -6,7 +6,7 @@ To be as clear as possible, we define the following names:
 
 
 ## Getting started
-Clone the repository and initialize the sub-modules.
+Clone the repository and initialize the submodules.
 In a terminal:
 ```shell
 git clone https://github.com/romi/plant-imager.git
@@ -26,8 +26,8 @@ Obviously you first have to follow the [getting started](https://github.com/romi
 #### Build the `plantimager` image
 In this repository, you will find a dedicated script, named `build.sh`, in the `docker/plantimager/` directory.
 
-You may need to update the sub-modules before building the image.
-In a terminal move to the root of the cloned `plant-imager` repository and update the sub-modules with:
+You may need to update the submodules before building the image.
+In a terminal move to the root of the cloned `plant-imager` repository and update the submodules with:
 ```shell
 git submodule update
 ```
@@ -54,8 +54,8 @@ To generate a new plant dataset, here named `test2`, we have to:
 - mount the local (host) database to the docker container with the `-db` option
 - provide the ROMI command to start a `Scan` task
 ```shell
-./docker/plantimager/run.sh -db /home/remisans/romi_db/\
-  -c "romi_run_task Scan /home/remisans/db/test_2 --config /home/remisans/plant-imager/config/hardware_scan_rx0.toml"
+./docker/plantimager/run.sh -db /home/${USER}/romi_db/\
+  -c "romi_run_task Scan /home/${USER}/db/test_2 --config /home/${USER}/plant-imager/config/hardware_scan_rx0.toml"
 ```
 
 ### Using the `virtualplantimager` docker image
@@ -63,8 +63,8 @@ To generate a new plant dataset, here named `test2`, we have to:
 #### Build the `virtualplantimager` image
 In this repository, you will find a dedicated script, named `build.sh`, in the `docker/virtualplantimager/` directory.
 
-You may need to update the sub-modules before building the image.
-In a terminal move to the root of the cloned `plant-imager` repository and update the sub-modules with:
+You may need to update the submodules before building the image.
+In a terminal move to the root of the cloned `plant-imager` repository and update the submodules with:
 ```shell
 git submodule update
 ```
@@ -118,14 +118,14 @@ After a while, if the generation has succeeded, you can check the generated data
 
 > :information_source: If you have an error about a locked database: `rm /tmp/generated_dataset/lock` and try again! 
 
-For more information have a look at the official ROMI documentation [website](https://docs.romi-project.eu/Scanner/).
+For more information have a look at the official ROMI documentation [website](https://docs.romi-project.eu/plant_imager/).
 
 
 ## Install from sources
 We **highly** recommend using the docker image for the _virtual plant imager_ as installing things can get messy!
 
 ### Getting started
-Start by cloning the sources and getting the sub-modules:
+Start by cloning the sources and getting the submodules:
 ```shell
 # Clone plant-imager sources
 git clone https://github.com/romi/plant-imager
@@ -140,7 +140,7 @@ git submodule update
 #### Conda environment creation
 Create a conda environment named `plant_imager` and install required dependencies:
 ```shell
-conda create -n plant_imager python=3.7
+conda create -n plant_imager python=3.9
 ```
 
 #### Install the sources
@@ -155,7 +155,7 @@ cd romitask/ && poetry install --no-interaction && cd ..
 # Install `plant-imager`:
 python -m pip install -e .
 ```
-> :information_source: Please notice that we here use the git sub-modules to clone and install `romitask` and `plantdb`.
+> :information_source: Please notice that we here use the git submodules to clone and install `romitask` and `plantdb`.
 
 ### Install from sources to use the _virtual plant imager_
 
@@ -215,7 +215,7 @@ python -m pip install -e ./romitask/
 python -m pip install -e .
 ```
 
-> :information_source: Please notice that we here use the git sub-modules to clone and install `romitask` and `plantdb`.
+> :information_source: Please notice that we here use the git submodules to clone and install `romitask` and `plantdb`.
 
-> :information_source: The `-e` option install the module or sub-module in *editable* mode.
+> :information_source: The `-e` option install the module or submodule in *editable* mode.
 > That means you will not have to reinstall them if you make modifications to the sources.

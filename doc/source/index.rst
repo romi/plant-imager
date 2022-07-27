@@ -7,7 +7,7 @@ Welcome to plantimager's API documentation!
 ===========================================
 
 This documentation only contains the reference API for plantimager.
-For more information about this Python package & how to use it, see: https://docs.romi-project.eu/Scanner/
+For more information about this Python package & how to use it, see: https://docs.romi-project.eu/plant_imager/
 
 .. toctree::
    :maxdepth: 4

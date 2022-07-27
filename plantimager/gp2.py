@@ -22,7 +22,7 @@
 # License along with plantimager.  If not, see
 # <https://www.gnu.org/licenses/>.
 
-"""Implementation of a camera module based on gphoto2.
+"""Implementation of a camera module based on gPhoto2.
 
 Requires system library `libgphoto2-dev` & python package `gphoto2`.
 ```shell
@@ -42,7 +42,7 @@ from plantimager.hal import DataItem
 
 
 class Camera(AbstractCamera):
-    """Gphoto2 Camera object.
+    """gPhoto2 Camera object.
 
     Examples
     --------
@@ -79,7 +79,7 @@ class Camera(AbstractCamera):
         return ['rgb']
 
     def grab(self, idx: int, metadata: dict = None):
-        """Grab a picture with gphoto2. """
+        """Grab a picture with gPhoto2. """
         # with tempfile.TemporaryDirectory as tmp:
         #     fname = os.path.join(tmp, "frame.jpg")
         #     self.grab_write(fname)
@@ -101,7 +101,7 @@ class Camera(AbstractCamera):
         return data_item
 
     def grab_write(self, target: str):
-        """Grab & save a picture with gphoto2. """
+        """Grab & save a picture with gPhoto2. """
         file_path = self.camera.capture(0)
         camera_file = self.camera.file_get(file_path.folder, file_path.name,
                                            gp.GP_FILE_TYPE_NORMAL)
