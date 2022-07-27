@@ -28,6 +28,7 @@ import os
 import random
 
 import luigi
+from plantimager import path
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
 from plantimager.log import logger
@@ -90,13 +91,13 @@ class Scan(RomiTask):
         """The output fileset associated to a ``Scan`` is an 'images' dataset."""
         return FilesetTarget(DatabaseConfig().scan, "images")
 
-    def get_path(self) -> plantimager.path.Path:
+    def get_path(self) -> path.Path:
         """Load the ``ScanPath`` module & get the configuration from the TOML config file."""
         path_module = importlib.import_module(ScanPath().module)
         path = getattr(path_module, ScanPath().class_name)(**ScanPath().kwargs)
         return path
 
-    def load_scanner(self) -> plantimager.scanner.Scanner:
+    def load_scanner(self) -> Scanner:
         """Load the ``CNC``, ``Gimbal`` & ``Camera`` modules and create a ``Scanner`` configuration."""
         scanner_config = self.scanner
 
@@ -250,7 +251,7 @@ class CalibrationScan(Scan):
         Offset to axes limits, in millimeters. Defaults to ``5``.
 
     """
-    n_points_line = luigi.IntParameter(default=10)
+    n_points_line = luigi.IntParameter(default=11)
     offset = luigi.IntParameter(default=5)  # limits offset in mm
 
     def run(self):
