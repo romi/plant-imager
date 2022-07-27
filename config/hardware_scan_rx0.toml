@@ -56,7 +56,7 @@ X_motor = "X-Carve NEMA23"  # type of motor used for the X axis, eg: "X-Carve NE
 Y_motor = "X-Carve NEMA23"  # type of motor used for the Y axis, eg: "X-Carve NEMA23";
 Z_motor = "X-Carve NEMA23"  # type of motor used for the Z axis, eg: "X-Carve NEMA23";
 pan_motor = "iPower Motor GM4108H-120T Brushless Gimbal Motor"  # type of motor used for the camera pan axis, eg: "Dynamixel";
-tilt_motor = "None"  # type of motor used for the camera tilt axis, eg: "Gimball";
+tilt_motor = "None"  # type of motor used for the camera tilt axis, eg: "gimbal";
 sensor = "Sony RX0"  # type of sensor used during acquisition, eg: "Sony alpha";
 
 [Scan.metadata.workspace]
