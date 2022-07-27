@@ -6,6 +6,7 @@ from setuptools import setup
 
 s = setup(
     name='plantimager',
+    version='0.2.1',
     packages=find_packages(),
     scripts=[
         'bin/romi_bpy',
@@ -17,8 +18,9 @@ s = setup(
     author_email='timothee@timwin.fr',
     description='A plant imager',
     long_description='',
-    use_scm_version=True,
-    setup_requires=['setuptools_scm'],
+    # use_scm_version=True,
+    # setup_requires=['setuptools_scm'],
+    setup_requires=[],
     install_requires=[
         'colorlog',
         'numpy',
