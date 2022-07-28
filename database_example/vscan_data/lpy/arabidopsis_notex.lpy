@@ -42,11 +42,8 @@ nb_triangles = 20
 triangle_zone = 30
 triangle_size = 10
 
-try:
-    seed(SEED)
-except:
-    pass
-
+SEED = 0.1
+seed(SEED)
 
 #########################
 # Meristem model
@@ -207,7 +204,9 @@ class InternodeData:
     self.age = 0
     self.order = meristem.order
     self.state = meristem.state
-    self.length = cap_gauss(enlen,enlen_sigma)
+    self.length_init = cap_gauss(enlen,enlen_sigma)
+    self.length = self.length_init
+    #self.divangle = float('inf')
 
 class LeafData:
   def __init__(self, maxsize, meristem):
@@ -257,6 +256,21 @@ def incTime(md,dt):
 
 def Start():
   logger.debug("Nb of simulation steps = %i" % NbSimulationSteps)
+  
+def End(lstring, lscene):
+  angles = []
+  internodes = []
+  
+  k = 0 # index on the internodes of the main stem
+  for id in lstring:
+    if id.name == 'I' and id[0].order == 0 and id[0].state[0] >=1 : # and id[0].state[0] == 2
+      #print(k, id[0].state[0], id[0].divangle, id[0].length)
+      internodes.append(id[0].length)
+      angles.append(id[0].divangle)
+      k += 1
+   
+  print("internode length sequence on the inflorescence :", internodes)
+  print("derivation angle sequence on the inflorescence :", angles)
 
 module M, I, L, Flower, Pedicel, Petals, Carpel, Leaf
 
@@ -264,7 +278,8 @@ Axiom:
   # plots red cylinders for calibration at the bottom of the scene
   nproduce @Tp(0,0,1)@Ts(MAXELASTICITY*0.1)
   md = MeristemData()
-  nproduce SetGuide(stem_curve,10) # 10 is the length of the curve. Should be checked
+  # 10 is the length of the curve. Should be checked
+  nproduce SetGuide(stem_curve,10) 
   nproduce M(md)
 
 derivation length: NbSimulationSteps
@@ -293,12 +308,12 @@ M(d):
     id = InternodeData(d)
     nproduce I(id)
     divangle = cap_gauss(alpha,sigma_alpha)
+    id.divangle = (divangle / 180.0) * pi # this will not change in time
     nproduce /(divangle)
     if d.order == 0 and d.state[0] == 2:
         logger.debug("angle = %.2f, internode = %.2f"%(divangle, id.length))
         angles.append((divangle / 180.0) * pi) # convert to radians
         internodes.append(id.length)
-
     # Compute lateral productions
     # 1. Leaf
     if d.state[0] < 2: # in veg and veginflo produce a leaf
@@ -327,6 +342,20 @@ M(d):
 
 I(d):
   d.age += dt
+  # computes the scale factor due to age
+  if d.state[0] == 0:
+    g = hillcurve(0.01,0.03,2.,2.*T,d.age)
+  elif d.state[0] == 1 :
+    g = hillcurve(0.01,3.,2.,10.*T,d.age)
+    # growth with age
+  elif d.state[0] == 2 :
+    # A large mid value will compact the flowers at the tip of inflorescence axes
+    # e.g. 30.*T
+    g = hillcurve(0.01,2.,5.,60.*T,d.age)
+    # growth with age
+  else:
+    g = hillcurve(0.01,0.011,2.,2.*T,d.age)
+  d.length = g*d.length_init 
   produce I(d)
 
 L(d):
@@ -346,19 +375,7 @@ M(d):
 
 # Internode (includes the phyllotaxy)
 I(d):
-  if d.state[0] == 0:
-    g = hillcurve(0.01,0.03,2.,2.*T,d.age)
-  elif d.state[0] == 1 :
-    g = hillcurve(0.01,3.,2.,10.*T,d.age)
-    # growth with age
-  elif d.state[0] == 2 :
-    # A large mid value will compact the flowers at the tip of inflorescence axes
-    # e.g. 30.*T
-    g = hillcurve(0.01,2.,5.,60.*T,d.age)
-    # growth with age
-  else:
-    g = hillcurve(0.01,0.011,2.,2.*T,d.age)
-  s = d.length*g
+  s = d.length
   produce ;(3)_(endiam*0.9)F(s)
 
 # Leaf
@@ -428,7 +445,7 @@ endlsystem
 
 lol = False
 if lol:
-  l = Lsystem("arabidopsis_notex.lpy") 
+  l = Lsystem("arabidopsis_notex.lpy")
   lstring = l.derive()
   t = PglTurtle()
   l.turtle_interpretation(lstring, t)
@@ -457,13 +474,7 @@ def __initialiseContext__(context):
 	Color_5.name = "Color_5"
 	context.turtle.setMaterial(5,Color_5)
 	context.animation_timestep = 0.01
-	scalars = [('BRANCHON', 'Bool', True),
-                   ('MEAN_NB_DAYS', 'Integer', 40, 0, 100),
-                   ('STDEV_NB_DAYS', 'Integer', 8, 1, 10),
-                   ('BETA', 'Float', 50, 0, 90),
-                   ('INTERNODE_LENGTH', 'Float', 1.0, 0, 3.0),
-                   ('STEM_DIAMETER', 'Float', 0.1, 0.1, 0.3),
-                   ('HAS_LEAVES', 'Bool', True)]
+	scalars = [('BRANCHON', 'Bool', True), ('MEAN_NB_DAYS', 'Integer', 40, 0, 100), ('STDEV_NB_DAYS', 'Integer', 8, 1, 10), ('BETA', 'Float', 50, 0, 90, 2), ('INTERNODE_LENGTH', 'Float', 1.0, 0, 3.0, 2), ('STEM_DIAMETER', 'Float', 0.1, 0.1, 0.3, 2), ('HAS_LEAVES', 'Bool', True)]
 	context["__scalars__"] = scalars
 	for s in scalars:
 		if not s[1] == "Category" : context[s[0]] = s[2]
