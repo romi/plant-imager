@@ -39,8 +39,10 @@ import atexit
 import time
 
 import serial
+
 from plantimager.error import Error
 from plantimager.hal import AbstractGimbal
+from plantimager.log import logger
 
 
 class Gimbal(AbstractGimbal):
@@ -67,7 +69,14 @@ class Gimbal(AbstractGimbal):
     invert_rotation : bool
         Use it to invert the rotation of the motor.
 
+    Examples
+    --------
+    >>> from plantimager.blgimbal import Gimbal
+    >>> g = Gimbal("/dev/ttyACM1", has_tilt=False, invert_rotation=True)
+    >>> g.status
+
     """
+
     def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=360,
                  zero_pan=0, zero_tilt=0, invert_rotation=False):
         super().__init__()
@@ -84,13 +93,13 @@ class Gimbal(AbstractGimbal):
         atexit.register(self.stop)
 
     def start(self):
-        """Start the serial connection with the custom board."""
-        self.serial_port = serial.Serial(self.port, 115200, timeout=1)
+        """Start the serial connection with the custom board controlling the Gimbal."""
+        self.serial_port = serial.Serial(self.port, 115200, timeout=1, write_timeout=3)
         self.update_status()
         return None
 
     def stop(self):
-        """Stop the serial connection with the custom board."""
+        """Stop the serial connection with the custom board controlling the Gimbal."""
         if self.serial_port:
             self.serial_port.close()
             self.serial_port = None
@@ -102,15 +111,26 @@ class Gimbal(AbstractGimbal):
     def async_enabled(self) -> bool:
         return True
 
-    def get_position(self):
+    def get_position(self) -> list:
+        """Returns the pan & tilt positions of the Gimbal."""
         self.update_status()
         return self.p
 
-    def get_status(self):
+    def get_status(self) -> str:
+        """Returns the status of the custom board controlling the Gimbal."""
         self.update_status()
         return self.status
 
     def set_target_pos(self, pan, tilt):
+        """Set a target position for pan & tilt.
+
+        Parameters
+        ----------
+        pan : float
+            The desired `pan` orientation.
+        tilt : float
+            The desired `tilt` orientation.
+        """
         if self.invert_rotation:
             pan = -pan
         self.__send("X%d" % (self.zero_pan + int(pan / 360 * self.steps_per_turn)))
@@ -122,32 +142,60 @@ class Gimbal(AbstractGimbal):
         pass
 
     def moveto(self, pan, tilt):
+        """Move to a target position for pan & tilt.
+
+        Parameters
+        ----------
+        pan : float
+            The desired `pan` orientation.
+        tilt : float
+            The desired `tilt` orientation.
+        """
         self.moveto_async(pan, tilt)
         self.wait()
         return None
 
     def moveto_async(self, pan, tilt):
+        """Asynchronous move to a target position for pan & tilt.
+
+        Parameters
+        ----------
+        pan : float
+            The desired `pan` orientation.
+        tilt : float
+            The desired `tilt` orientation.
+        """
         self.set_target_pos(pan, tilt)
         return None
 
     def update_status(self):
+        """Update the pan & tilt positions."""
         p = self.__send("p").decode('utf-8')
+        logger.debug(f"Raw gimbal response: {p}")
         p = p.split(":")[-1].split(",")
+        logger.debug(f"Gimbal response: pan={p[0]}, tilt={p[1]}")
         self.p[0] = (int(p[0]) - self.zero_pan) / self.steps_per_turn * 360
         self.p[1] = (int(p[1]) - self.zero_tilt) / self.steps_per_turn * 360
         return None
 
     def __send(self, s):
+        """Send a command trough the serial port.
+
+        Parameters
+        ----------
+        s : str
+            The command to send to the custom board controlling the Gimbal.
+        """
         if not self.serial_port:
             raise Error("Serial connection to gimbal has not been started yet!")
         self.serial_port.reset_input_buffer()
         r = False
         try:
-            self.serial_port.write(bytes('%s\n' % s, 'utf-8'))
+            self.serial_port.write(bytes(f"{s}\n", 'utf-8'))
             time.sleep(0.01)
             r = self.serial_port.readline()
         finally:
             pass  # dummy statement to avoid empty 'finally' clause
         if r == False:
-            print('cmd=%s: failed' % (s))
+            logger.critical(f"Command failed: `{s}`!")
         return r
