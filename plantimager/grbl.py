@@ -258,7 +258,7 @@ class CNC(AbstractCNC):
         return None
 
     def get_position(self):
-        """Returns the xyz position of the CNC."""
+        """Returns the x, y & z positions of the CNC."""
         return self.x, self.y, self.z
 
     def async_enabled(self):
@@ -335,7 +335,7 @@ class CNC(AbstractCNC):
         x = int(-x) if self.invert_x else int(x)
         y = int(-y) if self.invert_y else int(y)
         z = int(-z) if self.invert_z else int(z)
-        self.send_cmd("g0 x%s y%s z%s" % (x, y, z))
+        self.send_cmd(f"g0 x{x} y{y} z{z}")
         self.x, self.y, self.z = x, y, z
         time.sleep(0.1)  # Add a little sleep between calls
         return None
@@ -365,10 +365,10 @@ class CNC(AbstractCNC):
 
         """
         self.serial_port.reset_input_buffer()
-        logger.debug("%s -> cnc" % cmd)
+        logger.debug(f"{cmd} -> cnc")
         self.serial_port.write((cmd + "\n").encode())
         grbl_out = self.serial_port.readline()
-        logger.debug("cnc -> %s" % grbl_out.strip())
+        logger.debug(f"cnc -> {grbl_out.strip()}")
         time.sleep(0.1)
         return grbl_out
 
