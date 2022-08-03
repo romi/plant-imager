@@ -101,20 +101,36 @@ class Scan(RomiTask):
         """Load the ``CNC``, ``Gimbal`` & ``Camera`` modules and create a ``Scanner`` configuration."""
         scanner_config = self.scanner
 
+        # - Load the CNC configuration from TOML:
         cnc_module = scanner_config["cnc"]["module"]
+        logger.debug(f"CNC module: {cnc_module}")
         cnc_kwargs = scanner_config["cnc"]["kwargs"]
+        param_str = [f"\n  - {k}={v}" for k, v in cnc_kwargs.items()]
+        logger.debug(f"CNC parameters: {''.join(param_str)}")
+        # - Import corresponding module to python:
         cnc_module = importlib.import_module(cnc_module)
         cnc = getattr(cnc_module, "CNC")(**cnc_kwargs)
 
+        # - Load the Gimbal configuration from TOML:
         gimbal_module = scanner_config["gimbal"]["module"]
         gimbal_kwargs = scanner_config["gimbal"]["kwargs"]
+        logger.debug(f"Gimbal module: {gimbal_module}")
+        param_str = [f"\n  - {k}={v}" for k, v in gimbal_kwargs.items()]
+        logger.debug(f"Gimbal parameters: {''.join(param_str)}")
+        # - Import corresponding module to python:
         gimbal_module = importlib.import_module(gimbal_module)
         gimbal = getattr(gimbal_module, "Gimbal")(**gimbal_kwargs)
 
+        # - Load the Camera configuration from TOML:
         camera_module = scanner_config["camera"]["module"]
         camera_kwargs = scanner_config["camera"]["kwargs"]
+        logger.debug(f"Camera module: {camera_module}")
+        param_str = [f"\n  - {k}={v}" for k, v in camera_kwargs.items()]
+        logger.debug(f"Camera parameters: {''.join(param_str)}")
+        # - Import corresponding module to python:
         camera_module = importlib.import_module(camera_module)
         camera = getattr(camera_module, "Camera")(**camera_kwargs)
+
         return Scanner(cnc, gimbal, camera)
 
     def run(self, path=None, hw_scanner=None, extra_md=None):
