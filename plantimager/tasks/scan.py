@@ -264,7 +264,7 @@ class CalibrationScan(Scan):
     n_points_line : IntParameter, optional
         Number of shots taken on the orthogonal calibration lines. Defaults to ``10``.
     offset : IntParameter, optional
-        Offset to axes limits, in millimeters. Defaults to ``5``.
+        Offset to axis limits, in millimeters. Defaults to ``5``.
 
     """
     n_points_line = luigi.IntParameter(default=11)
@@ -290,5 +290,59 @@ class CalibrationScan(Scan):
         # Create a CalibrationPath instance:
         calibration_path = getattr(path_module, "CalibrationPath")(path, self.n_points_line,
                                                                    x_lims=x_lims, y_lims=y_lims)
+        # Run the calibration procedure:
+        Scan().run(path=calibration_path, hw_scanner=hw_scanner)
+
+
+class IntrinsicCalibrationScan(Scan):
+    """A task to calibrate the intrinsic parameters of the camera.
+
+    Parameters
+    ----------
+    n_poses : IntParameter, optional
+        Number of calibration pattern pictures to take. Defaults to ``20``.
+    offset : IntParameter, optional
+        Offset to axis limits, in millimeters. Defaults to ``5``.
+
+    romi_run_task IntrinsicCalibrationScan ~/Soft/romi_db/intrinsic_calib --config ~/Soft/romi_db/scan_v2.toml --module plantimager.tasks.scan
+    """
+
+    n_poses = luigi.IntParameter(default=20)  # number of acquisitions to make
+    offset = luigi.IntParameter(default=5)  # limits offset in mm
+
+    def run(self):
+        from plantimager.path import PathElement
+        path = Scan().get_path()
+        # Load the Scanner instance to get axes limits:
+        hw_scanner = Scan().load_scanner()
+
+        # Get axes limits:
+        x_lims = getattr(hw_scanner.cnc, 'x_lims', None)
+        if x_lims is not None:
+            logger.info(f"Got X limits from scanner: {x_lims}")
+            # Avoid true limits, as you might get stuck in some cases:
+            x_lims = [x_lims[0] + self.offset, x_lims[1] - self.offset]
+        else:
+            x_coords = [pelt.x for pelt in path]
+            x_lims = [min(x_coords), max(x_coords)]
+
+        y_lims = getattr(hw_scanner.cnc, 'y_lims', None)
+        if y_lims is not None:
+            logger.info(f"Got Y limits from scanner: {y_lims}")
+            # Avoid true limits, as you might get stuck in some cases:
+            y_lims = [y_lims[0] + self.offset, y_lims[1] - self.offset]
+        else:
+            y_coords = [pelt.y for pelt in path]
+            y_lims = [min(y_coords), max(y_coords)]
+
+        # Move the camera to the center of the scanner entrance (middle of x-axis, beginning of y-axis)
+        x = (x_lims[1] - x_lims[0]) // 2.
+        y = y_lims[0]
+        elt = PathElement(x, y, 0, 0, 0)
+        # Repeat this pose `n_poses` times to create the `Path` instance:
+        calibration_path = []
+        for n in range(0, self.n_poses):
+            calibration_path.append(elt)
+
         # Run the calibration procedure:
         Scan().run(path=calibration_path, hw_scanner=hw_scanner)
