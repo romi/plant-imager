@@ -29,6 +29,8 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
+from tqdm import tqdm
+
 from plantdb import io
 from plantdb.db import Fileset
 from plantimager.log import logger
@@ -227,9 +229,8 @@ class AbstractScanner(metaclass=ABCMeta):
         return target_pose
 
     def scan(self, path: Path, fileset: Fileset) -> None:
-        for x in path:
+        for x in tqdm(path, unit='pose'):
             pose = self.get_target_pose(x)
-            print(pose)
             data_item = self.scan_at(pose, x.exact_pose)
             for c in self.channels():
                 f = fileset.create_file(data_item.channels[c].format_id())

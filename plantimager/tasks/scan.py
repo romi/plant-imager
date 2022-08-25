@@ -80,7 +80,6 @@ class Scan(RomiTask):
 
     """
     upstream_task = None
-
     metadata = luigi.DictParameter(default={})
     scanner = luigi.DictParameter(default={})
 
@@ -306,7 +305,6 @@ class IntrinsicCalibrationScan(Scan):
 
     romi_run_task IntrinsicCalibrationScan ~/Soft/romi_db/intrinsic_calib --config ~/Soft/romi_db/scan_v2.toml --module plantimager.tasks.scan
     """
-
     n_poses = luigi.IntParameter(default=20)  # number of acquisitions to make
     offset = luigi.IntParameter(default=5)  # limits offset in mm
 
