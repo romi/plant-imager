@@ -18,8 +18,8 @@ radius = 375
 n_points = 36
 
 [Scan.scanner.camera]
-module = "plantimager.sony"
-#module = "plantimager.gp2"
+module = "plantimager.sony"  # Sony RX-0 camera
+#module = "plantimager.gp2"  # Sony alpha camera
 
 [Scan.scanner.camera.kwargs]
 #url = "http://myflashair"
@@ -30,7 +30,7 @@ use_flashair = false
 rotation = 270
 
 [Scan.scanner.gimbal]
-module = "plantimager.blgimbal"
+module = "plantimager.blgimbal"  # plant imager hardware v2
 
 [Scan.scanner.gimbal.kwargs]
 port = "/dev/ttyACM1"
@@ -39,7 +39,7 @@ zero_pan = 0
 invert_rotation = true
 
 [Scan.scanner.cnc]
-module = "plantimager.grbl"
+module = "plantimager.grbl"  # plant imager hardware v2
 
 [Scan.scanner.cnc.kwargs]
 port = "/dev/ttyACM0"
@@ -59,13 +59,13 @@ experiment_id = "romi_demo_2020"  # an identifier for the experiment, eg: "dry p
 dataset_id = "romi_demo_1"  # the dataset identifier for the biological dataset, eg: 12;
 
 [Scan.metadata.hardware]
-frame = "30profile v1"  # scanner frame type and version, eg: "30profile v1";
+frame = "30profile v2"  # scanner frame type and version, eg: "30profile v2";
 X_motor = "X-Carve NEMA23"  # type of motor used for the X axis, eg: "X-Carve NEMA23";
 Y_motor = "X-Carve NEMA23"  # type of motor used for the Y axis, eg: "X-Carve NEMA23";
 Z_motor = "X-Carve NEMA23"  # type of motor used for the Z axis, eg: "X-Carve NEMA23";
 pan_motor = "iPower Motor GM4108H-120T Brushless Gimbal Motor"  # type of motor used for the camera pan axis, eg: "Dynamixel";
 tilt_motor = "None"  # type of motor used for the camera tilt axis, eg: "gimbal";
-sensor = "Sony RX0"  # type of sensor used during acquisition, eg: "Sony alpha";
+sensor = "Sony RX-0"  # type of sensor used during acquisition, eg: "Sony alpha";
 
 [Scan.metadata.workspace]
 # TODO: To remove, should not be "hardcoded" in metadata but retreived from CNC configuration:
