@@ -1,3 +1,11 @@
+[IntrinsicCalibrationScan]
+n_poses = 20  # Number of acquisition of the printed ChArUco board
+offset = 5
+
+[CalibrationScan]
+n_points_line = 11
+offset = 5
+
 [ScanPath]
 class_name = "Circle"
 
