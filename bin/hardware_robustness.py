@@ -67,28 +67,6 @@ def parsing():
     return parser
 
 
-def get_scan_replicates(db_path):
-    """Get the list of scan replicates.
-
-    Parameters
-    ----------
-    db_path : pathlib.Path
-        Full path to evaluation database.
-
-    Returns
-    -------
-    list of str
-        List of full path to the scan replicates found in the evaluation database.
-
-    Examples
-    --------
-    >>> from pathlib import Path
-    >>> db_path = Path('~/scan_robustness_db/')
-    >>> get_scan_replicates(db_path.expanduser())
-    """
-    return sorted(list([idir.expanduser() for idir in db_path.iterdir() if idir.is_dir()]))
-
-
 def _check_markers(path):
     # - Make sure the `romidb` marker file exists:
     marker_file = path / MARKER_FILE_NAME
@@ -145,7 +123,7 @@ def check_scan_configs(scans_list):
         else:
             same_type = compare_scan_type(ref_scan_cfg, scan_cfg)
             same_params = compare_scan_params(ref_scan_cfg, scan_cfg)
-
+    return
 
 def compare_scan_type(ref_scan_cfg, scan_cfg):
     # - Check the type of 'ScanPath' is the same:
@@ -176,7 +154,7 @@ def romi_run_task(scan_path, task_name, cfg_file):
 
     Parameters
     ----------
-    scan_path : pathlib.Path
+    scan_path : pathlib.Path or str
        Path to the scan dataset directory.
     task_name : str
         Name of the ROMI task to run.
@@ -185,7 +163,6 @@ def romi_run_task(scan_path, task_name, cfg_file):
 
     """
     logger.info(f"Executing task '{task_name}' on scan dataset '{str(scan_path)}'.")
-    # TODO: use luigi.build() instead of subprocess.run call ?
     cmd = ["romi_run_task", task_name, str(scan_path), "--config", cfg_file, "--local-scheduler"]
     subprocess.run(cmd, check=True)
     return
@@ -199,11 +176,51 @@ def _get_diff_between_dict(d1, d2):
     return diff1, diff2
 
 
-def main():
-    # - Parse the input arguments to variables:
-    parser = parsing()
-    args = parser.parse_args()
+def make_animation(db_location, imgs, img_fname, delay):
+    """Make the animation as a sequence of images taken at the same position.
 
+    Parameters
+    ----------
+    db_location : pathlib.Path or str
+       Path to the database directory.
+    imgs : dict
+        ``Scan.id`` indexed dict of selected `img_fname`
+    img_fname : str
+        Name (without extension) of the image (from the .
+    delay : int
+        The delay between successive frames
+
+    Returns
+    -------
+
+    """
+    # Initialize a temporary directory use to store scan dataset before cleaning and running previous tasks to task to analyse:
+    tmp_dir = tempfile.mkdtemp()
+    # - Get the path of the temporary ROMI database
+    tmp_path = Path(tmp_dir)
+    logger.debug(f"Create a temporary directory '{tmp_path}' to modify the images prior to animation...")
+
+    # Copy the image to temporary directory:
+    annotated_imgs = {}
+    for n, (scan_id, img) in enumerate(imgs.items()):
+        img_fname = str(Path(img).stem) + f'_{n}' + '.jpg'
+        annotated_imgs[scan_id] = f"{tmp_path}/{img_fname}"
+        subprocess.run(["cp", img, annotated_imgs[scan_id]])
+
+    # Add the scan name to image
+    for scan_id, img in annotated_imgs.items():
+        cmd = ['mogrify', '-font', 'Liberation-Sans', '-fill', 'white', '-undercolor', "black", '-pointsize', '26',
+               '-gravity', 'NorthEast', '-annotate', '+10+10', f"'{scan_id}/{img_fname}'", img]
+        subprocess.run(cmd)
+
+    gif_fname = str(db_location / Path(str(Path(img_fname).stem) + '.gif'))
+    cmd = ["convert", "-delay", f"{delay}"] + sorted(map(str, annotated_imgs.values())) + [gif_fname]
+    subprocess.run(cmd, check=True)
+    rmtree(tmp_path)
+    logger.info(f"Generated the GIF animation: '{gif_fname}'.")
+
+
+def main(args):
     # - Get the path to DB (directory) used to save the repeated scans:
     db_location = Path(args.db_location).expanduser()
 
@@ -212,11 +229,7 @@ def main():
     logger = configure_logger(filename, db_location, args.log_level)
     logger.info(f"Path to the 'repeated scans' database is: '{db_location}'")
 
-    # - Search for existing repeated scans:
-    scan_replicates = get_scan_replicates(db_location)
-    if len(scan_replicates) == 0:
-        logger.warning(f"Could not find repeated scans in the provided database path!")
-
+    # Check the ROMI marker files and connect to the local database:
     _check_markers(db_location)
     db = FSDB(str(db_location))
     db.connect()
@@ -257,31 +270,11 @@ def main():
         img_fs = scan.get_fileset('images')
         imgs[scan.id] = Path(img_fs.get_file(args.image_id).path()).absolute()
 
-    # Initialize a temporary directory use to store scan dataset before cleaning and running previous tasks to task to analyse:
-    tmp_dir = tempfile.mkdtemp()
-    # - Get the path of the temporary ROMI database
-    tmp_path = Path(tmp_dir)
-    logger.debug(f"Create a temporary directory '{tmp_path}' to modify the images prior to animation...")
-
-    # Copy the image to temporary directory:
-    annotated_imgs = {}
-    for n, (scan_id, img) in enumerate(imgs.items()):
-        img_fname = str(Path(img).stem) + f'_{n}' + '.jpg'
-        annotated_imgs[scan_id] = f"{tmp_path}/{img_fname}"
-        subprocess.run(["cp", img, annotated_imgs[scan_id]])
-
-    # Add the scan name to image
-    for scan_id, img in annotated_imgs.items():
-        cmd = ['mogrify', '-font', 'Liberation-Sans', '-fill', 'white', '-undercolor', "black", '-pointsize', '26',
-               '-gravity', 'NorthEast', '-annotate', '+10+10', f"'{scan_id}/{args.image_id}'", img]
-        subprocess.run(cmd)
-
-    gif_fname = str(db_location / Path(str(Path(args.image_id).stem) + '.gif'))
-    cmd = ["convert", "-delay", f"{args.delay}"] + list(map(str, annotated_imgs.values())) + [gif_fname]
-    subprocess.run(cmd, check=True)
-    rmtree(tmp_path)
-    logger.info(f"Generated the GIF animation: '{gif_fname}'.")
-
+    make_animation(db_location, imgs, args.image_id, args.delay)
+    return
 
 if __name__ == '__main__':
-    main()
+    # - Parse the input arguments to variables:
+    parser = parsing()
+    args = parser.parse_args()
+    main(args)
