@@ -84,8 +84,7 @@ class ToCenter(RomiTask):
         return []
 
     def output(self):
-        DatabaseConfig()
-        return []
+        return FilesetTarget(DatabaseConfig().scan, "images")
 
     def get_path(self) -> path.Path:
         """Load the ``ScanPath`` module & get the configuration from the TOML config file."""
@@ -144,8 +143,12 @@ class ToCenter(RomiTask):
         if hw_scanner is None:
             hw_scanner = self.load_scanner()
 
+        # Get (create) the output 'images' fileset:
+        output_fileset = self.output().get(create=False)
+
         cx = ScanPath().kwargs["center_x"]
         cy = ScanPath().kwargs["center_y"]
+
         hw_scanner.cnc.moveto(cx, cy, 0.)
         return print(f"Moved to X:{cx}mm, Y:{cy}mm!")
 
