@@ -84,7 +84,14 @@ class ToCenter(RomiTask):
         return []
 
     def output(self):
+        DatabaseConfig()
         return []
+
+    def get_path(self) -> path.Path:
+        """Load the ``ScanPath`` module & get the configuration from the TOML config file."""
+        path_module = importlib.import_module(ScanPath().module)
+        path = getattr(path_module, ScanPath().class_name)(**ScanPath().kwargs)
+        return path
 
     def load_scanner(self) -> Scanner:
         """Load the ``CNC``, ``Gimbal`` & ``Camera`` modules and create a ``Scanner`` configuration."""
@@ -133,6 +140,7 @@ class ToCenter(RomiTask):
             Else should be a ``plantimager.scanner.Scanner`` instance.
 
         """
+        path = self.get_path()
         if hw_scanner is None:
             hw_scanner = self.load_scanner()
 
