@@ -1,24 +1,28 @@
-# -Virtual- Plant Imager
+# Plant Imager & Virtual Plant Imager
 
-To be as clear as possible, we define the following names:
+To be as clear as possible, we first define the following names:
 - _Plant Imager_: hardware control of the ROMI _3D plant imager_.
 - _Virtual Plant Imager_: simulate the plant imager using [LPY](https://github.com/fredboudon/lpy) to generate virtual plants and [Blender](https://www.blender.org/) for rendering. **We recommend using it inside a docker container.**
 
 
 ## Getting started
-Clone the repository and initialize the submodules.
+Clone the repository and initialize the submodules (`plantdb` & `romistask`).
 In a terminal:
 ```shell
-git clone https://github.com/romi/plant-imager.git
-cd plant-imager/
+# Clone the sources (here get the 'dev_lyon' branch):
+git clone https://github.com/romi/plant-imager --branch dev_lyon
+# Move to the cloned repository:
+cd plant-imager
+# Initialize and update the sub-modules:
 git submodule init  # only do this ONCE if the sub-module have not yet been initialized!
+git submodule update
 ```
 
 ## Docker
 For now, you have to first build the image locally, then you can use it.
 > :warning: We will change that soon, so you can use pre-built images!
 
-Obviously you first have to follow the [getting started](https://github.com/romi/plant-imager#getting-started) instructions.
+Obviously you first have to follow the [getting started](#getting-started) instructions.
 
 
 ### Using the `plantimager` docker image
@@ -122,15 +126,19 @@ For more information have a look at the official ROMI documentation [website](ht
 
 
 ## Install from sources
-We **highly** recommend using the docker image for the _virtual plant imager_ as installing things can get messy!
+To use the _Virtual Plant Imager_, we **strongly** recommend using the docker image as installing from the sources can get messy!
+
+However, installing from the sources should go smoothly if you plan to use the _Plant Imager_. 
 
 ### Getting started
-Start by cloning the sources and getting the submodules:
+If you have not done it yet, start by cloning the sources and getting the submodules (`plantdb` & `romistask`).
+In a terminal:
 ```shell
-# Clone plant-imager sources
-git clone https://github.com/romi/plant-imager
+# Clone the sources (here get the 'dev_lyon' branch):
+git clone https://github.com/romi/plant-imager --branch dev_lyon
+# Move to the cloned repository:
 cd plant-imager
-# Get the sub-modules:
+# Initialize and update the sub-modules:
 git submodule init  # only do this ONCE if the sub-module have not yet been initialized!
 git submodule update
 ```
@@ -149,6 +157,7 @@ You may now proceed to install the python requirements and packages:
 conda activate plant_imager # Don't forget to activate the environment!
 cd plant-imager
 # Install `plantdb` from sub-modules:
+python -m pip install -r ./plantdb/requirements.txt
 python -m pip install -e ./plantdb/
 # Install `romitask` from sub-modules:
 python -m pip install -e ./romitask/
@@ -208,6 +217,7 @@ We will now finish by cloning and installing the ROMI sources for `plant-imager`
 conda activate plant_imager
 cd plant-imager
 # Install `plantdb` from sub-modules:
+python -m pip install -r ./plantdb/requirements.txt
 python -m pip install -e ./plantdb/
 # Install `romitask` from sub-modules:
 python -m pip install -e ./romitask/
