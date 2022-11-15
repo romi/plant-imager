@@ -425,13 +425,11 @@ class Line(Path):
         x, y, z = line3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points)
         for i in range(n_points):
             for t in tilt:
-                self.append(PathElement(x[i], y[i], z[i], pan, t, exact_pose=True))
+                self.append(PathElement(x[i], y[i], z[i], pan, t, exact_pose=False))
 
 
 class CalibrationPath(Path):
-    """Creates a calibration path for the scanner.
-
-    This build two lines spanning the X & Y axes extent of the given path.
+    """Creates a calibration path for the Plant Imager.
 
     Notes
     -----
@@ -440,8 +438,7 @@ class CalibrationPath(Path):
       2. a first "half x-line" (from `x_min` to `x_max/2`) at `y_max/2`, facing `x_max` with `n_points_line/2` poses
       3. a second "half x-line" (from `x_max/2` to `x_max`) at `y_max/2`, facing `x_min` with `n_points_line/2` poses
       4. a "y-line" (from `y_min` to `y_max`) at `x_max`, facing `x_min` with `n_points_line` poses
-    The is also a full rotation by steps of 45° at the center.
-    All this is optimized in terms of travels to save time and remove duplicates.
+    The central and extreme points of the "x-line" at `y_max/2` are removed to avoid duplicates.
 
     See Also
     --------
@@ -452,11 +449,25 @@ class CalibrationPath(Path):
     >>> from plantimager.path import CalibrationPath
     >>> from plantimager.path import Circle
     >>> n_points_circle = 36
-    >>> circular_path = Circle(250, 250, 50, 0, 200, n_points_circle)
-    >>> n_points_line = 5
-    >>> calib_path = CalibrationPath(circular_path, n_points_line)
+    >>> circular_path = Circle(300, 300, 50, 0, 250, n_points_circle)
+    >>> n_points_line = 11
+    >>> calib_path = CalibrationPath(circular_path, n_points_line, x_lims=[0, 600], y_lims=[0, 600])
     >>> calib_path[36:]  # the calibration lines
     >>> len(calib_path) == n_points_circle + n_points_line*3
+    >>> # View the Calibration points coordinates:
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> x,y = np.array([(p.x, p.y) for p in calib_path]).T  # get the XY coordinates
+    >>> fig, ax = plt.subplots(figsize=(8,8))
+    >>> ax.scatter(x[:36], y[:36], marker='+', color=['r']*n_points_circle, label="Circle")
+    >>> ax.scatter(x[36:], y[36:], marker='x', color=['b']*(n_points_line*3-3), label="Lines")
+    >>> [ax.text(x[i], y[i], str(i)) for i in range(len(x))]
+    >>> ax.grid(True, which='major', axis='both', linestyle='dotted')
+    >>> ax.set_aspect('equal')
+    >>> ax.legend()
+    >>> ax.set_title("Calibration path")
+    >>> ax.set_xlabel("X-axis")
+    >>> ax.set_ylabel("Y-axis")
 
     """
 
@@ -479,7 +490,7 @@ class CalibrationPath(Path):
         super().__init__()
         # Check the `n_points_line` parameter:
         try:
-            assert n_points_line >=5
+            assert n_points_line >= 5
         except:
             raise ValueError(f"CalibrationPath require a number of point per line >= `5`, got {n_points_line}!")
 
@@ -516,13 +527,12 @@ class CalibrationPath(Path):
         self.extend(Line(x_min, y_min, p0.z, x_min, y_max, p0.z, 270., p0.tilt, n_points_line))
         # Add the first half X-line facing the x-max:
         #  - remove the first pose as it has been done during the first Y-line at x-min
-        self.extend(Line(x_min, mid_y, p0.z, mid_x, mid_y, p0.z, 270., p0.tilt, n_points_half_line)[1:])
-        # Add a full rotation by steps of 45°:
-        for n in range(1, 8):
-            self.extend([PathElement(mid_x, mid_y, p0.z, (270. + n * 45) % 360, p0.tilt)])
+        #  - remove the last pose as it would be at the center (and we want to exclude a central point)
+        self.extend(Line(x_min, mid_y, p0.z, mid_x, mid_y, p0.z, 270., p0.tilt, n_points_half_line)[1:-1])
         # Add the second half X-line facing the x-min:
-        #  - remove the first pose as it has been done during the rotation
+        #  - remove the first pose as it would be at the center (and we want to exclude a central point)
         #  - remove the last pose as it will be done during the second Y-line at x-max
         self.extend(Line(mid_x, mid_y, p0.z, x_max, mid_y, p0.z, 90., p0.tilt, n_points_half_line)[1:-1])
         # Add the second Y-line at x-max, facing the x-min:
         self.extend(Line(x_max, y_min, p0.z, x_max, y_max, p0.z, 90., p0.tilt, n_points_line))
+        # TODO: search for line points to close to circle points & remove them according to a distance threshold?
