@@ -44,27 +44,79 @@ from romitask.task import FilesetExists
 
 
 class ObjFileset(FilesetExists):
+    """This task check the existence of a `'data'` Fileset.
+
+    Attributes
+    ----------
+    upstream_task : None
+        No upstream task is required.
+    scan_id : luigi.Parameter
+        The id of the scan dataset that should contain the fileset.
+    fileset_id : str
+        The name of the fileset that should exist.
+    """
     scan_id = luigi.Parameter()
     fileset_id = "data"
 
 
 class HdriFileset(FilesetExists):
+    """This task check the existence of a `'hdri'` Fileset.
+
+    Attributes
+    ----------
+    upstream_task : None
+        No upstream task is required.
+    scan_id : luigi.Parameter
+        The id of the scan dataset that should contain the fileset.
+    fileset_id : str
+        The name of the fileset that should exist.
+    """
     scan_id = luigi.Parameter()
     fileset_id = "hdri"
 
 
 class SceneFileset(FilesetExists):
+    """This task check the existence of a `'scenes'` Fileset.
+
+    Attributes
+    ----------
+    upstream_task : None
+        No upstream task is required.
+    scan_id : luigi.Parameter
+        The id of the scan dataset that should contain the fileset.
+    fileset_id : str
+        The name of the fileset that should exist.
+    """
     scan_id = luigi.Parameter()
     fileset_id = "scenes"
 
 
 class PaletteFileset(FilesetExists):
+    """This task check the existence of a `'palette'` Fileset.
+
+    Attributes
+    ----------
+    upstream_task : None
+        No upstream task is required.
+    scan_id : luigi.Parameter
+        The id of the scan dataset that should contain the fileset.
+    fileset_id : str
+        The name of the fileset that should exist.
+    """
     scan_id = luigi.Parameter()
     fileset_id = "palette"
 
 
 class ScannerToCenter(RomiTask):
-    """A task to move the camera at the center of the path."""
+    """A task to move the camera at the center of the path.
+
+    Attributes
+    ----------
+    upstream_task : None
+        No upstream task is required.
+    scan_id : luigi.Parameter, optional
+        The scan id to use to get or create the ``FilesetTarget``.
+    """
     upstream_task = None
 
     def requires(self):
@@ -83,19 +135,22 @@ class ScannerToCenter(RomiTask):
 
 
 class Scan(RomiTask):
-    """ A task for running a scan, real or virtual.
+    """A task for running a scan, real or virtual.
 
     Module: romiscan.tasks.scan
     Default upstream tasks: None
 
-    Parameters
+    Attributes
     ----------
-    metadata : DictParameter
-        metadata for the scan
-    scanner : DictParameter
-        scanner hardware configuration (TODO: see hardware documentation)
-    path : DictParameter
-        scanner path configuration (TODO: see hardware documentation)
+    upstream_task : None
+        No upstream task is required by a `Scan` task.
+    scan_id : luigi.Parameter, optional
+        The scan id to use to create the ``FilesetTarget``.
+    metadata : luigi.DictParameter, optional
+        Metadata of the scan. Defaults to an empty dictionary.
+    scanner : luigi.DictParameter, optional
+        Scanner configuration to use for this task. (TODO: see hardware documentation)
+        Defaults to an empty dictionary.
 
     """
     upstream_task = None
@@ -103,10 +158,11 @@ class Scan(RomiTask):
     scanner = luigi.DictParameter(default={})
 
     def requires(self):
+        """Nothing is required."""
         return []
 
     def output(self):
-        """The output fileset associated to a ``Scan`` is an 'images' dataset."""
+        """The output fileset associated to a ``Scan`` task is an 'images' dataset."""
         return FilesetTarget(DatabaseConfig().scan, "images")
 
     def get_path(self) -> path.Path:
@@ -199,6 +255,48 @@ class Scan(RomiTask):
 
 
 class VirtualScan(Scan):
+    """Task to create scans of virtual plants using Blender.
+
+    Attributes
+    ----------
+    upstream_task : None
+        No upstream task is required by a `VirtualScan` task.
+    scan_id : luigi.Parameter, optional
+        The scan id to use to create the ``FilesetTarget``.
+    metadata : luigi.DictParameter, optional
+        Metadata of the scan. Defaults to an empty dictionary.
+    scanner : luigi.DictParameter, optional
+        VirtualScanner configuration to use for this task.
+        Defaults to an empty dictionary.
+    load_scene : luigi.BoolParameter, optional
+        Whether to load the scene file.
+        Defaults to ``False``.
+    scene_file_id : luigi.Parameter, optional
+        The name of the scene file to load, if any.
+        Defaults to an empty string.
+    use_palette : luigi.BoolParameter, optional
+        Whether to use a color palette to rendre the virtual plant.
+        Defaults to ``False``.
+    use_hdri : luigi.BoolParameter, optional
+        Whether to use an HDRI file for the background.
+        Defaults to ``False``.
+    obj_fileset : luigi.TaskParameter, optional
+        The Fileset that contains the virtual plant OBJ file to render and capture.
+        Defaults to ``VirtualPlant``.
+    hdri_fileset : luigi.TaskParameter, optional
+        The Fileset that contains the HDRI files to use as background.
+        Defaults to ``HdriFileset``.
+    scene_fileset : luigi.TaskParameter, optional
+        The Fileset that contain the scenes to use.
+        Defaults to ``SceneFileset``.
+    palette_fileset : luigi.TaskParameter, optional
+        The Fileset that contains the color palette to use to render the virtual plant.
+        Defaults to ``PaletteFileset``.
+    render_ground_truth : luigi.BoolParameter, optional
+        If ``True``, create the mask image for defined ground truth classes in virtual plant model.
+        Defaults to ``False``.
+
+    """
     load_scene = luigi.BoolParameter(default=False)
     scene_file_id = luigi.Parameter(default="")
 
@@ -225,8 +323,7 @@ class VirtualScan(Scan):
         return requires
 
     def load_scanner(self):
-        scanner_config = json.loads(
-            luigi.DictParameter().serialize(self.scanner))
+        scanner_config = json.loads(luigi.DictParameter().serialize(self.scanner))
 
         obj_fileset = self.input()["object"].get()
         if self.load_scene:
@@ -235,12 +332,10 @@ class VirtualScan(Scan):
                 logger.debug(f.id)
             self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
             scanner_config["scene"] = os.path.join(self.tmpdir.name,
-                                                   scene_fileset.get_file(
-                                                       self.scene_file_id).filename)
+                                                   scene_fileset.get_file(self.scene_file_id).filename)
 
         if self.render_ground_truth:
-            scanner_config["classes"] = list(
-                VirtualPlantConfig().classes.values())
+            scanner_config["classes"] = list(VirtualPlantConfig().classes.values())
 
         vscan = VirtualScanner(**scanner_config)
         while True:
@@ -250,8 +345,7 @@ class VirtualScan(Scan):
         mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
         palette_file = None
         if self.use_palette:
-            palette_file = random.choice(
-                self.input()["palette"].get().get_files())
+            palette_file = random.choice(self.input()["palette"].get().get_files())
         vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
 
         if self.use_hdri:
@@ -265,7 +359,7 @@ class VirtualScan(Scan):
 
 
 class CalibrationScan(Scan):
-    """ A task for running a scan, real or virtual, with a calibration path.
+    """A task for running a scan, real or virtual, with a calibration path.
 
     Module: romiscan.tasks.scan
     Colmap poses for subsequent scans. (TODO: see calibration documentation)
@@ -273,15 +367,15 @@ class CalibrationScan(Scan):
 
     Parameters
     ----------
-    metadata : DictParameter
+    metadata : luigi.DictParameter
         metadata for the scan
-    scanner : DictParameter
+    scanner : luigi.DictParameter
         scanner hardware configuration (TODO: see hardware documentation)
-    path : DictParameter
+    path : luigi.DictParameter
         scanner path configuration (TODO: see hardware documentation)
-    n_points_line : IntParameter, optional
+    n_points_line : luigi.IntParameter, optional
         Number of shots taken on the orthogonal calibration lines. Defaults to ``10``.
-    offset : IntParameter, optional
+    offset : luigi.IntParameter, optional
         Offset to axis limits, in millimeters. Defaults to ``5``.
 
     """
@@ -317,9 +411,9 @@ class IntrinsicCalibrationScan(Scan):
 
     Parameters
     ----------
-    n_poses : IntParameter, optional
+    n_poses : luigi.IntParameter, optional
         Number of calibration pattern pictures to take. Defaults to ``20``.
-    offset : IntParameter, optional
+    offset : luigi.IntParameter, optional
         Offset to axis limits, in millimeters. Defaults to ``5``.
 
     romi_run_task IntrinsicCalibrationScan ~/Soft/romi_db/intrinsic_calib --config ~/Soft/romi_db/scan_v2.toml --module plantimager.tasks.scan

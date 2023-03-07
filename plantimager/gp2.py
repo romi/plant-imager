@@ -44,6 +44,10 @@ from plantimager.hal import DataItem
 class Camera(AbstractCamera):
     """gPhoto2 Camera object.
 
+    See Also
+    --------
+    plantimager.hal.AbstractCamera
+
     Examples
     --------
     >>> from plantimager.gp2 import Camera

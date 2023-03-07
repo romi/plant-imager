@@ -37,14 +37,38 @@ class Scanner(AbstractScanner):
 
     Attributes
     ----------
-    cnc : AbstractCNC
+    cnc : plantimager.hal.AbstractCNC
         A class dedicated to CNC control.
-    gimbal: AbstractGimbal
+    gimbal: plantimager.hal.AbstractGimbal
         A class dedicated to Gimbal control.
-    camera : AbstractCamera
+    camera : plantimager.hal.AbstractCamera
         A class dedicated to Camera control.
     waiting_time: float, optional
         The time, in seconds, to wait for stabilization after setting position, default is 1.
+
+    See Also
+    --------
+    plantimager.hal.AbstractScanner
+
+    Example
+    -------
+    >>> from plantimager.scanner import Scanner
+    >>> # Example #1 - A dummy scanner
+    >>> from plantimager.dummy import CNC
+    >>> from plantimager.dummy import Gimbal
+    >>> from plantimager.dummy import Camera
+    >>> cnc = CNC()
+    >>> gimbal = Gimbal()
+    >>> camera = Camera()
+    >>> dummy_scanner = Scanner(cnc, gimbal, camera)
+    >>> # Example #2 - A scanner with CNC & Gimbal connected via USB and an URL Camera
+    >>> from plantimager.grbl import CNC
+    >>> from plantimager.blgimbal import Gimbal
+    >>> from plantimager.urlcam import Camera
+    >>> cnc = CNC("/dev/ttyACM0", x_lims=[0, 800], y_lims=[0, 800], z_lims=[0, 100])
+    >>> gimbal = Gimbal("/dev/ttyACM1", has_tilt=False, invert_rotation=True)
+    >>> camera = Camera("http://192.168.0.1:8080")
+    >>> scanner = Scanner(cnc, gimbal, camera)
 
     """
 
@@ -53,11 +77,11 @@ class Scanner(AbstractScanner):
 
         Parameters
         ----------
-        cnc : AbstractCNC
+        cnc : plantimager.hal.AbstractCNC
             A class dedicated to CNC control.
-        gimbal: AbstractGimbal
+        gimbal: plantimager.hal.AbstractGimbal
             A class dedicated to Gimbal control.
-        camera : AbstractCamera
+        camera : plantimager.hal.AbstractCamera
             A class dedicated to Camera control.
         waiting_time: float, optional
             The time, in seconds, to wait for stabilization after setting position, default is 1.

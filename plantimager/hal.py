@@ -155,7 +155,7 @@ class AbstractScanner(metaclass=ABCMeta):
     Attributes
     ----------
     scan_count : int
-        The incremental counter saving last id for grab method.
+        Incremental counter saving last id for grab method.
     ext : str
         Extension to use to write data from grab method.
     """

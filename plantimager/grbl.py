@@ -93,7 +93,7 @@ class CNC(AbstractCNC):
     z_lims : (int, int)
         The allowed range of Z-axis positions.
     serial_port : serial.Serial
-        The `Serial` instance used to send commands to the Grbl.
+        The ``Serial`` instance used to send commands to the Grbl.
     x : int
         The current position, in millimeter, of the CNC arm on the X-axis.
     y : int
@@ -101,20 +101,30 @@ class CNC(AbstractCNC):
     z : int
         The current position, in millimeter, of the CNC arm on the Z-axis.
     invert_x : bool
-        If `True`, "mirror" the coordinates direction respectively to 0.
+        If ``True``, "mirror" the coordinates direction respectively to 0.
     invert_y : bool
-        If `True`, "mirror" the coordinates direction respectively to 0.
+        If ``True``, "mirror" the coordinates direction respectively to 0.
     invert_z : bool
-        If `True`, "mirror" the coordinates direction respectively to 0.
+        If ``True``, "mirror" the coordinates direction respectively to 0.
 
     References
     ----------
     http://linuxcnc.org/docs/html/gcode/g-code.html
 
+    See Also
+    --------
+    plantimager.hal.AbstractCNC
+
+    Example
+    -------
+    >>> from plantimager.grbl import CNC
+    >>> cnc = CNC("/dev/ttyACM0", x_lims=[0, 780], y_lims=[0, 780], z_lims=[0, 90])
+    >>> cnc.moveto(200, 200, 50)  # move the CNC to this XYZ coordinate (in mm)
+
     """
 
-    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, x_lims=None, y_lims=None, z_lims=None,
-                 safe_start=True, invert_x=True, invert_y=True, invert_z=True):
+    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, safe_start=True,
+                 x_lims=None, y_lims=None, z_lims=None, invert_x=True, invert_y=True, invert_z=True):
         """Constructor.
 
         Parameters
@@ -125,23 +135,25 @@ class CNC(AbstractCNC):
             Communication baudrate, `115200` by default (should work for the Arduino UNO).
         homing : bool, optional
             If `True` (default), axes homing will be performed upon CNC object instantiation [RECOMMENDED].
+        safe_start : bool, optional
+            If ``True``, check the object have been initialized with proper axes limits.
         x_lims : (int, int), optional
             The allowed range of X-axis positions, if `None` (default) use the settings from Grbl ("$130", see GRBL_SETTINGS).
         y_lims : (int, int), optional
             The allowed range of Y-axis positions, if `None` (default) use the settings from Grbl ("$131", see GRBL_SETTINGS).
         z_lims : (int, int), optional
             The allowed range of Z-axis positions, if `None` (default) use the settings from Grbl ("$132", see GRBL_SETTINGS).
-        invert_x : bool
+        invert_x : bool, optional
             If `True` (default), "mirror" the coordinates direction respectively to 0.
-        invert_y : bool
+        invert_y : bool, optional
             If `True` (default), "mirror" the coordinates direction respectively to 0.
-        invert_z : bool
+        invert_z : bool, optional
             If `True` (default), "mirror" the coordinates direction respectively to 0.
 
         Examples
         --------
         >>> from plantimager.grbl import CNC
-        >>> cnc = CNC("/dev/ttyACM0", x_lims=[0, 780], y_lims=[0, 780], z_lims=[0, 90])
+        >>> cnc = CNC("/dev/ttyACM0",x_lims=[0, 780],y_lims=[0, 780],z_lims=[0, 90])
         >>> cnc.moveto(200, 200, 50)  # move the CNC to this XYZ coordinate (in mm)
         >>> cnc.home()  # homing command (automatically called on startup)
         >>> cnc.moveto_async(200, 200, 50)
@@ -194,7 +206,7 @@ class CNC(AbstractCNC):
         >>> cnc = CNC("/dev/ttyACM0")
         >>> grbl = cnc.get_grbl_settings()
         >>> print(f"Grbl axes limits are: X=[0, {grbl['$130']}], Y=[0, {grbl['$131']}], Z=[0, {grbl['$132']}]")
-        >>> wrong_cnc = CNC("/dev/ttyACM0", x_lims=[-1, 780], y_lims=[0, 780], z_lims=[0, 90])
+        >>> wrong_cnc = CNC("/dev/ttyACM0",x_lims=[-1, 780],y_lims=[0, 780],z_lims=[0, 90])
 
         """
         try:

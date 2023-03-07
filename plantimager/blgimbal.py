@@ -69,6 +69,10 @@ class Gimbal(AbstractGimbal):
     invert_rotation : bool
         Use it to invert the rotation of the motor.
 
+    See Also
+    --------
+    plantimager.hal.AbstractGimbal
+
     Examples
     --------
     >>> from plantimager.blgimbal import Gimbal

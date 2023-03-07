@@ -33,7 +33,13 @@ from plantimager.hal import DataItem
 class Camera(AbstractCamera):
     """Camera module fetching an image serve at given URL.
 
-    Image is served as `$url/scan.jpg`.
+    Notes
+    -----
+    Image should be served as `$url/scan.jpg`.
+
+    See Also
+    --------
+    plantimager.hal.AbstractCamera
 
     Examples
     --------
@@ -44,7 +50,6 @@ class Camera(AbstractCamera):
     >>> img = cam.grab("img_001")
     >>> arr = img.channel("rgb").data
     >>> arr.shape
-
     >>> image = Image.fromarray(arr)
     >>> image.show()
 
