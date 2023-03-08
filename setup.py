@@ -28,7 +28,8 @@ s = setup(
         'imageio',
         'psutil',
         'requests',
-        'pyserial'
+        'pyserial',
+        'tqdm'
     ],
     include_package_data=True
 )
