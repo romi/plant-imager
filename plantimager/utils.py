@@ -27,7 +27,7 @@
 """
 import sys
 
-import serial
+from serial.tools import list_ports
 
 from plantimager.log import logger
 
@@ -57,7 +57,7 @@ def guess_port(info):
     >>> guess_port("Arduino")  # This should return the port of the CNC (if using the X-Carve as the controller is based on an Arduino UNO)
 
     """
-    device = [p for p in list(serial.tools.list_ports.grep(info))]
+    device = [p for p in list(list_ports.grep(info))]
     if len(device) > 1:
         logger.warning(f"More than one serial device has been found with '{info}'!")
         [logger.warning(f"  * {dev.device} - {dev.description} - {dev.hwid}") for dev in device]
