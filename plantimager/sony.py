@@ -287,6 +287,13 @@ class Camera(AbstractCamera):
     >>> arr = np.array(img.channels['rgb'].data)
     >>> arr.shape
 
+    >>> import numpy as np
+    >>> from plantimager.sony import Camera
+    >>> cam = Camera('192.168.122.1', '10000', use_sd=True, rotation=0)
+    >>> img = cam.grab(0)
+    >>> arr = img.channels['rgb'].data
+    >>> arr.shape
+
     """
 
     def __init__(self, device_ip: str,
@@ -295,19 +302,22 @@ class Camera(AbstractCamera):
                  postview: bool = False,
                  use_adb: bool = False,
                  use_flashair: bool = False,
+                 use_sd: bool = False,
                  flashair_host: str = None,
                  camera_params: dict = None,
                  rotation: int = 0):
 
         self.sony_cam = SonyCamAPI(device_ip, api_port, timeout=timeout)
         self.postview = postview
-        self.use_flashair = use_flashair
         self.use_adb = use_adb
-        if use_flashair and use_adb:
-            raise SonyCamError("Cannot use both flashair and adb for transfer")
+        self.use_flashair = use_flashair
+        self.use_sd = use_sd
+        if sum([postview, use_flashair, use_sd, use_adb]) != 1:
+            cfg = {attr: getattr(self, attr) for attr in [postview, use_adb, use_flashair ,use_sd]}
+            raise SonyCamError(f"Check you configuration, only one can be `True`: {cfg}")
         if use_flashair:
             if flashair_host is None:
-                raise SonyCamError("Must provide flashair host IP")
+                raise SonyCamError("You must provide the 'flashair' host IP!")
             self.flashair = FlashAirAPI(flashair_host)
 
         self.camera_params = camera_params
@@ -335,6 +345,9 @@ class Camera(AbstractCamera):
         elif self.use_flashair:  # Download on wifi sd card
             images = self.flashair.transfer_latest_pictures(count=1)
             data = images[0]
+        elif self.use_sd:  # Do not download, write to SD!
+            # data = np.zeros(shape=(4272, 3200, 3), dtype='uint8')  # 14M x 4:3 for RX-0
+            data = np.zeros(shape=(3024, 2272, 3), dtype='uint8')  # 6.9M x 4:3 for RX-0
         else:  # Download using file transfer mode (not available on all cameras)
             self.sony_cam.start_transfer_mode()
             uri = self.sony_cam.get_source_list()[0]['source']
