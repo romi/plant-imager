@@ -43,20 +43,23 @@ import serial
 from plantimager.error import Error
 from plantimager.hal import AbstractGimbal
 from plantimager.log import logger
+from plantimager.utils import guess_port
 
 
 class Gimbal(AbstractGimbal):
-    """Custom-built gimbal controller.
+    """Custom-built gimbal controller based on Feather M0 and a .
 
     Attributes
     ----------
     port : str
-        Serial port to use for communication with the CNC, `"/dev/ttyUSB0"` by default.
+        Serial port to use for communication with the Gimbal controller (Feather M0).
+    baudrate : int, optional
+        Communication baud rate, `115200` should work with the Feather M0.
     status : str
         Describe the gimbal current status, "idle" or "moving".
     p : [float, float]
         Current pan and tilt positions.
-    serial_port :serial.Serial
+    serial_port : serial.Serial
         The `Serial` instance used to send commands to the gimbal.
     zero_pan : float
         The angle, in degree, to use as zero for pan.
@@ -76,15 +79,43 @@ class Gimbal(AbstractGimbal):
     Examples
     --------
     >>> from plantimager.blgimbal import Gimbal
-    >>> g = Gimbal("/dev/ttyACM1", has_tilt=False, invert_rotation=True)
+    >>> g = Gimbal("Feather M0", has_tilt=False, invert_rotation=True)
     >>> g.status
 
     """
 
-    def __init__(self, port="/dev/ttyUSB0", has_tilt=True, steps_per_turn=360,
+    def __init__(self, port="/dev/ttyUSB0", baudrate=115200, has_tilt=True, steps_per_turn=360,
                  zero_pan=0, zero_tilt=0, invert_rotation=False):
+        """Constructor.
+
+        Parameters
+        ----------
+        port : str, optional
+            Serial port to use for communication with the Gimbal controller.
+            This can also be a regular expression to identify in a unique way the corresponding port.
+            Defaults to `"/dev/ttyUSB0"`.
+        baudrate : int, optional
+            Communication baud rate, `115200` should work with the Feather M0.
+        has_tilt : bool, optional
+            Indicate if the Gimbal has a tilt motor.
+            Defaults to ``False``.
+        steps_per_turn : int, optional
+            Indicate the number of steps to perform for a full revolution (360°).
+            Defaults to ``360``.
+        zero_pan : float, optional
+            Indicate the origin position of the Gimbal for the pan-axis.
+            Defaults to ``0.``.
+        zero_tilt : float, optional
+            Indicate the origin position of the Gimbal for the tilt-axis.
+            Defaults to ``0.``.
+        invert_rotation : bool, optional
+            Indicate if rotation direction should be inverted.
+            Defaults to ``False``.
+
+        """
         super().__init__()
-        self.port = port
+        self.port = port if port.startswith('/dev') else guess_port(port)
+        self.baudrate = baudrate
         self.status = "idle"
         self.p = [0, 0]
         self.serial_port = None
@@ -98,7 +129,7 @@ class Gimbal(AbstractGimbal):
 
     def start(self):
         """Start the serial connection with the custom board controlling the Gimbal."""
-        self.serial_port = serial.Serial(self.port, 115200, timeout=1, write_timeout=3)
+        self.serial_port = serial.Serial(self.port, self.baudrate, timeout=1, write_timeout=3)
         self.update_status()
         return None
 

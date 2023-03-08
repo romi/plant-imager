@@ -35,6 +35,7 @@ import time
 import serial
 from plantimager.hal import AbstractCNC
 from plantimager.log import logger
+from plantimager.utils import guess_port
 
 #: Dictionary mapping the Grbl codes to their meaning and units.
 GRBL_SETTINGS = {
@@ -81,9 +82,9 @@ class CNC(AbstractCNC):
     Attributes
     ----------
     port : str
-        Serial port to use for communication with the CNC.
-    baud_rate : int
-        Communication baudrate, should be 115200 for the Arduino UNO.
+        Serial port to use for communication with the CNC controller (Arduino UNO).
+    baudrate : int
+        Communication baud rate, `115200` whould work with the Arduino UNO.
     homing : bool
         If `True`, axes homing will be performed upon CNC object instantiation [RECOMMENDED].
     x_lims : (int, int)
@@ -118,21 +119,23 @@ class CNC(AbstractCNC):
     Example
     -------
     >>> from plantimager.grbl import CNC
-    >>> cnc = CNC("/dev/ttyACM0", x_lims=[0, 780], y_lims=[0, 780], z_lims=[0, 90])
+    >>> cnc = CNC("/dev/ttyACM0",x_lims=[0, 780],y_lims=[0, 780],z_lims=[0, 90])
     >>> cnc.moveto(200, 200, 50)  # move the CNC to this XYZ coordinate (in mm)
 
     """
 
-    def __init__(self, port="/dev/ttyUSB0", baud_rate=115200, homing=True, safe_start=True,
+    def __init__(self, port="/dev/ttyUSB0", baudrate=115200, homing=True, safe_start=True,
                  x_lims=None, y_lims=None, z_lims=None, invert_x=True, invert_y=True, invert_z=True):
         """Constructor.
 
         Parameters
         ----------
         port : str, optional
-            Serial port to use for communication with the CNC, `"/dev/ttyUSB0"` by default.
-        baud_rate : int, optional
-            Communication baudrate, `115200` by default (should work for the Arduino UNO).
+            Serial port to use for communication with the CNC controller.
+            This can also be a regular expression to identify in a unique way the corresponding port.
+            Defaults to `"/dev/ttyUSB0"`.
+        baudrate : int, optional
+            Communication baud rate, `115200` should work with the Arduino UNO.
         homing : bool, optional
             If `True` (default), axes homing will be performed upon CNC object instantiation [RECOMMENDED].
         safe_start : bool, optional
@@ -153,7 +156,7 @@ class CNC(AbstractCNC):
         Examples
         --------
         >>> from plantimager.grbl import CNC
-        >>> cnc = CNC("/dev/ttyACM0",x_lims=[0, 780],y_lims=[0, 780],z_lims=[0, 90])
+        >>> cnc = CNC("Arduino",x_lims=[0, 780],y_lims=[0, 780],z_lims=[0, 90])
         >>> cnc.moveto(200, 200, 50)  # move the CNC to this XYZ coordinate (in mm)
         >>> cnc.home()  # homing command (automatically called on startup)
         >>> cnc.moveto_async(200, 200, 50)
@@ -163,8 +166,8 @@ class CNC(AbstractCNC):
 
         """
         super().__init__()
-        self.port = port
-        self.baud_rate = baud_rate
+        self.port = port if port.startswith('/dev') else guess_port(port)
+        self.baudrate = baudrate
         self.x_lims = x_lims
         self.y_lims = y_lims
         self.z_lims = z_lims
@@ -233,7 +236,7 @@ class CNC(AbstractCNC):
         http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g20-g21
 
         """
-        self.serial_port = serial.Serial(self.port, self.baud_rate, timeout=10)
+        self.serial_port = serial.Serial(self.port, self.baudrate, timeout=10)
         self.has_started = True
         self.serial_port.write("\r\n\r\n".encode())
         time.sleep(2)

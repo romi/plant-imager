@@ -43,7 +43,6 @@ class Camera(AbstractCamera):
 
     Examples
     --------
-    >>> from PIL import Image
     >>> from plantimager.urlcam import Camera
     >>> url = "http://192.168.0.1:8080"
     >>> cam = Camera(url)
@@ -84,13 +83,15 @@ class Camera(AbstractCamera):
 
         Examples
         --------
-        >>> from PIL import Image
         >>> from plantimager.urlcam import Camera
         >>> url = "http://192.168.0.1:8080"
         >>> cam = Camera(url)
         >>> img = cam.grab("img_001")
         >>> arr = img.channel("rgb").data
-        >>> arr.shape
+
+        >>> from PIL import Image
+        >>> image = Image.fromarray(arr)
+        >>> image.show()
 
         """
         data_item = DataItem(idx, metadata)
