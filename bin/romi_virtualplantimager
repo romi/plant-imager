@@ -236,9 +236,11 @@ class MultiClassObject():
                     if colorize:
                         if len(color) == 3:
                             color += [1.0]
-                        m.node_tree.nodes[1].inputs['Base Color'].default_value = color
-                        m.node_tree.nodes[1].inputs['Specular'].default_value = specular
-                
+                        # m.node_tree.nodes[1].inputs['Base Color'].default_value = color
+                        # m.node_tree.nodes[1].inputs['Specular'].default_value = specular
+                        m.node_tree.nodes["Principled BSDF"].inputs['Base Color'].default_value = color
+                        m.node_tree.nodes["Principled BSDF"].inputs['Specular'].default_value = specular
+
     def load_obj(self, fname, dx = None, dy = None, dz = None, colorize = True, palette_location=None):
         """move object by dx, dy, dz if specified"""
 

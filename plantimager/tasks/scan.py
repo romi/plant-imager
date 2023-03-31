@@ -215,7 +215,7 @@ class Scan(RomiTask):
         path : plantimager.path.Path, optional
             If ``None`` (default), load the ``ScanPath`` module & get the configuration from the TOML config file.
             Else should be a ``plantimager.path.Path`` instance.
-        hw_scanner : plantimager.scanner.Scanner, optional
+        hw_scanner : plantimager.scanner.Scanner or plantimager.scanner.VirtualScanner, optional
             If ``None`` (default), load the ``CNC``, ``Gimbal`` & ``Camera`` modules & get the configuration from the
             TOML config file.
             Else should be a ``plantimager.scanner.Scanner`` instance.
@@ -233,9 +233,12 @@ class Scan(RomiTask):
         if "hardware" not in metadata:
             logger.warning("Metadata entry 'hardware' is missing from the configuration file!")
             metadata["hardware"] = {}
-        metadata["hardware"]['x_lims'] = getattr(hw_scanner.cnc, "x_lims", None)
-        metadata["hardware"]['y_lims'] = getattr(hw_scanner.cnc, "y_lims", None)
-        metadata["hardware"]['z_lims'] = getattr(hw_scanner.cnc, "z_lims", None)
+
+        if isinstance(hw_scanner, Scanner):
+            metadata["hardware"]['x_lims'] = getattr(hw_scanner.cnc, "x_lims", None)
+            metadata["hardware"]['y_lims'] = getattr(hw_scanner.cnc, "y_lims", None)
+            metadata["hardware"]['z_lims'] = getattr(hw_scanner.cnc, "z_lims", None)
+
         # Add the extra metadata to the metadata
         if extra_md is not None:
             metadata.update(extra_md)
@@ -244,8 +247,9 @@ class Scan(RomiTask):
         output_fileset = self.output().get()
         # Scan with the plant imager:
         hw_scanner.scan(path, output_fileset)
-        # Go back close to home position:
-        hw_scanner.cnc.moveto(10., 10., 10.)
+        if isinstance(hw_scanner, Scanner):
+            # Go back close to home position:
+            hw_scanner.cnc.moveto(10., 10., 10.)
 
         # Write the metadata to the JSON associated to the 'images' fileset:
         output_fileset.set_metadata(metadata)

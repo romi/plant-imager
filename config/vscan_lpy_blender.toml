@@ -31,21 +31,13 @@ lpy_file_id = "arabidopsis_notex"
 type = "averaging"
 voxel_size = 0.05
 
-[retcode]
-already_running = 10
-missing_data = 20
-not_run = 25
-task_failed = 30
-scheduling_error = 35
-unhandled_exception = 40
-
 [ScanPath.kwargs]
 center_x = -2
 center_y = 3
 z = 65
 tilt = 8
 radius = 75
-n_points = 18
+n_points = 36
 
 [VirtualScan.scanner]
 width = 896

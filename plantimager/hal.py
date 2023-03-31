@@ -234,7 +234,10 @@ class AbstractScanner(metaclass=ABCMeta):
             data_item = self.scan_at(pose, x.exact_pose)
             for c in self.channels():
                 f = fileset.create_file(data_item.channels[c].format_id())
-                io.write_image(f, data_item.channels[c].data, ext=self.ext)
+                data = data_item.channels[c].data
+                if "float" in data.dtype.name:
+                    data = np.array(data * 255).astype("uint8")
+                io.write_image(f, data, ext=self.ext)
                 if data_item.metadata is not None:
                     f.set_metadata(data_item.metadata)
                 f.set_metadata("shot_id", "%06i" % data_item.idx)

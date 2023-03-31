@@ -1,27 +1,28 @@
 #!/usr/bin/env romi_bpy
-import bpy
-import sys
 import argparse
 import json
+import sys
+
+import bpy
 
 
 def load_obj(fname):
-    bpy.ops.object.select_all( action = 'SELECT' )
+    bpy.ops.object.select_all(action='SELECT')
     bpy.data.objects['Cube']
     bpy.ops.object.delete()
-   
+
     bpy.ops.import_scene.obj(filepath=fname)
     o = bpy.data.objects[list(bpy.data.objects.keys())[0]]
     bpy.context.view_layer.objects.active = o
 
-def main(fname, out, material_class_corres):
 
+def main(fname, out, material_class_corres):
     load_obj(fname)
 
-    bpy.ops.object.mode_set( mode = 'EDIT' )
-    bpy.ops.mesh.select_all( action = 'SELECT' )
-    bpy.ops.mesh.separate( type = 'MATERIAL' )
-    bpy.ops.object.mode_set( mode = 'OBJECT' )
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.mesh.separate(type='MATERIAL')
+    bpy.ops.object.mode_set(mode='OBJECT')
 
     # After separating, all pieces are selected
     for o in bpy.context.selected_objects:
@@ -37,19 +38,19 @@ def main(fname, out, material_class_corres):
         else:
             o.name = o.active_material.name
 
-
     bpy.ops.export_scene.obj(filepath=out)
+
 
 if __name__ == "__main__":
     try:
         idx = sys.argv.index('--')
-        sys.argv = ["null"] + sys.argv[idx+1:]
+        sys.argv = ["null"] + sys.argv[idx + 1:]
     except:
         sys.argv = ["null"]
     parser = argparse.ArgumentParser(description='Split an obj file into submeshes')
 
     parser.add_argument('--classes', dest='classes', default="{}", type=str,
-            help='JSON string of the form { "mat_id" : "class_name" }. Renames the materials to selected class names.')
+                        help='JSON string of the form { "mat_id" : "class_name" }. Renames the materials to selected class names.')
 
     parser.add_argument('input', metavar='input_file', help="Input file")
     parser.add_argument('output', metavar='output_file', help="Output file")

@@ -22,7 +22,7 @@ usage() {
   "
 
   echo "DESCRIPTION:"
-  echo "  Build a docker image named 'virtualplantimager' using 'Dockerfile' in 'docker/virtualplantimager/'.
+  echo "  Build a docker image named 'roboticsmicrofarms/virtualplantimager' using 'Dockerfile' in 'docker/virtualplantimager/'.
   Must be run from the 'plant-imager' repository root folder as it will be copied during at image build time.
   Do not forget to initialize or update the sub-modules if necessary!
   "
@@ -78,7 +78,7 @@ done
 start_time=`date +%s`
 
 # Start the docker image build:
-docker build -t virtualplantimager:$vtag $docker_opts \
+docker build -t roboticsmicrofarms/virtualplantimager:$vtag $docker_opts \
   --build-arg USER_NAME=$user \
   --build-arg USER_ID=$uid \
   --build-arg GROUP_NAME=$group \
