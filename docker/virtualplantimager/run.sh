@@ -22,7 +22,7 @@ usage() {
     "
 
   echo "DESCRIPTION:"
-  echo "  Start a 'virtualplantimager:<tag>' container and mount local (host) database.
+  echo "  Start a 'roboticsmicrofarms/virtualplantimager:<tag>' container and mount local (host) database.
     "
 
   echo "OPTIONS:"
@@ -88,9 +88,9 @@ fi
 if [ "$cmd" = "" ]
 then
     # Start in interactive mode. ~/.bashrc will be loaded.
-    docker run -it $mount_option --gpus all virtualplantimager:$vtag bash
+    docker run -it $mount_option --gpus all roboticsmicrofarms/virtualplantimager:$vtag bash
 else
     # Start in non-interactive mode (run the command). 
     # Request a login shell (-l) to load ~/.profile.
-    docker run $mount_option --gpus all virtualplantimager:$vtag bash -lc "$cmd"
+    docker run $mount_option --gpus all roboticsmicrofarms/virtualplantimager:$vtag bash -lc "$cmd"
 fi
