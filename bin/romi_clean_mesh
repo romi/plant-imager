@@ -10,32 +10,55 @@ from tqdm import tqdm
 
 
 def load_obj(fname):
-    # Start by selecting all objects from initialized scene (with a cube) and remove them all:
-    bpy.ops.object.select_all(action='SELECT')
-    bpy.ops.object.delete()
+    """Load a mesh in Blender.
 
+    Parameters
+    ----------
+    fname : str
+        The file path to the mesh object to load in Blender.
+    """
+    # Redirect blender outputs
+    output = io.StringIO()
+    with redirect_stdout(output), redirect_stderr(output):
+        # Start by selecting all objects from initialized scene (with a cube) and remove them all:
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete()
+    # Load the mesh in Blender:
     bpy.ops.import_scene.obj(filepath=fname)
+    # List all imported objects & set them as active:
     o = bpy.data.objects[list(bpy.data.objects.keys())[0]]
     bpy.context.view_layer.objects.active = o
-
+    return
 
 def main(fname, out):
+    """Mesh cleaning function.
+
+    Parameters
+    ----------
+    fname : str
+        The file path to the mesh object to load in Blender.
+    out : str
+        The file path to us to export the cleaned mesh object.
+    """
     load_obj(fname)
     bpy.ops.object.select_all(action='SELECT')
 
-    for o in tqdm(bpy.data.objects.values(), unit="object"):
+    for n, o in tqdm(enumerate(bpy.data.objects.values()), unit="object"):
         # Redirect blender outputs (notably from `remove_doubles`)
         output = io.StringIO()
         with redirect_stdout(output), redirect_stderr(output):
             bpy.context.view_layer.objects.active = o
             bpy.ops.object.mode_set(mode='EDIT')
             bpy.ops.mesh.select_all(action='SELECT')
-            bpy.ops.mesh.remove_doubles(threshold=0.01)
+            if n == 0:
+                bpy.ops.mesh.remove_doubles(threshold=0.01)
             bpy.ops.mesh.fill_holes(0)
             bpy.ops.mesh.set_normals_from_faces()
-    bpy.ops.export_scene.obj(filepath=out)
 
+    # Export the mesh:
+    with redirect_stdout(output), redirect_stderr(output):
+        bpy.ops.export_scene.obj(filepath=out)
+    return
 
 if __name__ == "__main__":
-    print("romi_clean_mesh")
     main(argv[-2], argv[-1])
