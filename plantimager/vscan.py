@@ -106,15 +106,19 @@ class VirtualScannerRunner():
         self.port = port
 
     def start(self):
-        port = 9001
-        self.port = port
-        logger.critical('came here')
+        """Start the Flask server in Blender."""
+        logger.info('Starting the Flask server in Blender...')
+        # Initialize the list of subprocess arguments:
         proclist = ["romi_virtualplantimager", "--", "--port", str(self.port)]
+        # Add the scene file path to the list of subprocess arguments:
         if self.scene is not None:
             logger.debug("scene = %s" % self.scene)
             proclist.extend(['--scene', self.scene])
-        self.process = subprocess.Popen(proclist)
+        # Execute the subprocess as a child process:
+        self.subprocess = subprocess.Popen(proclist)
+        # Register the stop method to be executed upon normal subprocess termination
         atexit.register(VirtualScannerRunner.stop, self)
+        # Wait for the Flask server to be ready...
         while True:
             try:
                 x = requests.get("http://localhost:%i" % self.port)
@@ -126,16 +130,24 @@ class VirtualScannerRunner():
         return
 
     def stop(self):
-        print("killing blender...")
-        parent_pid = self.process.pid
+        """Stop the Flask server in Blender."""
+        logger.warnig('Stopping the Flask server in Blender...')
+        # Get the 'Flask server' subprocess PID:
+        parent_pid = self.subprocess.pid
         parent = psutil.Process(parent_pid)
+        # Recursively send SIGKILL signal to kill all children processes:
         for child in parent.children(recursive=True):  # or parent.children() for recursive=False
             child.kill()
+        # Send SIGKILL signal to kill 'Flask server' subprocess:
         parent.kill()
+        # Check the subprocess has been killed:
         while True:
-            if self.process.poll() != None:
+            # If the subprocess has been killed this will return something...
+            if self.subprocess.poll() is not None:
+                # See: https://docs.python.org/3/library/subprocess.html#subprocess.Popen.poll
                 break
             time.sleep(1)
+        return
 
 
 class VirtualScanner(AbstractScanner):
@@ -204,12 +216,9 @@ class VirtualScanner(AbstractScanner):
             self.host = host
             self.port = port
 
-        self.path = []
         self.classes = classes
-
         self.flash = flash
         self.set_intrinsics(width, height, focal)
-        self.id = 0
         self.ext = "png"
         self.position = path.Pose()
         self.add_leaf_displacement = add_leaf_displacement
@@ -230,6 +239,7 @@ class VirtualScanner(AbstractScanner):
         }
         self.request_post("camera_pose", data)
         self.position = pose
+        return
 
     def set_intrinsics(self, width: int, height: int, focal: float) -> None:
         """Set the intrinsic parameters of the camera for the virtual scanner.
@@ -252,6 +262,7 @@ class VirtualScanner(AbstractScanner):
             "focal": focal,
         }
         self.request_post("camera_intrinsics", data)
+        return
 
     def list_objects(self):
         """List the available objects."""
@@ -383,15 +394,12 @@ class VirtualScanner(AbstractScanner):
                 x = 1.0 - x
                 data_item.add_channel("background", x)
 
-        rt = self.request_get_dict("camera_pose")
-        k = self.request_get_dict("camera_intrinsics")
-
         if metadata is None:
             metadata = {}
 
         metadata["camera"] = {
-            "camera_model": k,
-            **rt
+            "camera_model": self.request_get_dict("camera_intrinsics"),
+            **self.request_get_dict("camera_pose")
         }
         return data_item
 
