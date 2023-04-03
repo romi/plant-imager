@@ -315,6 +315,17 @@ class VirtualScan(Scan):
     render_ground_truth = luigi.BoolParameter(default=False)
 
     def requires(self):
+        """Defines the ``VirtualScan`` task requirements.
+
+        Always require an ``ObjFileset`` named ``'data'`` that contains a virtual plant.
+        If the use of an HDRI is required, check the ``'hdri'`` fileset exists.
+        If the use of a color palette is required, check the ``'palette'`` fileset exists.
+        If the use of a scene is required, check the ``'scenes'`` fileset exists.
+
+        Notes
+        -----
+        Overrides the method from ``Scan``.
+        """
         requires = {
             "object": self.obj_fileset()
         }
@@ -327,38 +338,63 @@ class VirtualScan(Scan):
         return requires
 
     def load_scanner(self):
+        """Load the virtual scanner configuration and create it.
+
+        Returns
+        -------
+        plantimager.vscan.VirtualScanner
+            The configured virtual scanner.
+
+        Notes
+        -----
+        Overrides the method from ``Scan``.
+        """
         scanner_config = json.loads(luigi.DictParameter().serialize(self.scanner))
 
+        # - Load the virtual plant object:
         obj_fileset = self.input()["object"].get()
+        # Randomly pick one of the files in the 'object' fileset, stop when "obj" is in the selected filename:
+        while True:
+            obj_file = random.choice(obj_fileset.get_files())
+            if "obj" in obj_file.filename:
+                break
+        # Defines the mtl file name:
+        mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
+
+        # - Load the scene if requested, using selected `scene_file_id`:
         if self.load_scene:
             scene_fileset = self.input()["scene"].get()
             for f in scene_fileset.get_files():
                 logger.debug(f.id)
             self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
-            scanner_config["scene"] = os.path.join(self.tmpdir.name,
-                                                   scene_fileset.get_file(self.scene_file_id).filename)
+            scene_file = scene_fileset.get_file(self.scene_file_id).filename
+            scanner_config["scene"] = os.path.join(self.tmpdir.name, scene_file)
 
-        if self.render_ground_truth:
-            scanner_config["classes"] = list(VirtualPlantConfig().classes.values())
-
-        vscan = VirtualScanner(**scanner_config)
-        while True:
-            obj_file = random.choice(obj_fileset.get_files())
-            if "obj" in obj_file.filename:
-                break
-        mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
+        # - Load the palette if requested, randomly choose among existing palette files:
         palette_file = None
         if self.use_palette:
-            palette_file = random.choice(self.input()["palette"].get().get_files())
-        vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
+            palette_fileset = self.input()["palette"].get()
+            palette_file = random.choice(palette_fileset.get_files())
 
+        # - Load the hdri if requested, randomly choose among existing hdri files:
+        hdri_file = None
         if self.use_hdri:
             hdri_fileset = self.input()["hdri"].get()
             hdri_file = random.choice(hdri_fileset.get_files())
-            vscan.load_background(hdri_file)
 
-        bb = vscan.get_bounding_box()
-        self.output().get().set_metadata("bounding_box", bb)
+        # - Defines the list of classes to create ground-truth images for:
+        if self.render_ground_truth:
+            scanner_config["classes"] = list(VirtualPlantConfig().classes.values())
+
+        # - Instantiate the VirtualScanner using the config:
+        vscan = VirtualScanner(**scanner_config)
+        vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
+        if self.use_hdri:
+            vscan.load_background(hdri_file)
+        # Add bounding-box to metadata:
+        bbox = vscan.get_bounding_box()
+        self.output().get().set_metadata("bounding_box", bbox)
+
         return vscan
 
 
