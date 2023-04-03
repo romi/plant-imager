@@ -29,13 +29,10 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
+from plantdb import io
 from tqdm import tqdm
 
-from plantdb import io
-from plantdb.db import Fileset
 from plantimager.log import logger
-from plantimager.path import Path
-from plantimager.path import PathElement
 from plantimager.path import Pose
 from plantimager.units import deg
 from plantimager.units import length_mm
@@ -150,14 +147,15 @@ class AbstractCamera(ABC):
 
 
 class AbstractScanner(metaclass=ABCMeta):
-    """Abstract Scanner class.
+    """An abstract scanner class.
 
     Attributes
     ----------
     scan_count : int
-        Incremental counter saving last id for grab method.
+        Incremental counter saving last picture index for the ``grab`` method.
+        Modified by the ``inc_count`` method.
     ext : str
-        Extension to use to write data from grab method.
+        Extension to use to write image data from the ``grab`` method.
     """
 
     def __init__(self):
@@ -176,7 +174,7 @@ class AbstractScanner(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def grab(self, idx: int, metadata: dict) -> DataItem:
+    def grab(self, idx, metadata):
         """Grab data with an id and metadata.
 
         Parameters
@@ -189,7 +187,7 @@ class AbstractScanner(metaclass=ABCMeta):
         Returns
         -------
         plantimager.hal.DataItem
-            The image data.
+            The image data & metadata.
 
         See Also
         --------
@@ -201,11 +199,6 @@ class AbstractScanner(metaclass=ABCMeta):
     def channels(self) -> List[str]:
         """Channel names associated to data from `grab` method.
 
-        Returns
-        -------
-        List[str]
-            The image data.
-
         See Also
         --------
         plantimager.hal.AbstractCamera
@@ -213,22 +206,47 @@ class AbstractScanner(metaclass=ABCMeta):
         pass
 
     def inc_count(self) -> int:
-        """Incremental counter used to return id for `grab` method. """
+        """Incremental counter used to return a picture index for the ``grab`` method."""
         x = self.scan_count
         self.scan_count += 1
         return x
 
-    def get_target_pose(self, x: PathElement) -> Pose:
+    def get_target_pose(self, elt):
+        """Get the target pose from a given path element (singleton).
+
+        Parameters
+        ----------
+        elt : plantimager.path.PathElement
+            The path element to reach.
+
+        Returns
+        -------
+        plantimager.path.Pose
+            The target pose to reach.
+
+        Notes
+        -----
+        If a ``Pose`` attribute is missing from the given path element, we use the value from the previous pose.
+        """
         pos = self.get_position()
         target_pose = Pose()
         for attr in pos.attributes():
-            if getattr(x, attr) is None:
+            if getattr(elt, attr) is None:
                 setattr(target_pose, attr, getattr(pos, attr))
             else:
-                setattr(target_pose, attr, getattr(x, attr))
+                setattr(target_pose, attr, getattr(elt, attr))
         return target_pose
 
-    def scan(self, path: Path, fileset: Fileset) -> None:
+    def scan(self, path, fileset):
+        """Performs a scan, that is a series of movements and image acquisitions.
+
+        Parameters
+        ----------
+        path : plantimager.path.Path
+            The path to follows to acquire image.
+        fileset : plantdb.FSDB.Fileset
+            The output fileset used to save the image.
+        """
         for x in tqdm(path, unit='pose'):
             pose = self.get_target_pose(x)
             data_item = self.scan_at(pose, x.exact_pose)
@@ -242,8 +260,26 @@ class AbstractScanner(metaclass=ABCMeta):
                     f.set_metadata(data_item.metadata)
                 f.set_metadata("shot_id", "%06i" % data_item.idx)
                 f.set_metadata("channel", c)
+        return
 
-    def scan_at(self, pose: Pose, exact_pose: bool = True, metadata: dict = {}) -> DataItem:
+    def scan_at(self, pose, exact_pose=True, metadata=None):
+        """Move to a given position and take a picture.
+
+        Parameters
+        ----------
+        pose : plantimager.path.Pose
+            The position of the camera to take the picture.
+        exact_pose : bool, optional
+            If ``True`` (default), save the given `pose` under a "pose" entry in metadata.
+            Else, save it as an "approximate_pose" entry in metadata.
+        metadata : dict, optional
+            The dictionary of metadata to associate to this picture.
+
+        Returns
+        -------
+        plantimager.hal.DataItem
+            The picture data & metadata.
+        """
         logger.debug(f"scanning at: {pose}")
         if exact_pose:
             metadata = {**metadata, "pose": [pose.x, pose.y, pose.z, pose.pan, pose.tilt]}

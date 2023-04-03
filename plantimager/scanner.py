@@ -25,9 +25,6 @@
 import time
 from typing import List
 
-from plantimager.hal import AbstractCNC
-from plantimager.hal import AbstractCamera
-from plantimager.hal import AbstractGimbal
 from plantimager.hal import AbstractScanner
 from plantimager.path import Pose
 
@@ -112,8 +109,9 @@ class Scanner(AbstractScanner):
             self.cnc.moveto(pose.x, pose.y, pose.z)
             self.gimbal.moveto(pose.pan, pose.tilt)
         time.sleep(self.waiting_time)
+        return
 
-    def grab(self, idx: int, metadata: dict = None):
+    def grab(self, idx, metadata=None):
         """Grab data with an id and metadata.
 
         Parameters
@@ -135,13 +133,13 @@ class Scanner(AbstractScanner):
         """
         return self.camera.grab(idx, metadata)
 
-    def channels(self) -> List[str]:
+    def channels(self):
         """Channel names associated to grabbed data with the grab method.
 
         Returns
         -------
-        List[str]
-            The image data.
+        List of str
+            The list of channel names.
 
         See Also
         --------
