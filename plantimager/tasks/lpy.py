@@ -29,9 +29,13 @@ import subprocess
 import tempfile
 
 import luigi
+
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.lpy import LpyFileset
 from romitask import RomiTask
+from romitask.log import configure_logger
+
+logger = configure_logger(__name__)
 
 
 class VirtualPlant(RomiTask):
@@ -39,20 +43,22 @@ class VirtualPlant(RomiTask):
 
     Attributes
     ----------
-    upstream_task : LpyFileset
-        ???
-    lpy_file_id : str
+    upstream_task : plantimager.lpy.LpyFileset
+        The fileset specific to LPY model.
+    lpy_file_id : luigi.Parameter
         Name of the LPY file used as model.
-    metadata : dict
-        Dictionary of metadata to use with the model.
+        Should exist in the `LpyFileset`.
+    metadata : list
+        The list of metadata to export with the model.
+        By default, ask for "angles" & "internodes".
     lpy_globals : dict
         Global LPY variables used by `lpy.Lsystem()` method.
+        By default, set the "SEED" LPY variable to a random integer in ``[0, 100000]``.
     """
     upstream_task = LpyFileset
     lpy_file_id = luigi.Parameter()
     metadata = luigi.ListParameter(default=["angles", "internodes"])
-    lpy_globals = luigi.DictParameter(default=
-                                      {"SEED": random.randint(0, 100000)})  # by default randomize lpy seed
+    lpy_globals = luigi.DictParameter(default={"SEED": random.randint(0, 100000)})
 
     def run(self):
         """Generates the virtual plant."""
@@ -68,7 +74,6 @@ class VirtualPlant(RomiTask):
                 f.write(x.read_raw())
 
             lsystem = lpy.Lsystem(tmp_filename, globals=lpy_globals)
-            # lsystem.context().globals()["SEED"] = self.seed
             for lstring in lsystem:
                 t = all.PglTurtle()
                 lsystem.turtle_interpretation(lstring, t)
@@ -78,15 +83,26 @@ class VirtualPlant(RomiTask):
             fname = os.path.join(tmpdir, "plant.obj")
             scene.save(fname)
             classes = luigi.DictParameter().serialize(VirtualPlantConfig().classes).replace(" ", "")
+
+            logger.info("Splitting mesh by classes in Blender with `romi_split_by_material`...")
             subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
 
-            # subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+            logger.info("Cleaning mesh in Blender with `romi_clean_mesh`...")
             subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
-            output_file.import_file(fname)
 
+            output_file.import_file(fname)
             output_mtl_file = self.output().get().create_file(output_file.id + "_mtl")
             output_mtl_file.import_file(fname.replace("obj", "mtl"))
 
+        measures = {}
         for m in self.metadata:
             m_val = lsystem.context().globals()[m]
+            if m in ["angles", 'internodes']:
+                measures[m] = m_val
             output_file.set_metadata(m, m_val)
+
+        # Export to a 'measures.json' file:
+        from plantdb.fsdb import _scan_measures_path
+        measures_json = _scan_measures_path(output_file.get_scan())
+        with open(measures_json, 'w') as f:
+            f.write(json.dumps(measures, indent=4))
