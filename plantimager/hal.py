@@ -281,6 +281,8 @@ class AbstractScanner(metaclass=ABCMeta):
             The picture data & metadata.
         """
         logger.debug(f"scanning at: {pose}")
+        if metadata is None:
+            metadata = {}
         if exact_pose:
             metadata = {**metadata, "pose": [pose.x, pose.y, pose.z, pose.pan, pose.tilt]}
         else:

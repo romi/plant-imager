@@ -131,7 +131,7 @@ class VirtualScannerRunner():
 
     def stop(self):
         """Stop the Flask server in Blender."""
-        logger.warnig('Stopping the Flask server in Blender...')
+        logger.warning('Stopping the Flask server in Blender...')
         # Get the 'Flask server' subprocess PID:
         parent_pid = self.subprocess.pid
         parent = psutil.Process(parent_pid)
