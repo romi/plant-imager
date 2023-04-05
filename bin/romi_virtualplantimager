@@ -6,11 +6,13 @@ import glob
 import os
 import sys
 import tempfile
+from contextlib import redirect_stderr
+from contextlib import redirect_stdout
 from random import randint
 
 import bpy
 import flask
-import imageio
+import imageio.v3 as iio
 import numpy as np
 from flask import Flask
 from flask import jsonify
@@ -19,6 +21,12 @@ from flask import send_from_directory
 from mathutils import Matrix
 from mathutils import Vector
 from werkzeug.utils import secure_filename
+
+from plantimager.blender import _get_log_filepath
+from plantimager.blender import check_engine
+from romitask.log import configure_logger
+
+logger = configure_logger(__name__)
 
 
 # ---------------------------------------------------------------
@@ -199,7 +207,7 @@ class MultiClassObject():
         for o in self.data.objects:
             try:
                 m = o.data.materials[0]
-                print("material = %s" % m.name)
+                logger.debug("material = %s" % m.name)
                 if class_name in m.name:
                     o.hide_render = False
                 else:
@@ -225,7 +233,7 @@ class MultiClassObject():
             if palette_location is None:
                 color = [np.random.rand(), np.random.rand(), np.random.rand()]
             else:
-                im = imageio.imread(palette_location)
+                im = iio.imread(palette_location)
                 palette_width, palette_height, channels = im.shape
                 color = (im[randint(0, palette_width - 1), randint(0, palette_height - 1)] / 255).tolist()
 
@@ -284,7 +292,7 @@ class MultiClassObject():
                 o.location.x = dz
                 o.select_set(True)
                 bpy.context.view_layer.objects.active = o
-                print("transform %s" % o.name)
+                logger.debug("transform %s" % o.name)
                 bpy.ops.object.select_all(action='DESELECT')
 
         self.location = {
@@ -307,6 +315,7 @@ class VirtualPlant(MultiClassObject):
 
 
 if __name__ == "__main__":
+    check_engine()
     # Remove the cube object (automatically created by Blender when initializing a new scene):
     if 'Cube' in bpy.data.objects:
         bpy.data.objects.remove(bpy.data.objects['Cube'], do_unlink=True)
@@ -340,9 +349,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.scene is not None:
-        bpy.ops.wm.open_mainfile(filepath=args.scene)
-
     data_dir = args.data_dir
     hdri_dir = args.hdri_dir
 
@@ -355,6 +361,9 @@ if __name__ == "__main__":
     background_list = [os.path.basename(o) for o in background_list]
     L = len(background_list)
 
+    if args.scene is not None:
+        bpy.ops.wm.open_mainfile(filepath=args.scene)
+
     cam = Camera(bpy.context.scene, bpy.data, False)
     cam.set_intrinsics(1616, 1080, 24)
     cam.move(-100, 0, 50, 90, 0, -90)
@@ -364,6 +373,7 @@ if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as tmpdir:
         # Initialize the Flask app:
         app = Flask(__name__)
+        logfile = _get_log_filepath(tmpdir)
 
 
         @app.route('/classes', methods=['GET'])
@@ -380,8 +390,7 @@ if __name__ == "__main__":
             for o in obj.data.objects:
                 m = o.matrix_world
                 if o.name not in obj.scene_objects:
-                    print("m = ")
-                    print(m)
+                    logger.debug(f"m = {m}")
                     for b in o.bound_box:
                         b1 = m @ Vector(b)
                         x, y, z = b1
@@ -535,12 +544,17 @@ if __name__ == "__main__":
                 view_layer.active_layer_collection.collection.objects.link(light_obj)
                 light_obj.select_set(True)
                 view_layer.objects.active = light_obj
-                light_obj
+                logger.debug(light_obj)
             obj.show_all()
 
             bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
-            bpy.ops.render.render(write_still=True)
-            if light_obj is not None: bpy.data.objects.remove(light_obj, do_unlink=True)
+            with open(logfile, mode="a") as f:
+                # Redirect blender outputs to a log file:
+                with redirect_stdout(f), redirect_stderr(f):
+                    bpy.ops.render.render(write_still=True)
+            if light_obj is not None:
+                bpy.data.objects.remove(light_obj, do_unlink=True)
+
             return send_from_directory(tmpdir, "plant.png")
 
 
@@ -548,17 +562,22 @@ if __name__ == "__main__":
         def render_class(class_id):
             obj.show_class(class_id)
             bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
-            bpy.ops.render.render(write_still=True)
+            with open(logfile, mode="a") as f:
+                # Redirect blender outputs to a log file:
+                with redirect_stdout(f), redirect_stderr(f):
+                    bpy.ops.render.render(write_still=True)
             return send_from_directory(tmpdir, "plant.png")
 
 
-        # cuda_devs, cl_devs = bpy.context.preferences.addons['cycles'].preferences.get_devices()
-        # bpy.context.scene.render.engine = 'CYCLES'# echo $PYTHONPATH
-        # Set the device_type
-        # bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
-
-        # Set the device and feature set
-        # bpy.context.scene.cycles.device = "GPU"
-        # bpy.context.scene.cycles.feature_set = "SUPPORTED"
+        # Detect available devices
+        cuda_devs, cl_devs = bpy.context.preferences.addons['cycles'].preferences.get_devices()
+        # Activate "CYCLES" engine and GPU rendering:
+        for scene in bpy.data.scenes:
+            bpy.context.scene.render.engine = 'CYCLES'
+            bpy.data.scenes["Scene"].cycles.device = 'GPU'
+            bpy.context.scene.cycles.device = 'GPU'
+        # Set the `compute_device_type` and use it
+        bpy.context.preferences.addons['cycles'].preferences.compute_device_type = "CUDA"
+        bpy.context.preferences.addons['cycles'].preferences.devices[0].use = True
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))
