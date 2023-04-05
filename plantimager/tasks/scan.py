@@ -172,7 +172,7 @@ class Scan(RomiTask):
         return path
 
     def load_scanner(self) -> Scanner:
-        """Load the ``CNC``, ``Gimbal`` & ``Camera`` modules and create a ``Scanner`` configuration."""
+        """Load the ``CNC``, ``Gimbal`` & ``Camera`` modules and create a ``Scanner`` instance."""
         scanner_config = self.scanner
 
         # - Load the CNC configuration from TOML:
@@ -216,9 +216,8 @@ class Scan(RomiTask):
             If ``None`` (default), load the ``ScanPath`` module & get the configuration from the TOML config file.
             Else should be a ``plantimager.path.Path`` instance.
         hw_scanner : plantimager.scanner.Scanner or plantimager.scanner.VirtualScanner, optional
-            If ``None`` (default), load the ``CNC``, ``Gimbal`` & ``Camera`` modules & get the configuration from the
-            TOML config file.
-            Else should be a ``plantimager.scanner.Scanner`` instance.
+            If ``None`` (default), load the configuration from the TOML config file with `self.load_scanner`.
+            Else should be a ``Scanner`` or ``VirtualScanner`` instance.
         extra_md : dict, optional
             A dictionary of extra metadata to add to the 'images' fileset.
 
