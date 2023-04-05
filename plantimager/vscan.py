@@ -27,11 +27,12 @@ import json
 import os
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 from io import BytesIO
 
-import imageio
+import imageio.v3 as iio
 import numpy as np
 import psutil
 import requests
@@ -44,32 +45,62 @@ from plantimager.hal import DataItem
 from plantimager.log import logger
 
 
-def check_port(port):
-    """Test if it is possible to listen to this port for TCP/IPv4 or TCP/IPv6 connections.
+def available_port(port):
+    """Test if it is possible to listen to this port for TCP/IPv4 connections.
 
     Parameters
     ----------
-    port : str
+    port : int
         The localhost port to test.
 
     Returns
     -------
     bool
         ``True`` if it's possible to listen on this port, ``False`` otherwise.
+
+    Examples
+    --------
+    >>> from plantimager.vscan import available_port
+    >>> available_port(9001)
+    True
+
     """
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(('127.0.0.1', port))
         sock.listen(5)
         sock.close()
-        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-        sock.bind(('::1', port))
-        sock.listen(5)
-        sock.close()
     except socket.error as e:
         return False
     return True
 
+
+def find_available_port(port_range):
+    """Find an available port.
+
+    Parameters
+    ----------
+    port_range : list of int
+        A len-2 list of integers specifying the range of ports to test for availability.
+
+    Returns
+    -------
+    int
+        The available port.
+
+    Examples
+    --------
+    >>> from plantimager.vscan import find_available_port
+    >>> find_available_port([9001, 9999])
+
+    """
+    port_range = range(*port_range)
+    rng = np.random.default_rng(5)
+    for port in rng.choice(port_range, size=len(port_range)):
+        if available_port(port):
+            break
+
+    return port
 
 class VirtualScannerRunner():
     """Run a Flask server in Blender to act as the virtual scanner.
@@ -103,7 +134,20 @@ class VirtualScannerRunner():
         """
         self.subprocess = None
         self.scene = scene
-        self.port = port
+        self.port = self._select_port(port)
+
+    def _select_port(self, port):
+        if not available_port(port):
+            logger.warning(f"Specified port {port} is not available!")
+            logger.info("Searching for an available port in the range '[9001, 9999]'...")
+            port = find_available_port(port_range=[9001, 9999])
+            try:
+                assert available_port(port)
+            except AssertionError:
+                sys.exit(f"Could not find an available port!")
+            else:
+                logger.info(f"Found available port '{port}'.")
+        return port
 
     def start(self):
         """Start the Flask server in Blender."""
@@ -163,7 +207,7 @@ class VirtualScanner(AbstractScanner):
     port : int
         The virtual scanner host port.
     classes : list of str
-        The list of classes to render.
+        The list of classes to render, must be found in the loaded OBJ.
     flash : bool
         If ``True``, light the scene with a flash.
     ext : str
@@ -174,7 +218,7 @@ class VirtualScanner(AbstractScanner):
         If ``True``, add a random displacement to the leaf class objects after loading the virtual plant.
     """
 
-    def __init__(self, width, height, focal, flash=False, host=None, port=5000, scene=None,
+    def __init__(self, width, height, focal, flash=False, host=None, port=9001, scene=None,
                  add_leaf_displacement=False, classes=None):
         """Instantiate a ``VirtualScanner``.
         
@@ -201,13 +245,13 @@ class VirtualScanner(AbstractScanner):
             If ``True``, add a random displacement to the leaf class objects after loading the virtual plant.
             Defaults to ``False``.
         classes : list of str, optional
-            The list of classes to generate pictures for.
+            The list of classes to generate pictures for, must be found in the loaded OBJ.
             Defaults to ``None``.
         """
         super().__init__()
 
         if host == None:
-            self.runner = VirtualScannerRunner(scene=scene)
+            self.runner = VirtualScannerRunner(scene=scene, port=port)
             self.runner.start()
             self.host = "localhost"
             self.port = self.runner.port
@@ -387,12 +431,15 @@ class VirtualScanner(AbstractScanner):
         for c in self.channels():
             if c != 'background':
                 data_item.add_channel(c, self.render(channel=c))
-            else:
-                x = np.zeros(data_item.channel(self.classes[0]).data.shape)
-                for c in self.classes:
-                    x = np.maximum(x, data_item.channel(c).data)
-                x = 1.0 - x
-                data_item.add_channel("background", x)
+
+        if 'background' in self.channels():
+            # Generate the background:
+            bg_mask = np.zeros_like(data_item.channel(self.classes[0]).data, dtype=np.uint8)
+            for c in self.classes:
+                mask = data_item.channel(c).data
+                bg_mask = np.maximum(bg_mask, mask)
+            bg_mask = 255 - bg_mask
+            data_item.add_channel("background", bg_mask)
 
         if metadata is None:
             metadata = {}
@@ -423,10 +470,10 @@ class VirtualScanner(AbstractScanner):
             if self.flash:
                 ep = ep + "?flash=1"
             x = self.request_get_bytes(ep)
-            data = imageio.imread(BytesIO(x))
+            data = iio.imread(BytesIO(x))
             return data
         else:
             x = self.request_get_bytes("render_class/%s" % channel)
-            data = imageio.imread(BytesIO(x))
-            data = data[:, :, 3]
+            data = iio.imread(BytesIO(x))
+            data = np.array(255 * (data[:, :, 3] > 10), dtype=np.uint8)
             return data
