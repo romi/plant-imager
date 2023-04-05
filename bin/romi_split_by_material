@@ -1,92 +1,30 @@
 #!/usr/bin/env romi_bpy
+
 import argparse
-import io
 import json
 import sys
-from contextlib import redirect_stderr
-from contextlib import redirect_stdout
 
-import bpy
+from plantimager.blender import split_by_material
 
 
-def load_obj(fname):
-    """Load a mesh in Blender.
-
-    Parameters
-    ----------
-    fname : str
-        The file path to the mesh object to load in Blender.
-    """
-    # Redirect blender outputs
-    output = io.StringIO()
-    with redirect_stdout(output), redirect_stderr(output):
-        # Start by selecting all objects from initialized scene (with a cube) and remove them all:
-        bpy.ops.object.select_all(action='SELECT')
-        bpy.ops.object.delete()
-    # Load the mesh in Blender:
-    bpy.ops.import_scene.obj(filepath=fname)
-    # List all imported objects & set them as active:
-    o = bpy.data.objects[list(bpy.data.objects.keys())[0]]
-    bpy.context.view_layer.objects.active = o
-    return
-
-
-def main(fname, out, material_class_corres):
-    """Mesh splitting function.
-
-    Parameters
-    ----------
-    fname : str
-        The file path to the mesh object to load in Blender.
-    out : str
-        The file path to us to export the cleaned mesh object.
-    material_class_corres : dict
-        A renaming dictionary, map LPY class names to semantic class names.
-    """
-    load_obj(fname)
-
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.mesh.select_all(action='SELECT')
-
-    # Redirect blender outputs
-    output = io.StringIO()
-    with redirect_stdout(output), redirect_stderr(output):
-        bpy.ops.mesh.separate(type='MATERIAL')
-
-    bpy.ops.object.mode_set(mode='OBJECT')
-
-    # After separating, all pieces are selected and named: accordingly
-    for o in bpy.context.selected_objects:
-        # Remove x rotation from LPY
-        o.rotation_euler[0] = 0
-        # Rename object by the material applied to it
-        if o.active_material.name in material_class_corres:
-            class_name = material_class_corres[o.active_material.name]
-            o.name = class_name
-            o.active_material.name = class_name
-        else:
-            o.name = o.active_material.name
-
-    # Export the mesh:
-    with redirect_stdout(output), redirect_stderr(output):
-        bpy.ops.export_scene.obj(filepath=out)
-    return
-
-
-if __name__ == "__main__":
+def parsing():
+    # - Override system arguments positions:
+    # Search for the index of the "--" marker (see `VirtualScannerRunner.start()`)
     try:
         idx = sys.argv.index('--')
         sys.argv = ["null"] + sys.argv[idx + 1:]
     except:
         sys.argv = ["null"]
-    parser = argparse.ArgumentParser(description='Split an obj file into submeshes')
-
-    parser.add_argument('--classes', dest='classes', default="{}", type=str,
-                        help='JSON string of the form { "mat_id" : "class_name" }. Renames the materials to selected class names.')
-
+    # Instantiate argument parser:
+    parser = argparse.ArgumentParser(description='Split an OBJ mesh file into sub-meshes with Blender.')
     parser.add_argument('input', metavar='input_file', help="Input file")
     parser.add_argument('output', metavar='output_file', help="Output file")
-    args = parser.parse_args()
+    parser.add_argument('--classes', dest='classes', default="{}", type=str,
+                        help='Renames the materials to selected class names with a JSON string as "{"mat_id": "class_name"}".')
+    return parser
 
-    args.classes = json.loads(args.classes)
-    main(args.input, args.output, args.classes)
+
+if __name__ == "__main__":
+    args = parsing().parse_args()
+    args.classes = json.loads(args.classes)  # parse the mapping string with JSON parser into a dictionary
+    split_by_material(args.input, args.output, args.classes)
