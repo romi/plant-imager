@@ -4,6 +4,7 @@ import distutils
 import distutils.util
 import glob
 import os
+import subprocess
 import sys
 import tempfile
 from contextlib import redirect_stderr
@@ -374,6 +375,20 @@ if __name__ == "__main__":
         # Initialize the Flask app:
         app = Flask(__name__)
         logfile = _get_log_filepath(tmpdir)
+
+
+        @app.route('/hello_world', methods=['GET'])
+        def hello_world():
+            """Dummy test function returning some info about the server."""
+            s = ["Hello World!"]
+            s += [f"I am a Flask server named '{app.name}'."]
+            # Get Blender version & build date:
+            s += [f"I run Blender {bpy.app.version_string} built on {bpy.app.build_date.decode()}."]
+            # Get Python version:
+            pyv = subprocess.run(['python', '--version'], capture_output=True)
+            pyv = pyv.stdout.decode().replace('\n', '')
+            s += [f"I run {pyv}."]
+            return jsonify(s)
 
 
         @app.route('/classes', methods=['GET'])
