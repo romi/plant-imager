@@ -10,10 +10,6 @@
 # $ ./docker/virtualplantimager/build.sh -t debug
 
 vtag="latest"
-user=$USER
-uid=$(id -u)
-group=$(id -g -n)
-gid=$(id -g)
 docker_opts=""
 
 usage() {
@@ -30,14 +26,6 @@ usage() {
   echo "OPTIONS:"
   echo "  -t, --tag
     Docker image tag to use, default to '$vtag'."
-  echo "  -u, --user
-    User name to create inside docker image, default to '$user'."
-  echo "  --uid
-    User id to use with 'user' inside docker image, default to '$uid'."
-  echo "  -g, --group
-    Group name to create inside docker image, default to '$group'."
-  echo "  --gid
-    Group id to use with 'user' inside docker image, default to '$gid'."
   # Docker options:
   echo "  --no-cache
     Do not use cache when building the image, (re)start from scratch."
@@ -79,12 +67,18 @@ start_time=`date +%s`
 
 # Start the docker image build:
 docker build -t roboticsmicrofarms/virtualplantimager:$vtag $docker_opts \
-  --build-arg USER_NAME=$user \
-  --build-arg USER_ID=$uid \
-  --build-arg GROUP_NAME=$group \
-  --build-arg GROUP_ID=$gid \
   -f docker/virtualplantimager/Dockerfile .
 
-# Print docker image build time:
-echo
-echo Build time is $(expr `date +%s` - $start_time) s
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+# Get docker build status:
+docker_build_status=$?
+# Print build time if successful (code 0), else print exit status code
+if [ $docker_build_status == 0 ]; then
+  echo -e "\n${GREEN}Docker build SUCCEEDED in $(expr `date +%s` - $start_time)s!${NC}"
+else
+  echo -e "\n${RED}Docker build FAILED after $(expr `date +%s` - $start_time)s with code ${docker_build_status}!${NC}"
+fi
+# Exit with docker build exit status code:
+exit $docker_build_status

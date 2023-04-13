@@ -30,8 +30,6 @@ usage() {
     Docker image tag to use, default to '$vtag'."
   echo "  -db, --database_path
     Host database path to mount in docker container. Require definition of docker container user."
-  echo "  -u, --user
-    User name in docker container, default to '$user'."
   echo "  -v, --volume
     Volume mapping for docker, e.g. '/abs/host/dir:/abs/container/dir'. Multiple use is allowed."
   echo "  -c, --cmd
@@ -45,10 +43,6 @@ while [ "$1" != "" ]; do
   -t | --tag)
     shift
     vtag=$1
-    ;;
-  -u | --user)
-    shift
-    user=$1
     ;;
   -db | --database_path)
     shift
@@ -82,7 +76,7 @@ done
 # Use 'host database path' & 'docker user' to create a bind mount:
 if [ "$db_path" != "" ]
 then
-  mount_option="$mount_option -v $db_path:/home/$user/db"
+  mount_option="$mount_option -v $db_path:/myapp/db"
 fi
 
 if [ "$cmd" = "" ]

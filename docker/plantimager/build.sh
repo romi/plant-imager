@@ -85,6 +85,16 @@ docker build -t plantimager:$vtag $docker_opts \
   --build-arg GROUP_ID=$gid \
   -f docker/plantimager/Dockerfile .
 
-# Print docker image build time:
-echo
-echo Build time is $(expr `date +%s` - $start_time) s
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+# Get docker build status:
+docker_build_status=$?
+# Print build time if successful (code 0), else print exit status code
+if [ $docker_build_status == 0 ]; then
+  echo -e "\n${GREEN}Docker build SUCCEEDED in $(expr `date +%s` - $start_time)s!${NC}"
+else
+  echo -e "\n${RED}Docker build FAILED after $(expr `date +%s` - $start_time)s with code ${docker_build_status}!${NC}"
+fi
+# Exit with docker build exit status code:
+exit $docker_build_status
