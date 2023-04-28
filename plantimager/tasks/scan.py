@@ -298,6 +298,9 @@ class VirtualScan(Scan):
     render_ground_truth : luigi.BoolParameter, optional
         If ``True``, create the mask image for defined ground truth classes in virtual plant model.
         Defaults to ``False``.
+    colorize : bool, optional
+        Whether the virtual plant should be colorized in Blender.
+        Defaults to ``True``.
 
     """
     load_scene = luigi.BoolParameter(default=False)
@@ -312,14 +315,16 @@ class VirtualScan(Scan):
     palette_fileset = luigi.TaskParameter(default=PaletteFileset)
 
     render_ground_truth = luigi.BoolParameter(default=False)
+    colorize = luigi.BoolParameter(default=True)
 
     def requires(self):
         """Defines the ``VirtualScan`` task requirements.
 
-        Always require an ``ObjFileset`` named ``'data'`` that contains a virtual plant.
-        If the use of an HDRI is required, check the ``'hdri'`` fileset exists.
-        If the use of a color palette is required, check the ``'palette'`` fileset exists.
-        If the use of a scene is required, check the ``'scenes'`` fileset exists.
+        Always require a `Fileset` that contains a virtual plant.
+        It can be an ``ObjFileset`` or the output of the ``VirtualPlant`` task.
+        If the use of an HDRI is required, check the ``HdriFileset`` exists.
+        If the use of a color palette is required, check the ``PaletteFileset`` exists.
+        If the use of a scene is required, check the ``SceneFileset`` exists.
 
         Notes
         -----
@@ -337,7 +342,7 @@ class VirtualScan(Scan):
         return requires
 
     def load_scanner(self):
-        """Load the virtual scanner configuration and create it.
+        """Create the virtual scanner configuration and defines the files it.
 
         Returns
         -------
@@ -348,49 +353,62 @@ class VirtualScan(Scan):
         -----
         Overrides the method from ``Scan``.
         """
+        # - Create the virtual scanner configuration (from TOML section 'VirtualScan.scanner'):
         scanner_config = json.loads(luigi.DictParameter().serialize(self.scanner))
 
-        # - Load the virtual plant object:
+        # - Defines the virtual plant files:
+        # Get the `Fileset` containing the OBJ & MTL files:
         obj_fileset = self.input()["object"].get()
-        # Randomly pick one of the files in the 'object' fileset, stop when "obj" is in the selected filename:
+        # Get the OBJ `File`:
         while True:
+            # Randomly pick one of the files from the fileset...
             obj_file = random.choice(obj_fileset.get_files())
             if "obj" in obj_file.filename:
+                # ...stop when "obj" is found in the filename
                 break
-        # Defines the mtl file name:
-        mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
+        # Get the MTL `File`:
+        try:
+            mtl_file = obj_fileset.get_file(obj_file.id + "_mtl")
+        except:
+            mtl_file = None
 
-        # - Load the scene if requested, using selected `scene_file_id`:
-        if self.load_scene:
-            scene_fileset = self.input()["scene"].get()
-            for f in scene_fileset.get_files():
-                logger.debug(f.id)
-            self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
-            scene_file = scene_fileset.get_file(self.scene_file_id).filename
-            scanner_config["scene"] = os.path.join(self.tmpdir.name, scene_file)
-
-        # - Load the palette if requested, randomly choose among existing palette files:
+        # - Defines the palette `File`, if requested:
         palette_file = None
         if self.use_palette:
+            # Randomly choose among existing palette files:
             palette_fileset = self.input()["palette"].get()
             palette_file = random.choice(palette_fileset.get_files())
 
-        # - Load the hdri if requested, randomly choose among existing hdri files:
+        # - Defines the hdri `File`, if requested:
         hdri_file = None
         if self.use_hdri:
+            # Randomly choose among existing hdri files:
             hdri_fileset = self.input()["hdri"].get()
             hdri_file = random.choice(hdri_fileset.get_files())
 
-        # - Defines the list of classes to create ground-truth images for:
+        # - Defines the scene `File`, if requested:
+        if self.load_scene:
+            scene_fileset = self.input()["scene"].get()
+            # Duplicate all files in a temporary directory: (TODO: why?!)
+            self.tmpdir = io.tmpdir_from_fileset(scene_fileset)
+            # Use the selected `scene_file_id` to get the `File`:
+            scene_file = scene_fileset.get_file(self.scene_file_id).filename
+            # Add its path to the virtual scanner config to create:
+            scanner_config["scene"] = os.path.join(self.tmpdir.name, scene_file)
+
+        # - Defines the list of classes to create ground-truth images for, if requested:
         if self.render_ground_truth:
+            # Add the list of classes names to the virtual scanner config to create:
             scanner_config["classes"] = list(VirtualPlantConfig().classes.values())
 
-        # - Instantiate the VirtualScanner using the config:
+        # - Instantiate the `VirtualScanner` using the config:
         vscan = VirtualScanner(**scanner_config)
-        vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file)
+        # - Load the defined OBJ, MTL and palette files to Blender:
+        vscan.load_object(obj_file, mtl=mtl_file, palette=palette_file, colorize=self.colorize)
+        # - Load the HDRI files to Blender, if requested:
         if self.use_hdri:
             vscan.load_background(hdri_file)
-        # Add bounding-box to metadata:
+        # Get the bounding-box from Blender & add it to the output fileset metadata:
         bbox = vscan.get_bounding_box()
         self.output().get().set_metadata("bounding_box", bbox)
 

@@ -1,5 +1,13 @@
-[ObjFileset]
-scan_id = "vscan_data"
+[VirtualPlant]
+lpy_file_id = "arabidopsis_notex"
+
+[VirtualPlant.lpy_globals]
+BRANCHON = false
+MEAN_NB_DAYS = 40
+STDEV_NB_DAYS = 5
+BETA = 51
+INTERNODE_LENGTH = 1.3
+STEM_DIAMETER = 0.25
 
 [PaletteFileset]
 scan_id = "vscan_data"
@@ -9,20 +17,6 @@ scan_id = "vscan_data"
 
 [LpyFileset]
 scan_id = "vscan_data"
-
-[SceneFileset]
-scan_id = "vscan_data"
-
-[VirtualPlant]
-lpy_file_id = "arabidopsis_notex"
-
-[VirtualPlant.lpy_globals]
-BRANCHON = false
-MEAN_NB_DAYS = 50
-STDEV_NB_DAYS = 5
-BETA = 51
-INTERNODE_LENGTH = 1.3
-STEM_DIAMETER = 0.15
 
 [ScanPath.kwargs]
 center_x = 0
@@ -36,17 +30,21 @@ n_points = 36
 class_name = "Circle"
 
 [VirtualScan]
-obj_fileset = "VirtualPlant"
+load_scene = false
+scene_file_id = ""
 use_palette = true
 use_hdri = true
-load_scene = false
-scene_file_id = "pot"
+obj_fileset = "VirtualPlant"
+hdri_fileset = "HdriFileset"
+scene_fileset = "SceneFileset"
+palette_fileset = "PaletteFileset"
 render_ground_truth = true
+colorize = true
 
 [VirtualScan.scanner]
 width = 1440
 height = 1080
 focal = 16
 flash = false
-add_leaf_displacement = true
 port = 9001
+add_leaf_displacement = true

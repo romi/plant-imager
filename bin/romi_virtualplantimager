@@ -12,9 +12,9 @@ from contextlib import redirect_stdout
 from random import randint
 
 import bpy
-import flask
 import imageio.v3 as iio
 import numpy as np
+from math import pi
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -353,8 +353,6 @@ if __name__ == "__main__":
     data_dir = args.data_dir
     hdri_dir = args.hdri_dir
 
-    pi = 3.14159265
-
     object_list = glob.glob(os.path.join(data_dir, "*.obj"))
     object_list = [os.path.basename(o) for o in object_list]
 
@@ -371,6 +369,8 @@ if __name__ == "__main__":
 
     obj = VirtualPlant(bpy.context.scene, bpy.data)
 
+    # The whole Flask app will run in a temporary directory.
+    # When the app close, it will clean the whole temporary directory.
     with tempfile.TemporaryDirectory() as tmpdir:
         # Initialize the Flask app:
         app = Flask(__name__)
@@ -429,7 +429,7 @@ if __name__ == "__main__":
         @app.route('/camera_intrinsics', methods=['POST', 'GET'])
         def camera_intrinsics():
             """Set or returns the camera intrinsic parameters."""
-            if flask.request.method == 'POST':
+            if request.method == 'POST':
                 kwargs = request.form.to_dict()
                 cam.set_intrinsics(int(kwargs["width"]), int(kwargs["height"]), float(kwargs["focal"]))
                 return jsonify('OK')
@@ -447,7 +447,7 @@ if __name__ == "__main__":
         @app.route('/camera_pose', methods=['POST', 'GET'])
         def camera_pose():
             """Set or get the camera position in space."""
-            if flask.request.method == 'POST':
+            if request.method == 'POST':
                 kwargs = request.form.to_dict()
                 cam.move(**kwargs)
                 return jsonify('OK')
@@ -456,82 +456,146 @@ if __name__ == "__main__":
                 return jsonify({"rotmat": R, "tvec": T})
 
 
-        @app.route('/upload_object', methods=['GET', 'POST'])
-        def upload_object():
-            """Upload or download the objects."""
-            request = flask.request
-            if request.method == "GET":
-                return '''
+        @app.get('/upload_object')
+        def upload_object_get():
+            """Load the OBJ, MTL & palette files to Blender.
+
+            Display a form to upload the OBJ, MTL & palette files to the server from a browser.
+            """
+            HTML = '''
                     <!doctype html>
-                    <title>Upload object</title>
-                    <h1>Upload object</h1>
-                    <form method=post enctype=multipart/form-data>
-                      <input type=file name=file>
-                      <input type=file name=mtl>
-                      <input type=file name=palette>
-                      <input type=submit value=Upload>
+                    <title>Upload mesh, material & palette files</title>
+                    <h1>Upload mesh, material & palette files</h1>
+                    <form method="post" class="upload-form" enctype=multipart/form-data>
+                      <div class="form-example">
+                        <label for="obj">Mesh file: </label>
+                        <input type="file" name="obj" id="obj" accept=".obj">
+                      </div>
+                      <div class="form-example">
+                        <label for="mtl">Material file: </label>
+                        <input type="file" name="mtl" id="mtl" accept=".mtl">
+                      </div>
+                      <div class="form-example">
+                        <label for="palette">Palette image file: </label>
+                        <input type="file" name="palette" id="palette" accept="image/png, image/jpeg">
+                      </div>
+                      <div class="form-example">
+                        <input type="submit" value="Upload">
+                      </div>
                     </form>
                     '''
-            kwargs = request.form
-            dx = kwargs.get('dx')
-            dy = kwargs.get('dy')
-            dz = kwargs.get('dz')
+            return HTML
 
-            colorize = kwargs.get('colorize')
+
+        @app.post('/upload_object')
+        def upload_object_post():
+            """Load the OBJ, MTL & palette files to Blender.
+
+            Get the OBJ, MTL & palette files from the POST request and load them into Blender.
+            """
+            # - If no OBJ file is provided, return a message & error code
+            if 'obj' not in request.files:
+                return "No OBJ file found!", 501
+            else:
+                obj_file = request.files['obj']
+            # - If the OBJ filename is empty, return a message & error code
+            if obj_file.filename == '':
+                return "No OBJ file name found!", 502
+            # - Securely copy the OBJ file:
+            obj_file_ext = os.path.splitext(obj_file.filename)[-1].lower()
+            if obj_file_ext == ".obj":
+                obj_filename = secure_filename(obj_file.filename)
+                obj_file.save(os.path.join(tmpdir, obj_filename))
+            else:
+                return f"Wrong extension for OBJ file, expected '.obj' got '{obj_file_ext}'!", 503
+            obj_location = os.path.join(tmpdir, obj_filename)
+
+            # - Securely copy the MTL file:
+            if 'mtl' in request.files:
+                mtl_file = request.files['mtl']
+                mtl_file_ext = os.path.splitext(mtl_file.filename)[-1].lower()
+                # Check the MTL filename is not empty & has the right extension prior to saving:
+                if mtl_file.filename != '' and mtl_file_ext == ".mtl":
+                    mtl_filename = secure_filename(mtl_file.filename)
+                    mtl_file.save(os.path.join(tmpdir, mtl_filename))
+
+            # - Securely copy the PNG palette file, if requested:
+            palette_location = None
+            if "palette" in request.files and request.files['palette'] != "":
+                palette_file = request.files['palette']
+                palette_file_ext = os.path.splitext(palette_file.filename)[-1].lower()
+                # Check then palette filename is not empty & is a valid image file prior to saving:
+                if palette_file.filename != '' and palette_file_ext in image_extensions:
+                    # Create a temporary copy of the PNG palette file
+                    palette_filename = secure_filename(palette_file.filename)
+                    palette_location = os.path.join(tmpdir, palette_filename)
+                    palette_file.save(palette_location)
+
+            # - Get XYZ displacements:
+            dx = request.form.get('dx')
+            dy = request.form.get('dy')
+            dz = request.form.get('dz')
+            # - Get 'colorize' argument:
+            colorize = request.form.get('colorize')
             if colorize is not None:
                 colorize = distutils.util.strtobool(colorize)
             else:
                 colorize = False
-            palette_location = None
 
-            if "palette" in request.files and request.files['palette'] != "":
-                palette_file = request.files['palette']
-                assert (os.path.splitext(palette_file.filename)[-1].lower() in image_extensions)
-                palette_filename = secure_filename(palette_file.filename)
-                palette_file.save(os.path.join(tmpdir, palette_filename))
-                palette_location = os.path.join(tmpdir, palette_filename)
-
-            if 'file' not in request.files:
-                return "no file", 501
-            file = request.files['file']
-            if file.filename == '':
-                return "no file", 502
-            if file and os.path.splitext(file.filename)[-1].lower() == ".obj":
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(tmpdir, filename))
-                if 'mtl' in request.files:
-                    mtl_file = request.files['mtl']
-                    mtl_filename = "plant.mtl"
-                    if mtl_file.filename != '' and os.path.splitext(mtl_file.filename)[-1].lower() == ".mtl":
-                        mtl_file.save(os.path.join(tmpdir, mtl_filename))
-                obj.load_obj(os.path.join(tmpdir, filename), dx, dy, dz, colorize, palette_location=palette_location)
-                return "OK"
-            return "wrong extension", 503
+            # - Load all that into Blender:
+            obj.load_obj(obj_location, dx, dy, dz, colorize, palette_location)
+            return "Successfully loaded all objects in Blender!"
 
 
-        @app.route('/upload_background', methods=['GET', 'POST'])
-        def upload_background():
-            if flask.request.method == "GET":
-                return '''
+        @app.get('/upload_background')
+        def upload_background_get():
+            """Load the HDRI background file to Blender.
+
+            Display a form to upload the HDRI background file to the server from a browser.
+            """
+            HTML = '''
                     <!doctype html>
-                    <title>Upload background</title>
-                    <h1>Upload background</h1>
-                    <form method=post enctype=multipart/form-data>
-                      <input type=file name=file>
-                      <input type=submit value=Upload>
+                    <title>Upload HDRI background</title>
+                    <h1>Upload HDRI background</h1>
+                    <form method="post" class="upload-form" enctype=multipart/form-data>
+                    <div class="form-example">
+                      <label for="hdr">HDRI file: </label>
+                      <input type="file" name="hdr" id="hdr" accept=".hdr">
+                    </div>
+                    <div class="form-example">
+                      <input type="submit" value="Upload">
+                    </div>
                     </form>
                     '''
-            if 'file' not in request.files:
-                return "no file", 500
-            file = request.files['file']
-            if file.filename == '':
-                return "no file", 500
-            if file and os.path.splitext(file.filename)[-1].lower() == ".hdr":
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(tmpdir, filename))
-                cam.load_hdri(os.path.join(tmpdir, filename))
-                return "OK"
-            return "wrong extension", 500
+            return HTML
+
+
+        @app.post('/upload_background')
+        def upload_background_post():
+            """Load the HDRI background file to Blender.
+
+            Get the HDRI file from the POST request and load it into Blender
+            """
+            # - If no HDRI file is provided, return a message & error code
+            if 'hdr' not in request.files:
+                return "No HDRI file found!", 501
+            else:
+                hdr_file = request.files['hdr']
+            # - If the HDRI filename is empty, return a message & error code
+            if hdr_file.filename == '':
+                return "No HDRI file name found!", 502
+            # - Securely copy the HDRI file:
+            hdr_file_ext = os.path.splitext(hdr_file.filename)[-1].lower()
+            if hdr_file_ext == ".hdr":
+                hdr_filename = secure_filename(hdr_file.filename)
+                hdr_location = os.path.join(tmpdir, hdr_filename)
+                hdr_file.save(hdr_location)
+            else:
+                return f"Wrong extension for HDRI file, expected '.hdr' got '{hdr_file_ext}'!", 503
+
+            # - Load the HDRI into Blender:
+            cam.load_hdri(hdr_location)
+            return "Successfully loaded HDRI file in Blender!"
 
 
         @app.route("/add_random_displacement/<class_id>", methods=['GET'])

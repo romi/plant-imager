@@ -102,6 +102,7 @@ def find_available_port(port_range):
 
     return port
 
+
 class VirtualScannerRunner():
     """Run a Flask server in Blender to act as the virtual scanner.
 
@@ -225,7 +226,7 @@ class VirtualScanner(AbstractScanner):
         Parameters
         ----------
         width : int
-            The with of the image to acquire.
+            The width of the image to acquire.
         height : int
             The height of the image to acquire.
         focal : int
@@ -237,10 +238,12 @@ class VirtualScanner(AbstractScanner):
             The virtual scanner host ip.
             By default, instantiate a local ``VirtualScannerRunner`` process.
         port : int, optional
-            The virtual scanner host port, useful only if ``host`` is set.
+            The virtual scanner host port.
+            Used only if ``host`` is NOT set.
             Defaults to ``5000``.
         scene : str, optional
-            The scene to initialize in the  ``VirtualScannerRunner``, useful only if ``host`` is NOT set.
+            Path to the scene file to create in the  ``VirtualScannerRunner``.
+            Used only if ``host`` is NOT set.
         add_leaf_displacement : bool, optional
             If ``True``, add a random displacement to the leaf class objects after loading the virtual plant.
             Defaults to ``False``.
@@ -250,7 +253,7 @@ class VirtualScanner(AbstractScanner):
         """
         super().__init__()
 
-        if host == None:
+        if host is None:
             self.runner = VirtualScannerRunner(scene=scene, port=port)
             self.runner.start()
             self.host = "localhost"
@@ -266,7 +269,8 @@ class VirtualScanner(AbstractScanner):
         self.ext = "png"
         self.position = path.Pose()
         self.add_leaf_displacement = add_leaf_displacement
-        logger.warning(self.add_leaf_displacement)
+        if self.add_leaf_displacement:
+            logger.warning("Random leaf displacement has been requested!")
 
     def get_position(self) -> path.Pose:
         """Returns the current position of the camera."""
@@ -291,7 +295,7 @@ class VirtualScanner(AbstractScanner):
         Parameters
         ----------
         width : int
-            The with of the image to acquire.
+            The width of the image to acquire.
         height : int
             The height of the image to acquire.
         focal : int
@@ -317,46 +321,69 @@ class VirtualScanner(AbstractScanner):
         return self.request_get_dict("backgrounds")
 
     def load_object(self, file, mtl=None, palette=None, colorize=True):
-        """Loads an object from a OBJ file and a palette image.
+        """Upload the OBJ, MTL and palette files to the Blender Flask server with the POST method.
 
         Parameters
         ----------
         file : plantdb.FSDB.File
-            The file instance corresponding to the OBJ file.
+            The `File` instance corresponding to the OBJ file.
         mtl : plantdb.FSDB.File, optional
-            The file instance corresponding to the MTL file.
+            The `File` instance corresponding to the MTL file.
         palette : plantdb.FSDB.File, optional
-            The file instance corresponding to the palette file.
+            The `File` instance corresponding to the PNG palette file.
         colorize : bool, optional
-            Wheter the object should be colorized in Blender.
+            Whether the object should be colorized in Blender.
 
         Returns
         -------
         requests.Response
-            The response from the Blender server after uploading the files.
+            The response from Blender Flask server after uploading the files.
+
+        See Also
+        --------
+        romi_virtualplantimager.upload_object_post
+
+        Notes
+        -----
+        To avoid messing up the OBJ, MTL & PNG palette files, we create a temporary copy.
+
+        The POST method of the Blender Flask server expect:
+          - a 'file' argument with the `BufferedReader` for the OBJ file [REQUIRED].
+          - a 'mtl' argument with the `BufferedReader` for the MTL file [OPTIONAL].
+          - a 'palette' argument with the `BufferedReader` for the PNG palette file [OPTIONAL].
+          - a 'colorize' argument as boolean [OPTIONAL].
         """
-        if type(file) == str:
+        # Convert path (str) to `plantdb.FSDB.File` type if necessary (create a temporary FSDB):
+        if isinstance(file, str):
             file = io.dbfile_from_local_file(file)
-        if type(mtl) == str:
+        if isinstance(mtl, str):
             mtl = io.dbfile_from_local_file(mtl)
-        if type(palette) == str:
+        if isinstance(palette, str):
             palette = io.dbfile_from_local_file(palette)
 
+        files = {}  # dict of `BufferedReader` to use for upload
         with tempfile.TemporaryDirectory() as tmpdir:
-            file_path = os.path.join(tmpdir, file.filename)
-            io.to_file(file, file_path)
-            files = {"file": open(file_path, "rb")}
+            # Copy the OBJ file to a temporary directory & get the `BufferedReader` from it:
+            obj_file_path = os.path.join(tmpdir, file.filename)
+            io.to_file(file, obj_file_path)
+            files["obj"] = open(obj_file_path, "rb")
+            # Copy the MTL file to a temporary directory & get the `BufferedReader` from it, if requested:
             if mtl is not None:
                 mtl_file_path = os.path.join(tmpdir, mtl.filename)
                 io.to_file(mtl, mtl_file_path)
                 files["mtl"] = open(mtl_file_path, "rb")
+            # Copy the PNG palette file to a temporary directory & get the `BufferedReader` from it, if requested:
             if palette is not None:
                 palette_file_path = os.path.join(tmpdir, palette.filename)
                 io.to_file(palette, palette_file_path)
                 files["palette"] = open(palette_file_path, "rb")
+            # Upload these files to the Blender Flask server:
             res = self.request_post("upload_object", {"colorize": colorize}, files)
+
+        # Apply random leaf displacement, if requested:
         if self.add_leaf_displacement:
             self.request_get_dict("add_random_displacement/leaf")
+
         return res
 
     def load_background(self, file: File):
@@ -370,19 +397,25 @@ class VirtualScanner(AbstractScanner):
         Returns
         -------
         requests.Response
-            The response from the Blender server after uploading the files.
+            The response from Blender Flask server to background file upload.
+
+        See Also
+        --------
+        romi_virtualplantimager.upload_background_post
         """
         logger.debug("loading background : %s" % file.filename)
         with tempfile.TemporaryDirectory() as tmpdir:
+            # Copy the PNG palette file to a temporary directory & get the `BufferedReader` from it, if requested:
             file_path = os.path.join(tmpdir, file.filename)
             io.to_file(file, file_path)
-            files = {"file": open(file_path, "rb")}
-            return self.request_post("upload_background", {}, files)
+            files = {"hdr": open(file_path, "rb")}
+            res = self.request_post("upload_background", {}, files)
+        return res
 
     def request_get_bytes(self, endpoint: str) -> bytes:
         x = requests.get("http://%s:%s/%s" % (self.host, self.port, endpoint))
         if x.status_code != 200:
-            raise Exception("Unable to connect to virtual scanner (code %i)" % x.status_code)
+            raise Exception(f"Unable to connect to virtual scanner (error code {x.status_code})!")
         return x.content
 
     def request_get_dict(self, endpoint: str) -> dict:
@@ -392,7 +425,8 @@ class VirtualScanner(AbstractScanner):
     def request_post(self, endpoint: str, data: dict, files: dict = None) -> requests.Response:
         x = requests.post("http://%s:%s/%s" % (self.host, self.port, endpoint), data=data, files=files)
         if x.status_code != 200:
-            raise Exception("Virtual scanner returned an error (error code %i)" % x.status_code)
+            logger.critical(x.text)
+            raise Exception(f"Virtual scanner returned an error code {x.status_code}!")
         return x
 
     def channels(self) -> list:

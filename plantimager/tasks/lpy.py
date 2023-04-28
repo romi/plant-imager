@@ -25,6 +25,7 @@
 import json
 import os
 import random
+import re
 import subprocess
 import tempfile
 
@@ -94,14 +95,30 @@ class VirtualPlant(RomiTask):
             output_mtl_file = self.output().get().create_file(output_file.id + "_mtl")
             output_mtl_file.import_file(fname.replace("obj", "mtl"))
 
+        # -- UGLY HACK --
+        # We need to replace the MTL file name referenced in OBJ file!
+        # The OBJ file is originally saved as a temporary file named 'plant.obj' by `scene.save(fname)`
+        # The associated MTL (material) file is thus named 'plant.mtl'...
+        # We thus edit the `output_file` OBJ file to match the renaming done by `output_mtl_file.import_file()`
+        # ---------------
+        # - Load the OBJ to edit:
+        with open(output_file.path(), "r") as f:
+            obj_lines = f.readlines()
+            # It seems that there is only one ref to the 'plant.mtl' file but, just in case, we check all lines...
+            fixed_obj_lines = [re.sub('plant.mtl', f'{output_mtl_file.id}.mtl', line) for line in obj_lines]
+        # - Save the fixed version:
+        with open(output_file.path(), "w") as f:
+            f.writelines(fixed_obj_lines)
+
+        # - Export 'angles' and 'internodes' as metadata of the OBJ file:
         measures = {}
         for m in self.metadata:
             m_val = lsystem.context().globals()[m]
-            if m in ["angles", 'internodes']:
+            if m in ["angles", "internodes"]:
                 measures[m] = m_val
             output_file.set_metadata(m, m_val)
 
-        # Export to a 'measures.json' file:
+        # - Export 'angles' and 'internodes' to a 'measures.json' file (to match manual measurements method):
         from plantdb.fsdb import _scan_measures_path
         measures_json = _scan_measures_path(output_file.get_scan())
         with open(measures_json, 'w') as f:
