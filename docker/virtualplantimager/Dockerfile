@@ -3,13 +3,13 @@ LABEL maintainer="Jonathan LEGRAND <jonathan.legrand@ens-lyon.fr>"
 LABEL corresponding_author="Peter Hanappe <peter@romi-project.eu>"
 LABEL project="Robotics for microfarms"
 LABEL homepage="https://docs.romi-project.eu/documentation/"
-LABEL repository="https://github.com/romi/plant-3d-vision"
+LABEL repository="https://github.com/romi/plant-imager"
 LABEL license="LGPL-3.0-or-later"
 LABEL description="Virtual Plant Imager"
 
 ENV LANG=C.UTF-8
 ENV PYTHONUNBUFFERED=1
-ENV USER_NAME=myuser
+ENV USER_NAME="myuser"
 ENV USER_ID=1000
 # Required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
@@ -21,7 +21,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 # Add Blender install path to PATH:
 ENV PATH="/opt/blender:${PATH}"
 # Defines URL to download blender from:
-ENV BLENDER_URL=https://ftp.halifax.rwth-aachen.de/blender/release/Blender2.93/blender-2.93.16-linux-x64.tar.xz
+ENV BLENDER_URL="https://ftp.halifax.rwth-aachen.de/blender/release/Blender2.93/blender-2.93.16-linux-x64.tar.xz"
 
 # Change Shell to 'bash', default is 'sh'
 SHELL [ "/bin/bash", "-c" ]
@@ -46,7 +46,7 @@ RUN apt-get update && \
     # Allow user to call conda:
     chown -R ${USER_NAME}: /opt/conda/ && \
     # Download Blender and move it to `/opt/blender`:
-    wget --progress=bar $BLENDER_URL && \
+    wget --progress=bar ${BLENDER_URL} && \
     tar -xJf blender-2.93.16-linux-x64.tar.xz && \
     mv blender-2.93.16-linux-x64 /opt/blender && \
     rm blender-2.93.16-linux-x64.tar.xz
