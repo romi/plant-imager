@@ -1,14 +1,13 @@
 #!/bin/bash
-
 ###############################################################################
-# Example usages:
-###############################################################################
-# 1. By default, starts an interactive shell:
+# Usage examples:
+# --------------
+# 1. Start a container with an interactive shell:
 # $ ./docker/plantimager/run.sh
-# $ ./run.sh -t latest -db /abs/host/my_data_base
 #
-# 2. Run a command:
-# $ ./run.sh -t latest -db /abs/host/my_data_base -c "romi_run_task Scan my_data_base/scan_id --config /path/to/config.toml"
+# 2. Start a container, run a command and exit the container:
+# $ ./docker/plantimager/run.sh -c "romi_run_task Scan $DB_LOCATION/scan_id --config /path/to/config.toml"
+###############################################################################
 
 # - Defines colors and message types:
 RED="\033[0;31m"
@@ -21,23 +20,36 @@ ERROR="${RED}ERROR${NC}   "
 bold() { echo -e "\e[1m$*\e[0m"; }
 
 # - Default variables
-cmd=''
-host_db=''
+# Image tag to use, 'latest' by default:
 vtag="latest"
+# Command to execute after starting the docker container:
+cmd=''
+# Volume mounting options:
 mount_option=""
+# Serial port to use to communicate with the CNC:
 cnc_device="/dev/ttyACM0"
+# Serial port to use to communicate with the Gimbal:
 gimbal_device="/dev/ttyACM1"
+# If the `DB_LOCATION` variable is set, use it as default database location, else set it to empty:
+if [ -z ${DB_LOCATION+x} ]; then
+  echo -e "${WARNING}Environment variable DB_LOCATION is not defined, set it to use as default database location!"
+  host_db=''
+else
+  host_db=${DB_LOCATION}
+fi
 
 usage() {
-  echo "$(bold USAGE):"
-  echo "  ./run.sh [OPTIONS]
-  "
+  echo -e "$(bold USAGE):"
+  echo "  ./run.sh [OPTIONS]"
+  echo ""
 
-  echo "$(bold DESCRIPTION):"
-  echo "  Start a 'plantimager:<tag>' container, mount local (host) database and connect serial devices.
-  "
+  echo -e "$(bold DESCRIPTION):"
+  echo "  Start a docker container using the 'roboticsmicrofarms/plantimager:<tag>' image.
 
-  echo "$(bold OPTIONS):"
+  It mount the local (host) database and connect serial devices."
+  echo ""
+
+  echo -e "$(bold OPTIONS):"
   echo "  -t, --tag
     Image tag to use." \
     "By default, use the '${vtag}' tag."

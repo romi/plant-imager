@@ -1,13 +1,13 @@
 #!/bin/bash
-
 ###############################################################################
-# Example usages:
-###############################################################################
-# 1. Default build options will create `roboticsmicrofarms/virtualplantimager:latest`:
+# Usage examples:
+# --------------
+# 1. Build an image with default options:
 # $ ./docker/virtualplantimager/build.sh
 #
-# 2. Build image with 'debug' tag
+# 2. Build an image with a 'debug' tag:
 # $ ./docker/virtualplantimager/build.sh -t debug
+###############################################################################
 
 # - Defines colors and message types:
 RED="\033[0;31m"
@@ -20,22 +20,24 @@ ERROR="${RED}ERROR${NC}   "
 bold() { echo -e "\e[1m$*\e[0m"; }
 
 # - Default variables
+# Image tag to use, 'latest' by default:
 vtag="latest"
+# String aggregating the docker build options to use:
 docker_opts=""
 
 usage() {
-  echo "$(bold USAGE):"
+  echo -e "$(bold USAGE):"
   echo "  ./docker/virtualplantimager/build.sh [OPTIONS]"
   echo ""
 
-  echo "$(bold DESCRIPTION):"
+  echo -e "$(bold DESCRIPTION):"
   echo "  Build a docker image named 'roboticsmicrofarms/virtualplantimager' using 'Dockerfile' in 'docker/virtualplantimager/'.
 
   Must be run from the 'plant-imager' repository root folder as it will be copied at image build time.
   Do not forget to initialize or update the sub-modules if necessary!"
   echo ""
 
-  echo "$(bold OPTIONS):"
+  echo -e "$(bold OPTIONS):"
   echo "  -t, --tag
     Image tag to use." \
     "By default, use the '${vtag}' tag."

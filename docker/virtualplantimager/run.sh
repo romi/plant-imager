@@ -1,14 +1,13 @@
 #!/bin/bash
-
 ###############################################################################
-# Example usages:
-###############################################################################
-# 1. By default, starts an interactive shell:
+# Usage examples:
+# --------------
+# 1. Start a container with an interactive shell:
 # $ ./docker/virtualplantimager/run.sh
-# $ ./run.sh -t latest -db /abs/host/my_data_base -v /abs/host/dir:/abs/container/dir
 #
-# 2. Run a command:
-# $ ./run.sh -t latest -db /abs/host/my_data_base -v /abs/host/dir:/abs/container/dir -c "romi_run_task --config /path/to/config.toml VirtualScan my_data_base/scan_id"
+# 2. Start a container, run a command and exit the container:
+# $ ./docker/virtualplantimager/run.sh -c "romi_run_task VirtualScan $DB_LOCATION/scan_id  --config /path/to/config.toml"
+###############################################################################
 
 # - Defines colors and message types:
 RED="\033[0;31m"
@@ -36,15 +35,15 @@ else
 fi
 
 usage() {
-  echo "$(bold USAGE):"
+  echo -e "$(bold USAGE):"
   echo "  ./run.sh [OPTIONS]"
   echo ""
 
-  echo "$(bold DESCRIPTION):"
+  echo -e "$(bold DESCRIPTION):"
   echo "  Start a docker container using the 'roboticsmicrofarms/virtualplantimager' image."
   echo ""
 
-  echo "$(bold OPTIONS):"
+  echo -e "$(bold OPTIONS):"
   echo "  -t, --tag
     Image tag to use." \
     "By default, use the '${vtag}' tag."

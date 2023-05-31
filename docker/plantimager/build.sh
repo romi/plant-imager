@@ -1,13 +1,13 @@
 #!/bin/bash
-
 ###############################################################################
-# Example usages:
-###############################################################################
-# 1. Default build options will create `roboticsmicrofarms/plantimager:latest`:
+# Usage examples:
+# --------------
+# 1. Build an image with default options:
 # $ ./docker/plantimager/build.sh
 #
-# 2. Build image with 'debug' tag
+# 2. Build an image with a 'debug' tag:
 # $ ./docker/plantimager/build.sh -t debug
+###############################################################################
 
 # - Defines colors and message types:
 RED="\033[0;31m"
@@ -20,29 +20,31 @@ ERROR="${RED}ERROR${NC}   "
 bold() { echo -e "\e[1m$*\e[0m"; }
 
 # - Default variables
+# Image tag to use, 'latest' by default:
 vtag="latest"
+# String aggregating the docker build options to use:
 docker_opts=""
 
 usage() {
-  echo "USAGE:"
-  echo "  ./docker/plantimager/build.sh [OPTIONS]
-    "
+  echo -e "$(bold USAGE):"
+  echo "  ./docker/plantimager/build.sh [OPTIONS]"
+  echo ""
 
-  echo "DESCRIPTION:"
+  echo -e "$(bold DESCRIPTION):"
   echo "  Build a docker image named 'roboticsmicrofarms/plantimager' using 'Dockerfile' in 'docker/plantimager/'.
 
   Must be run from the 'plant-imager' repository root folder as it will be copied during at image build time.
-  Do not forget to initialize or update the sub-modules if necessary!
-  "
+  Do not forget to initialize or update the sub-modules if necessary!"
+  echo ""
 
-  echo "OPTIONS:"
+  echo -e "$(bold OPTIONS):"
   echo "  -t, --tag
-    Docker image tag to use, default to '${vtag}'."
+    Image tag to use." \
+    "By default, use the '${vtag}' tag."
   echo "  --no-cache
     Do not use cache when building the image, (re)start from scratch."
   echo "  --pull
     Always attempt to pull a newer version of the parent image."
-  # General options:
   echo "  -h, --help
     Output a usage message and exit."
 }
