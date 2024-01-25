@@ -207,15 +207,15 @@ class Scan(RomiTask):
 
         return Scanner(cnc, gimbal, camera)
 
-    def run(self, path=None, hw_scanner=None, extra_md=None):
-        """Run a scan
+    def run(self, path=None, scanner=None, extra_md=None):
+        """Run a scan.
 
         Parameters
         ----------
         path : plantimager.path.Path, optional
             If ``None`` (default), load the ``ScanPath`` module & get the configuration from the TOML config file.
             Else should be a ``plantimager.path.Path`` instance.
-        hw_scanner : plantimager.scanner.Scanner or plantimager.scanner.VirtualScanner, optional
+        scanner : plantimager.scanner.Scanner or plantimager.scanner.VirtualScanner, optional
             If ``None`` (default), load the configuration from the TOML config file with `self.load_scanner`.
             Else should be a ``Scanner`` or ``VirtualScanner`` instance.
         extra_md : dict, optional
@@ -224,8 +224,8 @@ class Scan(RomiTask):
         """
         if path is None:
             path = self.get_path()
-        if hw_scanner is None:
-            hw_scanner = self.load_scanner()
+        if scanner is None:
+            scanner = self.load_scanner()
 
         metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
         # Import the axes limits from the ``plantimager.scanner.Scanner`` instance & add them to the "hardware" metadata
@@ -233,27 +233,27 @@ class Scan(RomiTask):
             logger.warning("Metadata entry 'hardware' is missing from the configuration file!")
             metadata["hardware"] = {}
 
-        if isinstance(hw_scanner, Scanner):
-            metadata["hardware"]['x_lims'] = getattr(hw_scanner.cnc, "x_lims", None)
-            metadata["hardware"]['y_lims'] = getattr(hw_scanner.cnc, "y_lims", None)
-            metadata["hardware"]['z_lims'] = getattr(hw_scanner.cnc, "z_lims", None)
+        if isinstance(scanner, Scanner):
+            metadata["hardware"]['x_lims'] = getattr(scanner.cnc, "x_lims", None)
+            metadata["hardware"]['y_lims'] = getattr(scanner.cnc, "y_lims", None)
+            metadata["hardware"]['z_lims'] = getattr(scanner.cnc, "z_lims", None)
 
-        # Add the extra metadata to the metadata
+        # Add the extra metadata to the metadata:
         if extra_md is not None:
             metadata.update(extra_md)
 
         # Get (create) the output 'images' fileset:
         output_fileset = self.output().get()
         # Scan with the plant imager:
-        hw_scanner.scan(path, output_fileset)
-        if isinstance(hw_scanner, Scanner):
+        scanner.scan(path, output_fileset)
+        if isinstance(scanner, Scanner):
             # Go back close to home position:
-            hw_scanner.cnc.moveto(10., 10., 10.)
+            scanner.cnc.moveto(10., 10., 10.)
 
         # Write the metadata to the JSON associated to the 'images' fileset:
         output_fileset.set_metadata(metadata)
         # Add a description of the type of scan data with a "channel" entry in the 'images' fileset metadata:
-        output_fileset.set_metadata("channels", hw_scanner.channels())
+        output_fileset.set_metadata("channels", scanner.channels())
         return
 
 
@@ -440,16 +440,22 @@ class CalibrationScan(Scan):
     offset = luigi.IntParameter(default=5)  # limits offset in mm
 
     def run(self):
+        """Run the calibration scan.
+
+        Notes
+        -----
+        Overrides the method from ``Scan``.
+        """
         path = Scan().get_path()
         # Load the Scanner instance to get axes limits:
-        hw_scanner = Scan().load_scanner()
+        scanner = Scan().load_scanner()
         # Get axes limits:
-        x_lims = getattr(hw_scanner.cnc, 'x_lims', None)
+        x_lims = getattr(scanner.cnc, 'x_lims', None)
         if x_lims is not None:
             logger.info(f"Got X limits from scanner: {x_lims}")
             # Avoid true limits, as you might get stuck in some cases:
             x_lims = [x_lims[0] + self.offset, x_lims[1] - self.offset]
-        y_lims = getattr(hw_scanner.cnc, 'y_lims', None)
+        y_lims = getattr(scanner.cnc, 'y_lims', None)
         if y_lims is not None:
             logger.info(f"Got Y limits from scanner: {y_lims}")
             # Avoid true limits, as you might get stuck in some cases:
@@ -482,10 +488,10 @@ class IntrinsicCalibrationScan(Scan):
         from plantimager.path import PathElement
         path = Scan().get_path()
         # Load the Scanner instance to get axes limits:
-        hw_scanner = Scan().load_scanner()
+        scanner = Scan().load_scanner()
 
         # Get axes limits:
-        x_lims = getattr(hw_scanner.cnc, 'x_lims', None)
+        x_lims = getattr(scanner.cnc, 'x_lims', None)
         if x_lims is not None:
             logger.info(f"Got X limits from scanner: {x_lims}")
             # Avoid true limits, as you might get stuck in some cases:
@@ -494,7 +500,7 @@ class IntrinsicCalibrationScan(Scan):
             x_coords = [pelt.x for pelt in path]
             x_lims = [min(x_coords), max(x_coords)]
 
-        y_lims = getattr(hw_scanner.cnc, 'y_lims', None)
+        y_lims = getattr(scanner.cnc, 'y_lims', None)
         if y_lims is not None:
             logger.info(f"Got Y limits from scanner: {y_lims}")
             # Avoid true limits, as you might get stuck in some cases:
@@ -513,4 +519,4 @@ class IntrinsicCalibrationScan(Scan):
             calibration_path.append(elt)
 
         # Run the calibration procedure:
-        Scan().run(path=calibration_path, hw_scanner=hw_scanner)
+        Scan().run(path=calibration_path, scanner=scanner)
