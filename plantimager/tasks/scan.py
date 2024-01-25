@@ -255,6 +255,9 @@ class Scan(RomiTask):
 
         # Write the metadata to the JSON associated to the 'images' fileset:
         output_fileset.set_metadata(metadata)
+        # TODO: Remove (duplicate) metadata from 'images' fileset in later release!
+        # Write the metadata to the JSON associated to the scan dataset:
+        output_fileset.scan.set_metadata(metadata)
         # Add a description of the type of scan data with a "channel" entry in the 'images' fileset metadata:
         output_fileset.set_metadata("channels", scanner.channels())
         return
