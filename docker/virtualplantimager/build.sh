@@ -80,10 +80,12 @@ done
 # Get the date to estimate docker image build time:
 start_time=$(date +%s)
 # Start the docker image build:
-docker build -t roboticsmicrofarms/virtualplantimager:${vtag} ${docker_opts} \
+docker build \
+  -t roboticsmicrofarms/virtualplantimager:${vtag} ${docker_opts} \
   -f docker/virtualplantimager/Dockerfile .
 # Get docker build exit code:
 docker_build_status=$?
+
 # Print build time if successful (code 0), else print exit code
 if [ ${docker_build_status} == 0 ]; then
   echo -e "\n${INFO}Docker build SUCCEEDED in $(expr $(date +%s) - ${start_time})s!"

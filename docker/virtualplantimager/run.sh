@@ -20,15 +20,22 @@ ERROR="${RED}ERROR${NC}   "
 bold() { echo -e "\e[1m$*\e[0m"; }
 
 # - Default variables
+# Default group id to use when starting the container:
+gid=2020
 # Image tag to use, 'latest' by default:
 vtag="latest"
 # Command to execute after starting the docker container:
 cmd=''
 # Volume mounting options:
 mount_option=""
-# If the `DB_LOCATION` variable is set, use it as default database location, else set it to empty:
-if [ -z ${DB_LOCATION+x} ]; then
-  echo -e "${WARNING}Environment variable DB_LOCATION is not defined, set it to use as default database location!"
+# Test configuration is blender server with LPY model:
+  test_cfg="plant-imager/configs/vscan_lpy_blender.toml"
+# Test command:
+test_cmd="romi_run_task VirtualScan /myapp/db/vplant_test --config ${test_cfg}"
+# Defines the temporary directory to use (in case of test and no path to local database)
+tmp_dir="/tmp/ROMI_DB/"
+
+# If the `ROMI_DB` variable is set, use it as default database location, else set it to empty:
 if [ -z ${ROMI_DB+x} ]; then
   echo -e "${WARNING}Environment variable 'ROMI_DB' is not defined, set it to use as default database location!"
   host_db=''
@@ -38,7 +45,7 @@ fi
 
 usage() {
   echo -e "$(bold USAGE):"
-  echo "  ./run.sh [OPTIONS]"
+  echo "  ./docker/virtualplantimager/run.sh [OPTIONS]"
   echo ""
 
   echo -e "$(bold DESCRIPTION):"
@@ -59,8 +66,25 @@ usage() {
   echo "  -c, --cmd
     Defines the command to run at container startup." \
     "By default, start an interactive container with a bash shell."
+  echo "  --test
+    Test the VirtualPlant task with the default config '${test_cfg}'."
+  echo "  --tmp
+    Create a temporary database under '${tmp_dir}'."
   echo "  -h, --help
     Output a usage message and exit."
+}
+
+bind_mount_options() {
+  mount_option="${mount_option} -v ${host_db}:/myapp/db"
+}
+
+create_tmp_db() {
+  host_db="${tmp_dir}"
+  # Create the directory:
+  mkdir -p "${host_db}/vplant_test"
+  # Add the marker to be a valid plantdb database:
+  touch "${host_db}/romidb"
+  cp -r "database_example/vscan_data/" "${host_db}/"
 }
 
 while [ "$1" != "" ]; do
@@ -85,6 +109,15 @@ while [ "$1" != "" ]; do
     shift
     cmd=$1
     ;;
+  --test)
+    shift
+    cmd="${test_cmd}"
+    create_tmp_db
+    ;;
+  --tmp)
+    shift
+    create_tmp_db
+    ;;
   -h | --help)
     usage
     exit
@@ -99,13 +132,22 @@ done
 
 # Use local database path `$host_db` to create a bind mount to '/myapp/db':
 if [ "${host_db}" != "" ]; then
-  mount_option="${mount_option} -v ${host_db}:/myapp/db"
+  bind_mount_options
   echo -e "${INFO}Automatic bind mount of '${host_db}' (host) to '/myapp/db' (container)!"
 else
   # Else raise an error:
   echo -e "${ERROR}No local host database defined!"
   echo -e "${INFO}Set 'ROMI_DB' or use the '-db' | '--database' option to define it."
   exit 1
+fi
+
+# If a 'host database path' is provided, get the name of the group and its id to, later used with the `--user` option
+if [ "${host_db}" != "" ]; then
+  group_name=$(stat -c "%G" ${host_db})                              # get the name of the group for the 'host database path'
+  gid=$(getent group ${group_name} | cut --delimiter ':' --fields 3) # get the 'gid' of this group
+  echo -e "${INFO}Automatic group id definition to '$gid'!"
+else
+  echo -e "${WARNING}Using default group id '${gid}'."
 fi
 
 # Check if we have a TTY or not
@@ -118,15 +160,21 @@ fi
 if [ "${cmd}" = "" ]; then
   # Start in interactive mode. ~/.bashrc will be loaded.
   docker run --rm --gpus all ${mount_option} \
-    ${USE_TTY} roboticsmicrofarms/virtualplantimager:${vtag} \
+    --user romi:${gid} \
+    ${USE_TTY} \
+    roboticsmicrofarms/virtualplantimager:${vtag} \
     bash
 else
+  echo -e "${INFO}Running: '${cmd}'."
+  echo -e "${INFO}Bind mount: '${mount_option}'."
   # Get the date to estimate command execution time:
   start_time=$(date +%s)
   # Start in non-interactive mode (run the command).
   # Request a login shell (-l) to load ~/.profile.
   docker run --rm --gpus all ${mount_option} \
-    ${USE_TTY} roboticsmicrofarms/virtualplantimager:${vtag} \
+    --user romi:${gid} \
+    ${USE_TTY} \
+    roboticsmicrofarms/virtualplantimager:${vtag} \
     bash -lc "${cmd}"
   # Get command exit code:
   cmd_status=$?
