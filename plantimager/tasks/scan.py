@@ -241,6 +241,9 @@ class Scan(RomiTask):
         # Add the extra metadata to the metadata:
         if extra_md is not None:
             metadata.update(extra_md)
+        # Add the acquisition time to the metadata:
+        from plantimager.utils import now
+        metadata["acquisition_date"] = now()
 
         # Get (create) the output 'images' fileset:
         output_fileset = self.output().get()
@@ -466,7 +469,7 @@ class CalibrationScan(Scan):
         calibration_path = getattr(path_module, "CalibrationPath")(path, self.n_points_line,
                                                                    x_lims=x_lims, y_lims=y_lims)
         # Run the calibration procedure:
-        Scan().run(path=calibration_path, hw_scanner=hw_scanner)
+        Scan().run(path=calibration_path, scanner=scanner)
 
 
 class IntrinsicCalibrationScan(Scan):
