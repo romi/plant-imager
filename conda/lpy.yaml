@@ -1,0 +1,14 @@
+name: lpyEnv
+channels:
+  - defaults
+  - conda-forge
+  - fredboudon
+dependencies:
+  - python ==3.9.2
+  - flask
+  - imageio
+  - toml
+  - openalea.lpy
+  - pip >=23
+  - pip:
+      - open3d>= 0.9.0.0
