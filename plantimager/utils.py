@@ -25,6 +25,7 @@
 """A collection of various utilities.
 
 """
+import datetime
 import sys
 
 from serial.tools import list_ports
@@ -69,3 +70,23 @@ def guess_port(info):
         device = device[0]
 
     return device.device
+
+
+def now(fmt="%Y-%m-%d %H:%M:%S"):
+    """Return datetime as a formatted string.
+
+    Parameters
+    ----------
+    fmt : str, optional
+        The date and time formating to use, default to '%y-%m-%d %H:%M:%S'.
+
+    References
+    ----------
+    https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+
+    Examples
+    --------
+    >>> from plantimager.utils import now
+    >>> now()
+    """
+    return datetime.datetime.now().strftime(fmt)
