@@ -6,7 +6,7 @@
 # $ ./docker/virtualplantimager/run.sh
 #
 # 2. Start a container, run a command and exit the container:
-# $ ./docker/virtualplantimager/run.sh -c "romi_run_task VirtualScan $DB_LOCATION/scan_id  --config /path/to/config.toml"
+# $ ./docker/virtualplantimager/run.sh -c "romi_run_task VirtualScan $ROMI_DB/scan_id  --config /path/to/config.toml"
 ###############################################################################
 
 # - Defines colors and message types:
@@ -29,9 +29,11 @@ mount_option=""
 # If the `DB_LOCATION` variable is set, use it as default database location, else set it to empty:
 if [ -z ${DB_LOCATION+x} ]; then
   echo -e "${WARNING}Environment variable DB_LOCATION is not defined, set it to use as default database location!"
+if [ -z ${ROMI_DB+x} ]; then
+  echo -e "${WARNING}Environment variable 'ROMI_DB' is not defined, set it to use as default database location!"
   host_db=''
 else
-  host_db=${DB_LOCATION}
+  host_db=${ROMI_DB}
 fi
 
 usage() {
@@ -49,7 +51,7 @@ usage() {
     "By default, use the '${vtag}' tag."
   echo "  -db, --database
     Path to the host database to mount inside the docker container." \
-    "By default, use the 'DB_LOCATION' environment variable (if defined)."
+    "By default, use the 'ROMI_DB' environment variable (if defined)."
   echo "  -v, --volume
     Volume mapping between host and container to mount a local directory in the container." \
     "Absolute paths are required and multiple use of this option is allowed." \
@@ -100,8 +102,9 @@ if [ "${host_db}" != "" ]; then
   mount_option="${mount_option} -v ${host_db}:/myapp/db"
   echo -e "${INFO}Automatic bind mount of '${host_db}' (host) to '/myapp/db' (container)!"
 else
+  # Else raise an error:
   echo -e "${ERROR}No local host database defined!"
-  echo -e "${INFO}Set 'DB_LOCATION' or use the '-db' | '--database' option to define it."
+  echo -e "${INFO}Set 'ROMI_DB' or use the '-db' | '--database' option to define it."
   exit 1
 fi
 

@@ -14,7 +14,7 @@ ENV USER_ID=1000
 # Required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
 # Required by `romi_run_task`:
-ENV DB_LOCATION="/myapp/db"
+ENV ROMI_DB="/myapp/db"
 # Required by `nvidia-container-runtime`
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
@@ -42,7 +42,7 @@ RUN apt-get update && \
     adduser --disabled-password --gecos '' --uid ${USER_ID} ${USER_NAME} && \
     chown -R ${USER_NAME}: /home/${USER_NAME} && \
     # Create the folder used to mount the database:
-    mkdir -p ${DB_LOCATION} && \
+    mkdir -p ${ROMI_DB} && \
     # Allow user to call conda:
     chown -R ${USER_NAME}: /opt/conda/ && \
     # Download Blender and move it to `/opt/blender`:

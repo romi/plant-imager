@@ -102,7 +102,7 @@ def check_scan_configs(scans_list):
     >>> import os, toml
     >>> from pathlib import Path
     >>> from plantdb.fsdb import FSDB
-    >>> db = FSDB(os.environ.get('DB_LOCATION', '/home/aurele/Downloads/20221010_Jo/Scans/'))
+    >>> db = FSDB(os.environ.get('ROMI_DB', '/home/aurele/Downloads/20221010_Jo/Scans/'))
     >>> db.connect()  # print the list of scan dataset names
     >>> check_scan_configs(db.get_scans())
     >>> db.disconnect()
