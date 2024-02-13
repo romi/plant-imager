@@ -88,11 +88,11 @@ SHELL [ "conda", "run", "-n", "lpyEnv", "/bin/bash", "-c" ]
 # Install `plant-imager` dependencies (`plantdb` & `romitask`) & sources:
 RUN cd plant-imager/ && \
     ## Install `plantdb` from sources:
-    python3 -m pip install --no-cache-dir ./plantdb/ && \
+    python3 -m pip install --user --no-cache-dir ./plantdb/ && \
     ## Install `romitask` from sources:
-    python3 -m pip install --no-cache-dir ./romitask/ && \
+    python3 -m pip install --user --no-cache-dir ./romitask/ && \
     ## Install `plant-imager` from sources:
-    python3 -m pip install --no-cache-dir . && \
+    python3 -m pip install --user --no-cache-dir . && \
     # Activate 'lpyEnv' conda env for interactive shell:
     echo "conda activate lpyEnv" >> ~/.bashrc && \
     # Activate 'lpyEnv' conda env for login shell:
