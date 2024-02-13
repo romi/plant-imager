@@ -117,12 +117,10 @@ while [ "$1" != "" ]; do
     cmd=$1
     ;;
   --test)
-    shift
     cmd="${test_cmd}"
     test=1
     ;;
   --tmp)
-    shift
     create_tmp_db ""
     ;;
   -h | --help)
