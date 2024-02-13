@@ -41,14 +41,14 @@ usage() {
   echo "  -t, --tag
     Image tag to use." \
     "By default, use the '${vtag}' tag."
-  # Docker options:
+  # -- Docker options:
   echo "  --no-cache
     Do not use cache when building the image, (re)start from scratch."
   echo "  --pull
     Always attempt to pull a newer version of the parent image."
   echo "  --plain
     Plain output during docker build."
-  # General options:
+  # -- General options:
   echo "  -h, --help
     Output a usage message and exit."
 }
@@ -60,15 +60,12 @@ while [ "$1" != "" ]; do
     vtag=$1
     ;;
   --no-cache)
-    shift
     docker_opts="${docker_opts} --no-cache"
     ;;
   --pull)
-    shift
     docker_opts="${docker_opts} --pull"
     ;;
   --plain)
-    shift
     docker_opts="${docker_opts} --progress=plain"
     ;;
   -h | --help)
@@ -91,12 +88,14 @@ docker build \
   -f docker/virtualplantimager/Dockerfile .
 # Get docker build exit code:
 docker_build_status=$?
+# Get elapsed time:
+elapsed_time=$(expr $(date +%s) - ${start_time})
 
 # Print build time if successful (code 0), else print exit code
 if [ ${docker_build_status} == 0 ]; then
-  echo -e "\n${INFO}Docker build SUCCEEDED in $(expr $(date +%s) - ${start_time})s!"
+  echo -e "\n${INFO}Docker build SUCCEEDED in ${elapsed_time}s!"
 else
-  echo -e "\n${ERROR}Docker build FAILED after $(expr $(date +%s) - ${start_time})s with code ${docker_build_status}!"
+  echo -e "\n${ERROR}Docker build FAILED after ${elapsed_time}s with code ${docker_build_status}!"
 fi
 # Exit with docker build exit code:
 exit ${docker_build_status}
