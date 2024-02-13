@@ -220,7 +220,11 @@ def make_animation(db_location, imgs, img_fname, delay):
     logger.info(f"Generated the GIF animation: '{gif_fname}'.")
 
 
-def main(args):
+def main():
+    # - Parse the input arguments to variables:
+    parser = parsing()
+    args = parser.parse_args()
+
     # - Get the path to DB (directory) used to save the repeated scans:
     db_location = Path(args.db_location).expanduser()
 
@@ -274,7 +278,4 @@ def main(args):
     return
 
 if __name__ == '__main__':
-    # - Parse the input arguments to variables:
-    parser = parsing()
-    args = parser.parse_args()
-    main(args)
+    main()

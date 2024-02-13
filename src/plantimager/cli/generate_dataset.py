@@ -5,25 +5,41 @@ Created on Fri Dec  6 14:14:31 2019
 
 @author: alienor
 """
+import copy
 import numpy as np
 import os
 import random
-import toml
-import copy
-from plantdb import fsdb, io
-import tempfile
 import subprocess
 import sys
+import tempfile
+import toml
+
+from plantdb import fsdb, io
 
 random.seed(0.1423432)
 
-param = sys.argv[-1]
-db = sys.argv[-2]
+DESC = """Create a virtual plant dataset using the 'VirtualScan' task."""
 
-def run(config, scan_name):
+
+def parsing():
+    parser = argparse.ArgumentParser(description=DESC,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog=f"Detailed explanations here: {URL}")
+
+    parser.add_argument("db_location", type=str,
+                        help="Location of the DB containing the scans to use for repeatability evaluation.")
+    parser.add_argument("config", type=str,
+                        help="TOML configuration file to performs the virtual scan.")
+
+    return parser
+
+
+def run(db, config, scan_name):
     with tempfile.TemporaryDirectory() as tempdir:
         toml.dump(config, open(os.path.join(tempdir, "config.toml"), "w"))
-        subprocess.run(["romi_run_task", "--config", os.path.join(tempdir, "config.toml"), "VirtualScan", os.path.join(db, scan_name), "--local-scheduler", "--log-level", "WARNING"], check=True)
+        subprocess.run(["romi_run_task", "--config", os.path.join(tempdir, "config.toml"), "VirtualScan",
+                        os.path.join(db, scan_name), "--local-scheduler", "--log-level", "WARNING"], check=True)
+
 
 def basic_scan_config(config):
     config = copy.deepcopy(config)
@@ -46,25 +62,30 @@ def basic_scan_config(config):
     config["VirtualPlant"]["lpy_globals"]["BETA"] = random.randint(50, 90)
     return config
 
+
 def no_scene(config):
     config = copy.deepcopy(config)
     config["VirtualScan"]["load_scene"] = False
     return config
+
 
 def multiple_branches(config):
     config = copy.deepcopy(config)
     config["VirtualPlant"]["lpy_globals"]["BRANCHON"] = True
     return config
 
+
 def no_leaves(config):
     config = copy.deepcopy(config)
     config["VirtualPlant"]["lpy_globals"]["HAS_LEAVES"] = False
     return config
 
+
 def branch_on(config):
     config = copy.deepcopy(config)
     config["VirtualPlant"]["lpy_globals"]["BRANCHON"] = True
     return config
+
 
 def arabidopsis_big(config):
     config = copy.deepcopy(config)
@@ -77,25 +98,36 @@ def arabidopsis_big(config):
 
     return config
 
-orig_config = toml.load(param)
-k = 20
 
-config = basic_scan_config(orig_config)
-config_no_scene = no_scene(config)
-config_no_leaves = no_leaves(config_no_scene)
-config_branch_on = branch_on(config_no_scene)
-config_big_branch_on = arabidopsis_big(config_branch_on)
-config_big = arabidopsis_big(config_no_scene)
-config_big_scene = arabidopsis_big(config)
+def main():
+    parser = parsing()
+    args = parser.parse_args()
 
-configs = [config,
-config_no_leaves,
-config_no_scene,
-config_branch_on,
-config_big_branch_on,
-config_big,
-config_big_scene]
+    db = args.db_location
+    orig_config = toml.load(args.config)
 
-for i in range(k):
-    for j,c in enumerate(configs):
-        run(c, "%06d"%(i*len(configs) + j))
+    k = 20
+
+    config = basic_scan_config(orig_config)
+    config_no_scene = no_scene(config)
+    config_no_leaves = no_leaves(config_no_scene)
+    config_branch_on = branch_on(config_no_scene)
+    config_big_branch_on = arabidopsis_big(config_branch_on)
+    config_big = arabidopsis_big(config_no_scene)
+    config_big_scene = arabidopsis_big(config)
+
+    configs = [config,
+               config_no_leaves,
+               config_no_scene,
+               config_branch_on,
+               config_big_branch_on,
+               config_big,
+               config_big_scene]
+
+    for i in range(k):
+        for j, c in enumerate(configs):
+            run(db, c, "%06d" % (i * len(configs) + j))
+
+
+if __name__ == '__main__':
+    main()

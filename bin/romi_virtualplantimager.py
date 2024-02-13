@@ -1,4 +1,5 @@
 #!/usr/bin/env romi_bpy
+
 import argparse
 import distutils
 import distutils.util
@@ -9,12 +10,12 @@ import sys
 import tempfile
 from contextlib import redirect_stderr
 from contextlib import redirect_stdout
+from math import pi
 from random import randint
 
 import bpy
 import imageio.v3 as iio
 import numpy as np
-from math import pi
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -315,7 +316,7 @@ class VirtualPlant(MultiClassObject):
                 displace_modifier.texture = tex
 
 
-if __name__ == "__main__":
+def main():
     check_engine()
     # Remove the cube object (automatically created by Blender when initializing a new scene):
     if 'Cube' in bpy.data.objects:
@@ -376,7 +377,6 @@ if __name__ == "__main__":
         app = Flask(__name__)
         logfile = _get_log_filepath(tmpdir)
 
-
         @app.route('/hello_world', methods=['GET'])
         def hello_world():
             """Dummy test function returning some info about the server."""
@@ -390,12 +390,10 @@ if __name__ == "__main__":
             s += [f"I run {pyv}."]
             return jsonify(s)
 
-
         @app.route('/classes', methods=['GET'])
         def classes():
             """Returns the list of available classes."""
             return jsonify(obj.classes)
-
 
         @app.route('/bounding_box', methods=['GET'])
         def bounding_box():
@@ -419,12 +417,10 @@ if __name__ == "__main__":
             }
             return jsonify(bbox)
 
-
         @app.route('/backgrounds', methods=['GET'])
         def backgrounds():
             """Returns the list of backgrounds."""
             return jsonify(background_list)
-
 
         @app.route('/camera_intrinsics', methods=['POST', 'GET'])
         def camera_intrinsics():
@@ -443,7 +439,6 @@ if __name__ == "__main__":
                 }
                 return jsonify(camera_model)
 
-
         @app.route('/camera_pose', methods=['POST', 'GET'])
         def camera_pose():
             """Set or get the camera position in space."""
@@ -454,7 +449,6 @@ if __name__ == "__main__":
             else:
                 R, T = cam.get_RT()
                 return jsonify({"rotmat": R, "tvec": T})
-
 
         @app.get('/upload_object')
         def upload_object_get():
@@ -485,7 +479,6 @@ if __name__ == "__main__":
                     </form>
                     '''
             return HTML
-
 
         @app.post('/upload_object')
         def upload_object_post():
@@ -546,7 +539,6 @@ if __name__ == "__main__":
             obj.load_obj(obj_location, dx, dy, dz, colorize, palette_location)
             return "Successfully loaded all objects in Blender!"
 
-
         @app.get('/upload_background')
         def upload_background_get():
             """Load the HDRI background file to Blender.
@@ -568,7 +560,6 @@ if __name__ == "__main__":
                     </form>
                     '''
             return HTML
-
 
         @app.post('/upload_background')
         def upload_background_post():
@@ -597,15 +588,12 @@ if __name__ == "__main__":
             cam.load_hdri(hdr_location)
             return "Successfully loaded HDRI file in Blender!"
 
-
         @app.route("/add_random_displacement/<class_id>", methods=['GET'])
         def add_random_displacement(class_id):
             obj.add_leaf_displacement(class_id)
             return jsonify('OK')
 
-
         light_data = bpy.data.lights.new(type='POINT', name="flash")
-
 
         @app.route('/render', methods=['GET'])
         def render():
@@ -636,7 +624,6 @@ if __name__ == "__main__":
 
             return send_from_directory(tmpdir, "plant.png")
 
-
         @app.route('/render_class/<class_id>', methods=['GET'])
         def render_class(class_id):
             obj.show_class(class_id)
@@ -646,7 +633,6 @@ if __name__ == "__main__":
                 with redirect_stdout(f), redirect_stderr(f):
                     bpy.ops.render.render(write_still=True)
             return send_from_directory(tmpdir, "plant.png")
-
 
         # Detect available devices
         cuda_devs, cl_devs = bpy.context.preferences.addons['cycles'].preferences.get_devices()
@@ -660,3 +646,7 @@ if __name__ == "__main__":
         bpy.context.preferences.addons['cycles'].preferences.devices[0].use = True
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))
+
+
+if __name__ == "__main__":
+    main()

@@ -142,6 +142,7 @@ cd plant-imager
 git submodule init  # only do this ONCE if the sub-module have not yet been initialized!
 git submodule update
 ```
+> :information_source: Note that we use the `git submodules` to clone `romitask` and `plantdb`.
 
 ### Install from sources to use the _plant imager_
 
@@ -155,16 +156,13 @@ conda create -n plant_imager python=3.9
 You may now proceed to install the python requirements and packages:
 ```shell
 conda activate plant_imager # Don't forget to activate the environment!
-cd plant-imager
 # Install `plantdb` from sub-modules:
-python -m pip install -r ./plantdb/requirements.txt
 python -m pip install -e ./plantdb/
 # Install `romitask` from sub-modules:
 python -m pip install -e ./romitask/
 # Install `plant-imager`:
 python -m pip install -e .
 ```
-> :information_source: Please notice that we here use the git submodules to clone and install `romitask` and `plantdb`.
 
 ### Install from sources to use the _virtual plant imager_
 
@@ -174,50 +172,48 @@ sudo apt-get install libgl1-mesa-dev libxi6 gcc
 ```
 
 #### Conda environment creation
-Create a conda environment named `plant_imager` and install required dependencies:
+Create a conda environment named `plant_imager` and install required dependencies listed in `conda/lpy.yaml`:
 ```shell
-conda create -n plant_imager python=3.7
-conda install -n plant_imager -c conda-forge -c fredboudon flask imageio toml luigi boost=1.70.0 qhull=2015.2 openalea.lpy
+conda create -n plant_imager python=3.9
+conda env update -n plant_imager --file conda/lpy.yaml
 ```
 
 #### Blender setup
 In order to use the `bpy` module we have to do this mess:
 
-##### 1. Download Blender2.81
-Download Blender2.81, extract the archive and move its contents to `/opt/blender`:
+##### 1. Download Blender 2.93.16
+Download Blender 2.93.16, extract the archive and move its contents to `/opt/blender`:
 ```shell
-BLENDER_URL=https://download.blender.org/release/Blender2.81/blender-2.81a-linux-glibc217-x86_64.tar.bz2
+BLENDER_URL="https://ftp.halifax.rwth-aachen.de/blender/release/Blender2.93/blender-2.93.16-linux-x64.tar.xz"
 wget --progress=bar $BLENDER_URL
-tar -xjf blender-2.81a-linux-glibc217-x86_64.tar.bz2
-sudo mv blender-2.81a-linux-glibc217-x86_64 /opt/blender
-rm blender-2.81a-linux-glibc217-x86_64.tar.bz2
+tar -xJf blender-2.93.16-linux-x64.tar.xz
+mv blender-2.93.16-linux-x64 /opt/blender  # sudo might be required here!
+rm blender-2.93.16-linux-x64.tar.xz
 ```
 
-Add blender library path to `$LD_LIBRARY_PATH`:
+> :information_source: For now 2.93.16 is the latest version of blender we tested our tools against.
+
+To be able to call the `blender` executable, add the `/opt/blender` path to your `$PATH` as follows:
 ```shell
-echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/blender/lib' >> ~/.bashrc
+echo 'export PATH="/opt/blender:${PATH}"' >> ~/.bashrc
 ```
 
-##### 2. Copy required python libraries to blender
-Copy python libraries to the python's blender site-packages:
+##### 2. Install dependencies
+To install dependencies for Blender's embedded Python interpreter, simply do:
 ```shell
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/markupsafe/ /opt/blender/2.81/python/lib/python3.7/site-packages/
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/flask/ /opt/blender/2.81/python/lib/python3.7/site-packages/
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/itsdangerous/ /opt/blender/2.81/python/lib/python3.7/site-packages/
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/click/ /opt/blender/2.81/python/lib/python3.7/site-packages/
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/werkzeug/ /opt/blender/2.81/python/lib/python3.7/site-packages/
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/jinja2/ /opt/blender/2.81/python/lib/python3.7/site-packages/
-sudo cp -r /opt/conda/envs/plant_imager/lib/python3.7/site-packages/imageio/ /opt/blender/2.81/python/lib/python3.7/site-packages/
+/opt/blender/2.93/python/bin/python3.9 -m ensurepip
+/opt/blender/2.93/python/bin/python3.9 -m pip install -e ./romitask/
+/opt/blender/2.93/python/bin/python3.9 -m pip install -e .[virtual]
 ```
 
-##### 3. Install ROMI sources
-We will now finish by cloning and installing the ROMI sources for `plant-imager`.
+#### Install sources
+Finally, you can install the sources for `plant-imager`.
+From the `plant-imager` root directory, using the `plant_imager` conda environment, it is done as follows:
+
 ```shell
 # Don't forget to activate the environment!
 conda activate plant_imager
-cd plant-imager
 # Install `plantdb` from sub-modules:
-python -m pip install -r ./plantdb/requirements.txt
 python -m pip install -e ./plantdb/
 # Install `romitask` from sub-modules:
 python -m pip install -e ./romitask/
@@ -225,7 +221,5 @@ python -m pip install -e ./romitask/
 python -m pip install -e .
 ```
 
-> :information_source: Please notice that we here use the git submodules to clone and install `romitask` and `plantdb`.
-
-> :information_source: The `-e` option install the module or submodule in *editable* mode.
-> That means you will not have to reinstall them if you make modifications to the sources.
+> :information_source: The `-e` option install the source in _editable_ mode.
+> Detailed explanations can be found [here](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).

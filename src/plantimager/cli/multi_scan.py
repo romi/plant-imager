@@ -181,7 +181,17 @@ def _check_markers(path):
     return
 
 
-def main(args):
+def main():
+    # - Parse the input arguments to variables:
+    parser = parsing()
+    args = parser.parse_args()
+
+    # - Configure a logger from this application:
+    from romitask.log import configure_logger
+
+    global logger
+    logger = configure_logger('multi_scan.py')
+
     # Check the database path exists and have the required ROMI marker files:
     db_path = args.database_path
     if not os.path.isdir(db_path):
@@ -245,14 +255,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # - Parse the input arguments to variables:
-    parser = parsing()
-    args = parser.parse_args()
-
-    # - Configure a logger from this application:
-    from romitask.log import configure_logger
-
-    global logger
-    logger = configure_logger('multi_scan')
-
-    main(args)
+    main()
