@@ -36,13 +36,16 @@ import imageio.v3 as iio
 import numpy as np
 import psutil
 import requests
-from plantdb import io
-from plantdb.db import File
 
+from plantdb.db import File
+from plantdb.utils import fsdb_file_from_local_file
+from plantdb.utils import to_file
 from plantimager import path
 from plantimager.hal import AbstractScanner
 from plantimager.hal import DataItem
 from plantimager.log import logger
+
+PY_BLENDER = ["blender", "-E", "CYCLES", "-b", "-P"]
 
 
 def available_port(port):
@@ -154,7 +157,7 @@ class VirtualScannerRunner():
         """Start the Flask server in Blender."""
         logger.info('Starting the Flask server in Blender...')
         # Initialize the list of subprocess arguments:
-        proclist = ["romi_virtualplantimager", "--", "--port", str(self.port)]
+        proclist = ["romi_virtualplantimager.py", "--", "--port", str(self.port)]
         # Add the scene file path to the list of subprocess arguments:
         if self.scene is not None:
             logger.debug("scene = %s" % self.scene)
@@ -355,27 +358,27 @@ class VirtualScanner(AbstractScanner):
         """
         # Convert path (str) to `plantdb.FSDB.File` type if necessary (create a temporary FSDB):
         if isinstance(file, str):
-            file = io.dbfile_from_local_file(file)
+            file = fsdb_file_from_local_file(file)
         if isinstance(mtl, str):
-            mtl = io.dbfile_from_local_file(mtl)
+            mtl = fsdb_file_from_local_file(mtl)
         if isinstance(palette, str):
-            palette = io.dbfile_from_local_file(palette)
+            palette = fsdb_file_from_local_file(palette)
 
         files = {}  # dict of `BufferedReader` to use for upload
         with tempfile.TemporaryDirectory() as tmpdir:
             # Copy the OBJ file to a temporary directory & get the `BufferedReader` from it:
             obj_file_path = os.path.join(tmpdir, file.filename)
-            io.to_file(file, obj_file_path)
+            to_file(file, obj_file_path)
             files["obj"] = open(obj_file_path, "rb")
             # Copy the MTL file to a temporary directory & get the `BufferedReader` from it, if requested:
             if mtl is not None:
                 mtl_file_path = os.path.join(tmpdir, mtl.filename)
-                io.to_file(mtl, mtl_file_path)
+                to_file(mtl, mtl_file_path)
                 files["mtl"] = open(mtl_file_path, "rb")
             # Copy the PNG palette file to a temporary directory & get the `BufferedReader` from it, if requested:
             if palette is not None:
                 palette_file_path = os.path.join(tmpdir, palette.filename)
-                io.to_file(palette, palette_file_path)
+                to_file(palette, palette_file_path)
                 files["palette"] = open(palette_file_path, "rb")
             # Upload these files to the Blender Flask server:
             res = self.request_post("upload_object", {"colorize": colorize}, files)
@@ -407,7 +410,7 @@ class VirtualScanner(AbstractScanner):
         with tempfile.TemporaryDirectory() as tmpdir:
             # Copy the PNG palette file to a temporary directory & get the `BufferedReader` from it, if requested:
             file_path = os.path.join(tmpdir, file.filename)
-            io.to_file(file, file_path)
+            to_file(file, file_path)
             files = {"hdr": open(file_path, "rb")}
             res = self.request_post("upload_background", {}, files)
         return res
@@ -496,7 +499,7 @@ class VirtualScanner(AbstractScanner):
 
         Returns
         -------
-        numpy.array
+        numpy.ndarray
             The image array.
         """
         if channel == 'rgb':

@@ -24,7 +24,11 @@ def parsing():
     return parser
 
 
-if __name__ == "__main__":
+def main():
     args = parsing().parse_args()
     args.classes = json.loads(args.classes)  # parse the mapping string with JSON parser into a dictionary
     split_by_material(args.input, args.output, args.classes)
+
+
+if __name__ == "__main__":
+    main()

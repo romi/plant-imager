@@ -29,7 +29,7 @@ cmd=''
 # Volume mounting options:
 mount_option=""
 # Test configuration is blender server with LPY model:
-  test_cfg="plant-imager/configs/vscan_lpy_blender.toml"
+test_cfg="plant-imager/configs/vscan_lpy_blender.toml"
 # Test command:
 test_cmd="romi_run_task VirtualScan /myapp/db/vplant_test --config ${test_cfg}"
 # Defines the temporary directory to use (in case of test and no path to local database)
@@ -67,7 +67,7 @@ usage() {
     Defines the command to run at container startup." \
     "By default, start an interactive container with a bash shell."
   echo "  --test
-    Test the VirtualPlant task with the default config '${test_cfg}'."
+    Test the 'VirtualScan' task with the default config '${test_cfg}'."
   echo "  --tmp
     Create a temporary database under '${tmp_dir}'."
   echo "  -h, --help
@@ -79,14 +79,21 @@ bind_mount_options() {
 }
 
 create_tmp_db() {
-  host_db="${tmp_dir}"
-  # Create the directory:
+  # If an argument is provided, use it as host database, else use the temporary path defined in $tmp_dir,
+  if [ "$1" != "" ]; then
+    host_db="$1"
+  else
+    host_db="${tmp_dir}"
+  fi
+  # Create the directory 'vplant_test':
   mkdir -p "${host_db}/vplant_test"
   # Add the marker to be a valid plantdb database:
   touch "${host_db}/romidb"
+  # Copy the 'vscan_data' required to run the `VirtualScan` task:
   cp -r "database_example/vscan_data/" "${host_db}/"
 }
 
+test=0
 while [ "$1" != "" ]; do
   case $1 in
   -t | --tag)
@@ -112,11 +119,11 @@ while [ "$1" != "" ]; do
   --test)
     shift
     cmd="${test_cmd}"
-    create_tmp_db
+    test=1
     ;;
   --tmp)
     shift
-    create_tmp_db
+    create_tmp_db ""
     ;;
   -h | --help)
     usage
@@ -130,15 +137,18 @@ while [ "$1" != "" ]; do
   shift
 done
 
+if [ ${test} == 1 ]; then
+  create_tmp_db "${host_db}"
+fi
+
 # Use local database path `$host_db` to create a bind mount to '/myapp/db':
 if [ "${host_db}" != "" ]; then
   bind_mount_options
   echo -e "${INFO}Automatic bind mount of '${host_db}' (host) to '/myapp/db' (container)!"
 else
   # Else raise an error:
-  echo -e "${ERROR}No local host database defined!"
+  echo -e "${WARNING}No local host database defined!"
   echo -e "${INFO}Set 'ROMI_DB' or use the '-db' | '--database' option to define it."
-  exit 1
 fi
 
 # If a 'host database path' is provided, get the name of the group and its id to, later used with the `--user` option

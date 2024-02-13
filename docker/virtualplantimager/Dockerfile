@@ -13,6 +13,9 @@ ENV USER_NAME="romi"
 ENV USER_ID=1010
 # Required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
+# Fix pip problem when installed by Ubuntu22.04 (Jammy).
+# See: https://github.com/pypa/setuptools/issues/3269#issuecomment-1254507377
+ENV DEB_PYTHON_INSTALL_LAYOUT=deb_system
 # Required by `romi_run_task`:
 ENV ROMI_DB="/myapp/db"
 # Required by `nvidia-container-runtime`
@@ -42,6 +45,8 @@ RUN apt-get update && \
     chown -R ${USER_NAME}: /home/${USER_NAME} && \
     # Create the folder used to mount the database:
     mkdir -p ${ROMI_DB} && \
+    touch ${ROMI_DB}/romidb && \
+    chown -R ${USER_NAME} ${ROMI_DB} && \
     # Allow user to call conda:
     chown -R ${USER_NAME}: /opt/conda/ && \
     # Download Blender and move it to `/opt/blender`: \
@@ -50,10 +55,7 @@ RUN apt-get update && \
     echo "Installing Blender in '/opt/blender'..." && \
     tar -xJf blender-2.93.16-linux-x64.tar.xz && \
     mv blender-2.93.16-linux-x64 /opt/blender && \
-    rm blender-2.93.16-linux-x64.tar.xz && \
-    echo "Installing Python dependencies for Blender..." && \
-    /opt/blender/2.93/python/bin/python3.9 -m ensurepip && \
-    /opt/blender/2.93/python/bin/python3.9 -m pip install markupsafe flask itsdangerous click werkzeug jinja2 imageio
+    rm blender-2.93.16-linux-x64.tar.xz
 
 ENV LD_LIBRARY_PATH="/opt/blender/lib"
 
@@ -71,7 +73,12 @@ RUN conda install -y -n base conda-libmamba-solver && \
     ## Create the `lpyEnv` environment:
     conda env create -y -n lpyEnv -f plant-imager/conda/lpy.yaml && \
     ## Clean conda cache:
-    conda clean -y --all
+    conda clean -y --all && \
+    echo "Installing Python dependencies for Blender..." && \
+    /opt/blender/2.93/python/bin/python3.9 -m ensurepip && \
+    /opt/blender/2.93/python/bin/python3.9 -m pip install --upgrade pip setuptools && \
+    /opt/blender/2.93/python/bin/python3.9 -m pip install --no-cache-dir ./plant-imager/romitask/ && \
+    /opt/blender/2.93/python/bin/python3.9 -m pip install --no-cache-dir ./plant-imager/.[virtual]
 
 # Activate conda usage from bash:
 # https://pythonspeed.com/articles/activate-conda-dockerfile/
@@ -81,14 +88,11 @@ SHELL [ "conda", "run", "-n", "lpyEnv", "/bin/bash", "-c" ]
 # Install `plant-imager` dependencies (`plantdb` & `romitask`) & sources:
 RUN cd plant-imager/ && \
     ## Install `plantdb` from sources:
-    python3 -m pip install ./plantdb/ --no-cache-dir && \
+    python3 -m pip install --no-cache-dir ./plantdb/ && \
     ## Install `romitask` from sources:
-    python3 -m pip install -r ./romitask/requirements.txt --no-cache-dir && \
-    python3 -m pip install ./romitask/ --no-cache-dir && \
+    python3 -m pip install --no-cache-dir ./romitask/ && \
     ## Install `plant-imager` from sources:
-    python3 -m pip install . --no-cache-dir && \
-    # Clean pip cache:
-    python3 -m pip cache purge && \
+    python3 -m pip install --no-cache-dir . && \
     # Activate 'lpyEnv' conda env for interactive shell:
     echo "conda activate lpyEnv" >> ~/.bashrc && \
     # Activate 'lpyEnv' conda env for login shell:

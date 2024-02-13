@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plantimager"
+version = "0.2.1"
+dependencies = [
+    'colorlog',
+    'imageio',
+    'numpy',
+    'psutil',
+    'requests',
+    'pyserial',
+    'tqdm',
+]
+description = "ROMI library controlling the PlantImager (hardware) or the VirtualPlantImager (Blender) to acquire images of (virtual) single potted plants."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Nabil Ait Taleb", email = "mohamednabil.aittaleb@sony.com" },
+    { name = "Julie Charlaix", email = "julie.charlaix@ens-lyon.fr" },
+    { name = "David Colliaux", email = "david.colliaux@sony.com" },
+    { name = "Peter Hanappe", email = "peter.hanappe@sony.com" },
+    { name = "Timothée Wintz", email = "timothee@timwin.fr" },
+]
+maintainers = [
+    { name = "Jonathan Legrand", email = "jonathan.legrand@ens-lyon.fr" }
+]
+keywords = [
+    "Robotics for Microfarms",
+    "ROMI",
+    "virtual plant",
+    "scanner",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)"
+]
+
+[project.scripts]
+generate_dataset = "plantimager.cli.generate_dataset:main"
+hardware_robustness = "plantimager.cli.hardware_robustness:main"
+multi_scan = "plantimager.cli.multi_scan:main"
+
+[project.urls]
+Homepage = "https://romi-project.eu/"
+Documentation = "https://docs.romi-project.eu/plant_imager/"
+Repository = "https://github.com/romi/plant-imager"
+Issues = "https://github.com/romi/plant-imager/issues"
+
+[project.optional-dependencies]
+virtual = [
+    "markupsafe",
+    "flask",
+    "itsdangerous",
+    "click",
+    "werkzeug",
+    "jinja2",
+    "imageio",
+]
+doc = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "pymdown-extensions",
+    "markdown-exec[ansi]",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+]
+test = [
+    "nose2[coverage]",
+    "coverage[toml]",
+]

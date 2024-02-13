@@ -4,5 +4,10 @@ from sys import argv
 
 from plantimager.blender import clean_mesh
 
-if __name__ == "__main__":
+
+def main():
     clean_mesh(argv[-2], argv[-1])
+
+
+if __name__ == "__main__":
+    main()

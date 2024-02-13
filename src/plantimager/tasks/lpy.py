@@ -86,10 +86,10 @@ class VirtualPlant(RomiTask):
             classes = luigi.DictParameter().serialize(VirtualPlantConfig().classes).replace(" ", "")
 
             logger.info("Splitting mesh by classes in Blender with `romi_split_by_material`...")
-            subprocess.run(["romi_split_by_material", "--", "--classes", classes, fname, fname], check=True)
+            subprocess.run(["romi_split_by_material.py", "--", "--classes", classes, fname, fname], check=True)
 
             logger.info("Cleaning mesh in Blender with `romi_clean_mesh`...")
-            subprocess.run(["romi_clean_mesh", "--", fname, fname], check=True)
+            subprocess.run(["romi_clean_mesh.py", "--", fname, fname], check=True)
 
             output_file.import_file(fname)
             output_mtl_file = self.output().get().create_file(output_file.id + "_mtl")
