@@ -30,7 +30,7 @@ The simplest way to use the docker image is to pull the pre-built `roboticsmicro
 docker pull roboticsmicrofarms/plantimager:latest
 ```
 
-#### Build the ima[run.sh](docker%2Fvirtualplantimager%2Frun.sh)ge
+#### Build the image
 In this repository, you will find a dedicated script, named `build.sh`, in the `docker/plantimager/` directory.
 
 ```shell
