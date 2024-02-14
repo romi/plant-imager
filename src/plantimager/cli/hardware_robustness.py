@@ -15,7 +15,7 @@ import toml
 from plantdb import FSDB
 from plantdb.fsdb import LOCK_FILE_NAME
 from plantdb.fsdb import MARKER_FILE_NAME
-from romitask.log import configure_logger
+from plantimager.log import configure_logger
 
 dirname, filename = os.path.split(os.path.abspath(__file__))
 

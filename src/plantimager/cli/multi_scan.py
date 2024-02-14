@@ -187,10 +187,10 @@ def main():
     args = parser.parse_args()
 
     # - Configure a logger from this application:
-    from romitask.log import configure_logger
+    from plantimager.log import configure_logger
 
     global logger
-    logger = configure_logger('multi_scan.py')
+    logger = configure_logger('multi_scan')
 
     # Check the database path exists and have the required ROMI marker files:
     db_path = args.database_path
