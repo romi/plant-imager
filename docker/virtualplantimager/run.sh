@@ -175,6 +175,11 @@ if [ "${cmd}" = "" ]; then
 else
   echo -e "${INFO}Running: '${cmd}'."
   echo -e "${INFO}Bind mount: '${mount_option}'."
+  echo -e "  docker run --rm --gpus all ${mount_option} \
+    --user romi:${gid} \
+    ${USE_TTY} \
+    roboticsmicrofarms/virtualplantimager:${vtag} \
+    bash -c ${cmd}"
   # Get the date to estimate command execution time:
   start_time=$(date +%s)
   # Start in non-interactive mode (run the command).
@@ -186,11 +191,13 @@ else
     bash -c "${cmd}"
   # Get command exit code:
   cmd_status=$?
-  # Print build time if successful (code 0), else print command exit code
+
+  # Print elapsed time if successful (code 0), else print command exit code
+  elapsed_time=$(expr $(date +%s) - ${start_time})
   if [ ${cmd_status} == 0 ]; then
-    echo -e "\n${INFO}Command SUCCEEDED in $(expr $(date +%s) - ${start_time})s!"
+    echo -e "\n${INFO}Command SUCCEEDED in ${elapsed_time}s!"
   else
-    echo -e "\n${ERROR}Command FAILED after $(expr $(date +%s) - ${start_time})s with code ${cmd_status}!"
+    echo -e "\n${ERROR}Command FAILED after ${elapsed_time}s with code ${cmd_status}!"
   fi
   # Exit with status code:
   exit ${cmd_status}

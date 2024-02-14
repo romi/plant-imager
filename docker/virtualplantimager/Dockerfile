@@ -57,13 +57,23 @@ RUN apt-get update && \
 
 ENV LD_LIBRARY_PATH="/opt/blender/lib"
 
-# Change to non-root user:
-USER ${USER_NAME}
 # Change working directory:
 WORKDIR /home/${USER_NAME}
 
 # Copy the source files (repository):
 COPY --chown=${USER_NAME} ./ plant-imager/
+
+
+RUN echo -e "\n\n## Installing dependencies for Blender's embedded Python..." && \
+    echo "$(python3 -m pip --version)" && \
+    python3 -m pip \
+      --python /opt/blender/2.93/python/bin/python3.9 \
+      install --no-cache-dir \
+      --prefix /opt/blender/2.93/python/lib/python3.9/site-packages/ \
+      plant-imager/.[virtual]
+
+# Change to non-root user:
+USER ${USER_NAME}
 
 # Create the appropriate conda environment:
 RUN conda install -y -n base conda-libmamba-solver && \
@@ -76,21 +86,14 @@ RUN conda install -y -n base conda-libmamba-solver && \
 RUN conda init bash
 SHELL ["conda", "run", "-n", "base", "/bin/bash", "-c"]
 
-RUN echo "# --------------------------------------------" && \
-    echo "$(which python3)" && \
-    echo -e "\n\n\n" && \
-    echo "# --------------------------------------------" && \
-    echo "\n\n# Installing 'plant-imager' and dependencies..." && \
+RUN echo "\n\n# Installing 'plant-imager' and dependencies..." && \
     echo -e "\n\n## Installing 'plantdb' from sources..." && \
     python3 -m pip install --no-cache-dir plant-imager/plantdb/ && \
     echo -e "\n\n## Installing 'romitask' from sources..." && \
     python3 -m pip install --no-cache-dir plant-imager/romitask/ && \
     echo -e "\n\n## Installing 'plant-imager' from sources..." && \
     python3 -m pip install --no-cache-dir plant-imager/ && \
-    echo -e "\n\n\n" && \
-    echo "# --------------------------------------------" && \
-    echo -e "\n\n## Installing dependencies for Blender's embedded Python..." && \
-    python3 -m pip --python /opt/blender/2.93/python/bin/python3.9 install --no-cache-dir plant-imager/.[virtual] &&\
+    echo -e "\n\n\n" &&\
     # Add blender to executables:
     echo "export PATH=\$PATH:/opt/blender" >> ~/.profile && \
     # Make blender library accessible by python path:
