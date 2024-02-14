@@ -26,7 +26,7 @@ from werkzeug.utils import secure_filename
 
 from plantimager.blender import _get_log_filepath
 from plantimager.blender import check_engine
-from romitask.log import configure_logger
+from plantimager.log import configure_logger
 
 logger = configure_logger(__name__)
 
@@ -111,7 +111,7 @@ class Camera():
         location, rotation = self.cam.matrix_world.decompose()[0:2]
         R_world2bcam = rotation.to_matrix().transposed()
 
-        # Use location from matrix_world to account for constraints:     
+        # Use location from matrix_world to account for constraints:
         T_world2bcam = -1 * R_world2bcam @ location
 
         # Build the coordinate transform matrix from world to computer vision camera
