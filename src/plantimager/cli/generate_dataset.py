@@ -5,16 +5,15 @@ Created on Fri Dec  6 14:14:31 2019
 
 @author: alienor
 """
+import argparse
 import copy
-import numpy as np
 import os
 import random
 import subprocess
-import sys
 import tempfile
-import toml
 
-from plantdb import fsdb, io
+import numpy as np
+import toml
 
 random.seed(0.1423432)
 
@@ -23,8 +22,7 @@ DESC = """Create a virtual plant dataset using the 'VirtualScan' task."""
 
 def parsing():
     parser = argparse.ArgumentParser(description=DESC,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog=f"Detailed explanations here: {URL}")
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument("db_location", type=str,
                         help="Location of the DB containing the scans to use for repeatability evaluation.")
