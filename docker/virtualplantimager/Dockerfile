@@ -29,14 +29,12 @@ ENV BLENDER_URL="https://ftp.halifax.rwth-aachen.de/blender/release/Blender2.93/
 # Expose the port to communicate with the blender server:
 EXPOSE 9001
 
-# Change Shell to 'bash', default is 'sh'
-SHELL [ "/bin/bash", "-c" ]
-
 RUN apt-get update && \
     # Install system dependencies:
     apt-get install -y --no-install-recommends \
-    libgl1-mesa-dev libxi6 libc++-dev \
-    emacs-nox && \
+      libgl1-mesa-dev \
+      libxi6 \
+      libc++-dev && \
     # Clean cache:
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -70,35 +68,31 @@ COPY --chown=${USER_NAME} ./ plant-imager/
 # Create the appropriate conda environment:
 RUN conda install -y -n base conda-libmamba-solver && \
     conda config --set solver libmamba && \
-    ## Create the `lpyEnv` environment:
-    conda env create -y -n lpyEnv -f plant-imager/conda/lpy.yaml && \
+    echo "\n\n# -- Installing LPY dependencies in the 'base' environment..." && \
+    conda install -y -n base "python==3.9.2" flask imageio toml openalea.lpy -c conda-forge -c fredboudon && \
     ## Clean conda cache:
-    conda clean -y --all && \
-    echo "Installing Python dependencies for Blender..." && \
-    /opt/blender/2.93/python/bin/python3.9 -m ensurepip && \
-    /opt/blender/2.93/python/bin/python3.9 -m pip install --upgrade pip setuptools && \
-    /opt/blender/2.93/python/bin/python3.9 -m pip install --no-cache-dir ./plant-imager/romitask/ && \
-    /opt/blender/2.93/python/bin/python3.9 -m pip install --no-cache-dir ./plant-imager/.[virtual]
+    conda clean -y --all
 
-# Activate conda usage from bash:
-# https://pythonspeed.com/articles/activate-conda-dockerfile/
 RUN conda init bash
-SHELL [ "conda", "run", "-n", "lpyEnv", "/bin/bash", "-c" ]
+SHELL ["conda", "run", "-n", "base", "/bin/bash", "-c"]
 
-# Install `plant-imager` dependencies (`plantdb` & `romitask`) & sources:
-RUN cd plant-imager/ && \
-    ## Install `plantdb` from sources:
-    python3 -m pip install --user --no-cache-dir ./plantdb/ && \
-    ## Install `romitask` from sources:
-    python3 -m pip install --user --no-cache-dir ./romitask/ && \
-    ## Install `plant-imager` from sources:
-    python3 -m pip install --user --no-cache-dir . && \
-    # Activate 'lpyEnv' conda env for interactive shell:
-    echo "conda activate lpyEnv" >> ~/.bashrc && \
-    # Activate 'lpyEnv' conda env for login shell:
-    # This is used by 'docker/*/run.sh' when passing a command as argument
-    echo "conda activate lpyEnv" >> ~/.profile && \
+RUN echo "# --------------------------------------------" && \
+    echo "$(which python3)" && \
+    echo -e "\n\n\n" && \
+    echo "# --------------------------------------------" && \
+    echo "\n\n# Installing 'plant-imager' and dependencies..." && \
+    echo -e "\n\n## Installing 'plantdb' from sources..." && \
+    python3 -m pip install --no-cache-dir plant-imager/plantdb/ && \
+    echo -e "\n\n## Installing 'romitask' from sources..." && \
+    python3 -m pip install --no-cache-dir plant-imager/romitask/ && \
+    echo -e "\n\n## Installing 'plant-imager' from sources..." && \
+    python3 -m pip install --no-cache-dir plant-imager/ && \
+    echo -e "\n\n\n" && \
+    echo "# --------------------------------------------" && \
+    echo -e "\n\n## Installing dependencies for Blender's embedded Python..." && \
+    python3 -m pip --python /opt/blender/2.93/python/bin/python3.9 install --no-cache-dir plant-imager/.[virtual] &&\
     # Add blender to executables:
     echo "export PATH=\$PATH:/opt/blender" >> ~/.profile && \
     # Make blender library accessible by python path:
     echo "export LD_LIBRARY_PATH=/opt/blender/lib" >> ~/.profile
+
