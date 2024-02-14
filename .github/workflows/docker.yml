@@ -1,0 +1,120 @@
+# This workflow will build the Docker image and publish it to Docker Hub in the 'roboticsmicrofarms' repo.
+
+# Github context:
+#   https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+# This action is inspired from official GitHub doc:
+#  https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-docker-hub
+# -- Metadata configuration here:
+#  https://github.com/marketplace/actions/docker-metadata-action
+# -- Build & push job configuration here:
+#  https://github.com/marketplace/actions/build-and-push-docker-images
+
+name: Docker image
+
+on:
+  - push
+
+jobs:
+  plantimager-docker:
+    name: Build & Push Docker plantimager image to Docker Hub
+    runs-on: ubuntu-latest
+    environment: docker-hub
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: roboticsmicrofarms/plantimager
+          tags: type=sha,format=short,prefix=
+      - name: Build and Cache docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/plantimager/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          outputs: type=docker,dest=/tmp/myimage.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myimage
+          path: /tmp/myimage.tar
+          retention-days: 2
+          overwrite: true
+      - name: Test image
+        run: |
+          docker load --input /tmp/myimage.tar
+          docker image ls -a
+          docker run --rm ${{ steps.meta.outputs.tags }} \
+            /bin/bash -c 'python -c "import plantimager" && romi_run_task -h'
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push as latest
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          file: docker/plantimager/Dockerfile
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            roboticsmicrofarms/plantimager:latest
+
+  virtualplantimager-docker:
+    name: Build & Push Docker virtualplantimager image to Docker Hub
+    runs-on: ubuntu-latest
+    environment: docker-hub
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: roboticsmicrofarms/virtualplantimager
+          tags: type=sha,format=short,prefix=
+      - name: Build and Cache docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/virtualplantimager/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          outputs: type=docker,dest=/tmp/myimage.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myimage
+          path: /tmp/myimage.tar
+          retention-days: 2
+          overwrite: true
+      - name: Test image
+        run: |
+          docker load --input /tmp/myimage.tar
+          docker image ls -a
+          docker run --rm ${{ steps.meta.outputs.tags }} \
+            /bin/bash -c 'python -c "import plantimager" && romi_run_task -h'
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push as latest
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          file: docker/virtualplantimager/Dockerfile
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            roboticsmicrofarms/virtualplantimager:latest
