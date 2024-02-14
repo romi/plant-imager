@@ -29,13 +29,15 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
-from plantdb import io
-from tqdm import tqdm
-
-from plantimager.log import logger
+from plantimager.log import configure_logger
 from plantimager.path import Pose
 from plantimager.units import deg
 from plantimager.units import length_mm
+from tqdm import tqdm
+
+from plantdb import io
+
+logger = configure_logger(__name__)
 
 
 class ChannelData(object):
@@ -126,7 +128,7 @@ class AbstractCamera(ABC):
     @abstractmethod
     def grab(self, idx: int, metadata: dict = None):
         """Grab data with an id and metadata.
-        
+
         Parameters
         ----------
         idx : int

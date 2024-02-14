@@ -31,7 +31,7 @@ import luigi
 from plantimager import path
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
-from plantimager.log import logger
+from plantimager.log import configure_logger
 from plantimager.scanner import Scanner
 from plantimager.tasks.lpy import VirtualPlant
 from plantimager.vscan import VirtualScanner
@@ -41,6 +41,8 @@ from romitask import DatabaseConfig
 from romitask import FilesetTarget
 from romitask import RomiTask
 from romitask.task import FilesetExists
+
+logger = configure_logger(__name__)
 
 
 class ObjFileset(FilesetExists):

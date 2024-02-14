@@ -36,14 +36,16 @@ import imageio.v3 as iio
 import numpy as np
 import psutil
 import requests
+from plantimager import path
+from plantimager.hal import AbstractScanner
+from plantimager.hal import DataItem
+from plantimager.log import configure_logger
 
 from plantdb.db import File
 from plantdb.utils import fsdb_file_from_local_file
 from plantdb.utils import to_file
-from plantimager import path
-from plantimager.hal import AbstractScanner
-from plantimager.hal import DataItem
-from plantimager.log import logger
+
+logger = configure_logger(__name__)
 
 PY_BLENDER = ["blender", "-E", "CYCLES", "-b", "-P"]
 
@@ -225,7 +227,7 @@ class VirtualScanner(AbstractScanner):
     def __init__(self, width, height, focal, flash=False, host=None, port=9001, scene=None,
                  add_leaf_displacement=False, classes=None):
         """Instantiate a ``VirtualScanner``.
-        
+
         Parameters
         ----------
         width : int
@@ -434,7 +436,7 @@ class VirtualScanner(AbstractScanner):
 
     def channels(self) -> list:
         """List the channels to acquire.
-        
+
         Notes
         -----
         Default to the 'rgb' channel.
