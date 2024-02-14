@@ -183,7 +183,7 @@ else
     --user romi:${gid} \
     ${USE_TTY} \
     roboticsmicrofarms/virtualplantimager:${vtag} \
-    bash -lc "${cmd}"
+    bash -c "${cmd}"
   # Get command exit code:
   cmd_status=$?
   # Print build time if successful (code 0), else print command exit code
