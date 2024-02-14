@@ -1,0 +1,3852 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="PlantImager documentation.">
+      
+      
+        <meta name="author" content="ROMI Team">
+      
+      
+        <link rel="canonical" href="https://romi.github.io/plant-imager/reference/plantimager/vscan/">
+      
+      
+        <link rel="prev" href="../utils/">
+      
+      
+        <link rel="next" href="../../../docker/">
+      
+      
+      <link rel="icon" href="../../../assets/images/ROMI_ICON_green.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
+    
+    
+      
+        <title>vscan - PlantImager</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.f2e4d321.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,300i,400,400i,700,700i%7CUbuntu+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Nunito Sans";--md-code-font:"Ubuntu Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_markdown_exec_pyodide.css">
+    
+      <link rel="stylesheet" href="../../../assets/_markdown_exec_ansi.css">
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plantimager.vscan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://romi.github.io/plantdb/" title="PlantImager" class="md-header__button md-logo" aria-label="PlantImager" data-md-component="logo">
+      
+  <img src="../../../assets/images/ROMI_logo_white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PlantImager
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              vscan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/romi/plant-imager" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../rest_api/" class="md-tabs__link">
+        
+  
+    
+  
+  REST API
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Reference API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../docker/" class="md-tabs__link">
+        
+  
+    
+  
+  Docker
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../developer/" class="md-tabs__link">
+        
+  
+    
+  
+  Developer
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://romi.github.io/plantdb/" title="PlantImager" class="md-nav__button md-logo" aria-label="PlantImager" data-md-component="logo">
+      
+  <img src="../../../assets/images/ROMI_logo_white.svg" alt="logo">
+
+    </a>
+    PlantImager
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/romi/plant-imager" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rest_api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Reference API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    plantimager
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            plantimager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blender/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    blender
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blgimbal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    blgimbal
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../cli/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    cli
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_3" id="__nav_3_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            cli
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/generate_dataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    generate_dataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/hardware_robustness/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hardware_robustness
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/multi_scan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi_scan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../configs/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    configs
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_4" id="__nav_3_1_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            configs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configs/lpy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    lpy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configs/scan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    scan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dummy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dummy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamixel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamixel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    error
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gp2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gp2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grbl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    grbl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hal
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../log/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    log
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lpy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    lpy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../path/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    path
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scanner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    scanner
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sony/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sony
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_16" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tasks/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    tasks
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_16" id="__nav_3_1_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_16">
+            <span class="md-nav__icon md-icon"></span>
+            tasks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/lpy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    lpy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/scan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    scan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../units/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    units
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../urlcam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    urlcam
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    vscan
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    vscan
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      vscan
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner" class="md-nav__link">
+    <span class="md-ellipsis">
+      VirtualScanner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VirtualScanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.get_bounding_box" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_bounding_box
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.get_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_position
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.grab" class="md-nav__link">
+    <span class="md-ellipsis">
+      grab
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.list_backgrounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_backgrounds
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.list_objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.load_background" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_background
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.load_object" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.render" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.set_intrinsics" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_intrinsics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.set_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_position
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScannerRunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      VirtualScannerRunner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VirtualScannerRunner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScannerRunner.start" class="md-nav__link">
+    <span class="md-ellipsis">
+      start
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScannerRunner.stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      stop
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.available_port" class="md-nav__link">
+    <span class="md-ellipsis">
+      available_port
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.find_available_port" class="md-nav__link">
+    <span class="md-ellipsis">
+      find_available_port
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../docker/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Docker
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docker/virtualplantimager/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VirtualPlantImager
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Developer
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Developer
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building the documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/virtualplantimager/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VirtualPlantImager specifications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      vscan
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner" class="md-nav__link">
+    <span class="md-ellipsis">
+      VirtualScanner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VirtualScanner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.get_bounding_box" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_bounding_box
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.get_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_position
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.grab" class="md-nav__link">
+    <span class="md-ellipsis">
+      grab
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.list_backgrounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_backgrounds
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.list_objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.load_background" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_background
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.load_object" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.render" class="md-nav__link">
+    <span class="md-ellipsis">
+      render
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.set_intrinsics" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_intrinsics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScanner.set_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_position
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScannerRunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      VirtualScannerRunner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VirtualScannerRunner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScannerRunner.start" class="md-nav__link">
+    <span class="md-ellipsis">
+      start
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.vscan.VirtualScannerRunner.stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      stop
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.available_port" class="md-nav__link">
+    <span class="md-ellipsis">
+      available_port
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.vscan.find_available_port" class="md-nav__link">
+    <span class="md-ellipsis">
+      find_available_port
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>vscan</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="plantimager.vscan"></a>
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="plantimager.vscan.VirtualScanner" class="doc doc-heading">
+            <code class="highlight language-python">VirtualScanner(width, height, focal, flash<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, host<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, port<span style="color: #666666">=9001</span>, scene<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, add_leaf_displacement<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, classes<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>)</code>
+
+<a href="#plantimager.vscan.VirtualScanner" class="headerlink" title="Permanent link">Link</a></h2>
+
+
+  <div class="doc doc-contents ">
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="plantimager.hal.AbstractScanner" href="../hal/#plantimager.hal.AbstractScanner">AbstractScanner</a></code></p>
+
+  
+      <p>A virtual scanner sending HTTP requests to a host rendering the 3D virtual plant and taking pictures.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.runner">runner</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="plantimager.vscan.VirtualScannerRunner" href="#plantimager.vscan.VirtualScannerRunner">VirtualScannerRunner</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The runner for the virtual scanner process.
+It must accept POST &amp; GET HTTP requests.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.host">host</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The virtual scanner host ip.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.port">port</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The virtual scanner host port.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.classes">classes</span></code></td>
+          <td>
+                <code>list of str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The list of classes to render, must be found in the loaded OBJ.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.flash">flash</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If <code>True</code>, light the scene with a flash.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.ext">ext</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extension to use to write image data from the <code>grab</code> method.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.position">position</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="plantimager.path.Pose" href="../path/#plantimager.path.Pose">Pose</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The current position of the camera.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScanner.add_leaf_displacement">add_leaf_displacement</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If <code>True</code>, add a random displacement to the leaf class objects after loading the virtual plant.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+  
+      <p>Instantiate a <code>VirtualScanner</code>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>width</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The width of the image to acquire.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>height</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The height of the image to acquire.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>focal</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The focal distance to the object to acquire.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>flash</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If <code>True</code>, light the scene with a flash.
+Defaults to <code>False</code>.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>host</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The virtual scanner host ip.
+By default, instantiate a local <code>VirtualScannerRunner</code> process.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>port</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The virtual scanner host port.
+Used only if <code>host</code> is NOT set.
+Defaults to <code>5000</code>.</p>
+            </div>
+          </td>
+          <td>
+                <code>9001</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scene</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to the scene file to create in the  <code>VirtualScannerRunner</code>.
+Used only if <code>host</code> is NOT set.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>add_leaf_displacement</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If <code>True</code>, add a random displacement to the leaf class objects after loading the virtual plant.
+Defaults to <code>False</code>.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>classes</code></td>
+          <td>
+                <code>list of str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The list of classes to generate pictures for, must be found in the loaded OBJ.
+Defaults to <code>None</code>.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>plantimager/vscan.py</code></summary>
+                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">227</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">228</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">229</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">230</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">231</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">232</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">233</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">234</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">235</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">236</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">237</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">238</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">239</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">240</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">241</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">242</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">243</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">244</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">245</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">246</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">247</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">248</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">249</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">250</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">251</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">252</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">253</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">254</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">255</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">256</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">257</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">258</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">259</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">260</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">261</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">262</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">263</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">264</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">265</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">266</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">267</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">268</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">269</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">270</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">272</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">273</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>, width, height, focal, flash<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, host<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, port<span style="color: #666666">=9001</span>, scene<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>,
+             add_leaf_displacement<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, classes<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Instantiate a ``VirtualScanner``.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    width : int</span>
+<span style="color: #BA2121; font-style: italic">        The width of the image to acquire.</span>
+<span style="color: #BA2121; font-style: italic">    height : int</span>
+<span style="color: #BA2121; font-style: italic">        The height of the image to acquire.</span>
+<span style="color: #BA2121; font-style: italic">    focal : int</span>
+<span style="color: #BA2121; font-style: italic">        The focal distance to the object to acquire.</span>
+<span style="color: #BA2121; font-style: italic">    flash : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If ``True``, light the scene with a flash.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``False``.</span>
+<span style="color: #BA2121; font-style: italic">    host : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The virtual scanner host ip.</span>
+<span style="color: #BA2121; font-style: italic">        By default, instantiate a local ``VirtualScannerRunner`` process.</span>
+<span style="color: #BA2121; font-style: italic">    port : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        The virtual scanner host port.</span>
+<span style="color: #BA2121; font-style: italic">        Used only if ``host`` is NOT set.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``5000``.</span>
+<span style="color: #BA2121; font-style: italic">    scene : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        Path to the scene file to create in the  ``VirtualScannerRunner``.</span>
+<span style="color: #BA2121; font-style: italic">        Used only if ``host`` is NOT set.</span>
+<span style="color: #BA2121; font-style: italic">    add_leaf_displacement : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If ``True``, add a random displacement to the leaf class objects after loading the virtual plant.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``False``.</span>
+<span style="color: #BA2121; font-style: italic">    classes : list of str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The list of classes to generate pictures for, must be found in the loaded OBJ.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``None``.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000">super</span>()<span style="color: #666666">.</span><span style="color: #0000FF">__init__</span>()
+
+    <span style="color: #008000; font-weight: bold">if</span> host <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">None</span>:
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>runner <span style="color: #666666">=</span> VirtualScannerRunner(scene<span style="color: #666666">=</span>scene, port<span style="color: #666666">=</span>port)
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>runner<span style="color: #666666">.</span>start()
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>host <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;localhost&quot;</span>
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>port <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>runner<span style="color: #666666">.</span>port
+    <span style="color: #008000; font-weight: bold">else</span>:
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>runner <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span>
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>host <span style="color: #666666">=</span> host
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>port <span style="color: #666666">=</span> port
+
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>classes <span style="color: #666666">=</span> classes
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>flash <span style="color: #666666">=</span> flash
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>set_intrinsics(width, height, focal)
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>ext <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;png&quot;</span>
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>position <span style="color: #666666">=</span> path<span style="color: #666666">.</span>Pose()
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>add_leaf_displacement <span style="color: #666666">=</span> add_leaf_displacement
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>add_leaf_displacement:
+        logger<span style="color: #666666">.</span>warning(<span style="color: #BA2121">&quot;Random leaf displacement has been requested!&quot;</span>)
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.channels" class="doc doc-heading">
+          <code class="highlight language-python">channels()</code>
+
+<a href="#plantimager.vscan.VirtualScanner.channels" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>List the channels to acquire.</p>
+
+<details class="notes" open>
+  <summary>Notes</summary>
+  <p>Default to the 'rgb' channel.
+If classes are defined, they will be returned in addition to the default and the 'background'.</p>
+</details>
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">437</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">438</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">439</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">441</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">442</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">444</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">445</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">446</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">447</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">448</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">channels</span>(<span style="color: #008000">self</span>) <span style="color: #666666">-&gt;</span> <span style="color: #008000">list</span>:
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;List the channels to acquire.</span>
+
+<span style="color: #BA2121; font-style: italic">    Notes</span>
+<span style="color: #BA2121; font-style: italic">    -----</span>
+<span style="color: #BA2121; font-style: italic">    Default to the &#39;rgb&#39; channel.</span>
+<span style="color: #BA2121; font-style: italic">    If classes are defined, they will be returned in addition to the default and the &#39;background&#39;.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>classes <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">None</span>:
+        <span style="color: #008000; font-weight: bold">return</span> [<span style="color: #BA2121">&#39;rgb&#39;</span>]
+    <span style="color: #008000; font-weight: bold">else</span>:
+        <span style="color: #008000; font-weight: bold">return</span> [<span style="color: #BA2121">&#39;rgb&#39;</span>] <span style="color: #666666">+</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>classes <span style="color: #666666">+</span> [<span style="color: #BA2121">&#39;background&#39;</span>]
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.get_bounding_box" class="doc doc-heading">
+          <code class="highlight language-python">get_bounding_box()</code>
+
+<a href="#plantimager.vscan.VirtualScanner.get_bounding_box" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the bounding-box coordinates from the Blender server.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">451</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">452</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_bounding_box</span>(<span style="color: #008000">self</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Returns the bounding-box coordinates from the Blender server.&quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;bounding_box&quot;</span>)
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.get_position" class="doc doc-heading">
+          <code class="highlight language-python">get_position()</code>
+
+<a href="#plantimager.vscan.VirtualScanner.get_position" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the current position of the camera.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_position</span>(<span style="color: #008000">self</span>) <span style="color: #666666">-&gt;</span> path<span style="color: #666666">.</span>Pose:
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Returns the current position of the camera.&quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>position
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.grab" class="doc doc-heading">
+          <code class="highlight language-python">grab(idx, metadata<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>)</code>
+
+<a href="#plantimager.vscan.VirtualScanner.grab" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Grab a picture using the virtual scanner.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>idx</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The id of the picture.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>metadata</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The dictionary of metadata to associate to this picture.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="plantimager.hal.DataItem">DataItem</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The picture data &amp; metadata.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">454</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">455</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">456</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">457</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">458</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">459</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">460</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">461</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">462</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">463</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">464</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">465</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">466</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">467</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">468</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">469</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">470</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">471</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">472</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">473</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">474</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">475</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">476</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">477</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">478</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">479</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">480</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">481</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">482</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">483</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">484</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">485</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">486</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">487</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">488</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">489</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">490</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">grab</span>(<span style="color: #008000">self</span>, idx: <span style="color: #008000">int</span>, metadata: <span style="color: #008000">dict</span> <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span>) <span style="color: #666666">-&gt;</span> DataItem:
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Grab a picture using the virtual scanner.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    idx : int</span>
+<span style="color: #BA2121; font-style: italic">        The id of the picture.</span>
+<span style="color: #BA2121; font-style: italic">    metadata : dict, optional</span>
+<span style="color: #BA2121; font-style: italic">        The dictionary of metadata to associate to this picture.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    plantimager.hal.DataItem</span>
+<span style="color: #BA2121; font-style: italic">        The picture data &amp; metadata.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    data_item <span style="color: #666666">=</span> DataItem(idx, metadata)
+    <span style="color: #008000; font-weight: bold">for</span> c <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>channels():
+        <span style="color: #008000; font-weight: bold">if</span> c <span style="color: #666666">!=</span> <span style="color: #BA2121">&#39;background&#39;</span>:
+            data_item<span style="color: #666666">.</span>add_channel(c, <span style="color: #008000">self</span><span style="color: #666666">.</span>render(channel<span style="color: #666666">=</span>c))
+
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #BA2121">&#39;background&#39;</span> <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>channels():
+        <span style="color: #3D7B7B; font-style: italic"># Generate the background:</span>
+        bg_mask <span style="color: #666666">=</span> np<span style="color: #666666">.</span>zeros_like(data_item<span style="color: #666666">.</span>channel(<span style="color: #008000">self</span><span style="color: #666666">.</span>classes[<span style="color: #666666">0</span>])<span style="color: #666666">.</span>data, dtype<span style="color: #666666">=</span>np<span style="color: #666666">.</span>uint8)
+        <span style="color: #008000; font-weight: bold">for</span> c <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>classes:
+            mask <span style="color: #666666">=</span> data_item<span style="color: #666666">.</span>channel(c)<span style="color: #666666">.</span>data
+            bg_mask <span style="color: #666666">=</span> np<span style="color: #666666">.</span>maximum(bg_mask, mask)
+        bg_mask <span style="color: #666666">=</span> <span style="color: #666666">255</span> <span style="color: #666666">-</span> bg_mask
+        data_item<span style="color: #666666">.</span>add_channel(<span style="color: #BA2121">&quot;background&quot;</span>, bg_mask)
+
+    <span style="color: #008000; font-weight: bold">if</span> metadata <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">None</span>:
+        metadata <span style="color: #666666">=</span> {}
+
+    metadata[<span style="color: #BA2121">&quot;camera&quot;</span>] <span style="color: #666666">=</span> {
+        <span style="color: #BA2121">&quot;camera_model&quot;</span>: <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;camera_intrinsics&quot;</span>),
+        <span style="color: #666666">**</span><span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;camera_pose&quot;</span>)
+    }
+    <span style="color: #008000; font-weight: bold">return</span> data_item
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.list_backgrounds" class="doc doc-heading">
+          <code class="highlight language-python">list_backgrounds()</code>
+
+<a href="#plantimager.vscan.VirtualScanner.list_backgrounds" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>List the available backgrounds.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">324</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">325</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">list_backgrounds</span>(<span style="color: #008000">self</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;List the available backgrounds.&quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;backgrounds&quot;</span>)
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.list_objects" class="doc doc-heading">
+          <code class="highlight language-python">list_objects()</code>
+
+<a href="#plantimager.vscan.VirtualScanner.list_objects" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>List the available objects.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">321</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">322</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">list_objects</span>(<span style="color: #008000">self</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;List the available objects.&quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;objects&quot;</span>)
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.load_background" class="doc doc-heading">
+          <code class="highlight language-python">load_background(file)</code>
+
+<a href="#plantimager.vscan.VirtualScanner.load_background" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Loads a background from a HDRI file.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>file</code></td>
+          <td>
+                <code><span title="plantdb.FSDB.File">File</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The file instance corresponding to the HDRI file.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="requests.Response">Response</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The response from Blender Flask server to background file upload.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="see-also" open>
+  <summary>See Also</summary>
+  <p>romi_virtualplantimager.upload_background_post</p>
+</details>
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">395</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">396</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">397</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">398</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">399</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">400</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">401</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">402</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">403</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">404</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">405</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">406</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">407</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">409</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">418</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">load_background</span>(<span style="color: #008000">self</span>, file: File):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Loads a background from a HDRI file.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    file : plantdb.FSDB.File</span>
+<span style="color: #BA2121; font-style: italic">        The file instance corresponding to the HDRI file.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    requests.Response</span>
+<span style="color: #BA2121; font-style: italic">        The response from Blender Flask server to background file upload.</span>
+
+<span style="color: #BA2121; font-style: italic">    See Also</span>
+<span style="color: #BA2121; font-style: italic">    --------</span>
+<span style="color: #BA2121; font-style: italic">    romi_virtualplantimager.upload_background_post</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    logger<span style="color: #666666">.</span>debug(<span style="color: #BA2121">&quot;loading background : </span><span style="color: #A45A77; font-weight: bold">%s</span><span style="color: #BA2121">&quot;</span> <span style="color: #666666">%</span> file<span style="color: #666666">.</span>filename)
+    <span style="color: #008000; font-weight: bold">with</span> tempfile<span style="color: #666666">.</span>TemporaryDirectory() <span style="color: #008000; font-weight: bold">as</span> tmpdir:
+        <span style="color: #3D7B7B; font-style: italic"># Copy the PNG palette file to a temporary directory &amp; get the `BufferedReader` from it, if requested:</span>
+        file_path <span style="color: #666666">=</span> os<span style="color: #666666">.</span>path<span style="color: #666666">.</span>join(tmpdir, file<span style="color: #666666">.</span>filename)
+        to_file(file, file_path)
+        files <span style="color: #666666">=</span> {<span style="color: #BA2121">&quot;hdr&quot;</span>: <span style="color: #008000">open</span>(file_path, <span style="color: #BA2121">&quot;rb&quot;</span>)}
+        res <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_post(<span style="color: #BA2121">&quot;upload_background&quot;</span>, {}, files)
+    <span style="color: #008000; font-weight: bold">return</span> res
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.load_object" class="doc doc-heading">
+          <code class="highlight language-python">load_object(file, mtl<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, palette<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, colorize<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">True</span>)</code>
+
+<a href="#plantimager.vscan.VirtualScanner.load_object" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Upload the OBJ, MTL and palette files to the Blender Flask server with the POST method.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>file</code></td>
+          <td>
+                <code><span title="plantdb.FSDB.File">File</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The <code>File</code> instance corresponding to the OBJ file.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>mtl</code></td>
+          <td>
+                <code><span title="plantdb.FSDB.File">File</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The <code>File</code> instance corresponding to the MTL file.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>palette</code></td>
+          <td>
+                <code><span title="plantdb.FSDB.File">File</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The <code>File</code> instance corresponding to the PNG palette file.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>colorize</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether the object should be colorized in Blender.</p>
+            </div>
+          </td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="requests.Response">Response</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The response from Blender Flask server after uploading the files.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="see-also" open>
+  <summary>See Also</summary>
+  <p>romi_virtualplantimager.upload_object_post</p>
+</details>
+<details class="notes" open>
+  <summary>Notes</summary>
+  <p>To avoid messing up the OBJ, MTL &amp; PNG palette files, we create a temporary copy.</p>
+<p>The POST method of the Blender Flask server expect:
+  - a 'file' argument with the <code>BufferedReader</code> for the OBJ file [REQUIRED].
+  - a 'mtl' argument with the <code>BufferedReader</code> for the MTL file [OPTIONAL].
+  - a 'palette' argument with the <code>BufferedReader</code> for the PNG palette file [OPTIONAL].
+  - a 'colorize' argument as boolean [OPTIONAL].</p>
+</details>
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">329</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">330</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">331</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">332</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">333</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">336</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">337</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">338</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">339</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">340</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">341</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">342</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">343</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">344</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">345</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">346</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">347</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">348</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">349</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">350</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">351</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">352</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">353</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">354</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">355</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">356</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">357</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">358</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">359</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">360</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">361</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">362</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">363</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">364</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">365</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">366</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">367</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">368</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">369</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">370</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">371</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">372</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">373</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">374</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">375</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">376</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">377</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">378</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">379</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">380</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">381</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">382</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">383</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">384</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">385</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">386</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">387</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">388</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">389</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">390</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">391</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">load_object</span>(<span style="color: #008000">self</span>, file, mtl<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, palette<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, colorize<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Upload the OBJ, MTL and palette files to the Blender Flask server with the POST method.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    file : plantdb.FSDB.File</span>
+<span style="color: #BA2121; font-style: italic">        The `File` instance corresponding to the OBJ file.</span>
+<span style="color: #BA2121; font-style: italic">    mtl : plantdb.FSDB.File, optional</span>
+<span style="color: #BA2121; font-style: italic">        The `File` instance corresponding to the MTL file.</span>
+<span style="color: #BA2121; font-style: italic">    palette : plantdb.FSDB.File, optional</span>
+<span style="color: #BA2121; font-style: italic">        The `File` instance corresponding to the PNG palette file.</span>
+<span style="color: #BA2121; font-style: italic">    colorize : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        Whether the object should be colorized in Blender.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    requests.Response</span>
+<span style="color: #BA2121; font-style: italic">        The response from Blender Flask server after uploading the files.</span>
+
+<span style="color: #BA2121; font-style: italic">    See Also</span>
+<span style="color: #BA2121; font-style: italic">    --------</span>
+<span style="color: #BA2121; font-style: italic">    romi_virtualplantimager.upload_object_post</span>
+
+<span style="color: #BA2121; font-style: italic">    Notes</span>
+<span style="color: #BA2121; font-style: italic">    -----</span>
+<span style="color: #BA2121; font-style: italic">    To avoid messing up the OBJ, MTL &amp; PNG palette files, we create a temporary copy.</span>
+
+<span style="color: #BA2121; font-style: italic">    The POST method of the Blender Flask server expect:</span>
+<span style="color: #BA2121; font-style: italic">      - a &#39;file&#39; argument with the `BufferedReader` for the OBJ file [REQUIRED].</span>
+<span style="color: #BA2121; font-style: italic">      - a &#39;mtl&#39; argument with the `BufferedReader` for the MTL file [OPTIONAL].</span>
+<span style="color: #BA2121; font-style: italic">      - a &#39;palette&#39; argument with the `BufferedReader` for the PNG palette file [OPTIONAL].</span>
+<span style="color: #BA2121; font-style: italic">      - a &#39;colorize&#39; argument as boolean [OPTIONAL].</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #3D7B7B; font-style: italic"># Convert path (str) to `plantdb.FSDB.File` type if necessary (create a temporary FSDB):</span>
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">isinstance</span>(file, <span style="color: #008000">str</span>):
+        file <span style="color: #666666">=</span> fsdb_file_from_local_file(file)
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">isinstance</span>(mtl, <span style="color: #008000">str</span>):
+        mtl <span style="color: #666666">=</span> fsdb_file_from_local_file(mtl)
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">isinstance</span>(palette, <span style="color: #008000">str</span>):
+        palette <span style="color: #666666">=</span> fsdb_file_from_local_file(palette)
+
+    files <span style="color: #666666">=</span> {}  <span style="color: #3D7B7B; font-style: italic"># dict of `BufferedReader` to use for upload</span>
+    <span style="color: #008000; font-weight: bold">with</span> tempfile<span style="color: #666666">.</span>TemporaryDirectory() <span style="color: #008000; font-weight: bold">as</span> tmpdir:
+        <span style="color: #3D7B7B; font-style: italic"># Copy the OBJ file to a temporary directory &amp; get the `BufferedReader` from it:</span>
+        obj_file_path <span style="color: #666666">=</span> os<span style="color: #666666">.</span>path<span style="color: #666666">.</span>join(tmpdir, file<span style="color: #666666">.</span>filename)
+        to_file(file, obj_file_path)
+        files[<span style="color: #BA2121">&quot;obj&quot;</span>] <span style="color: #666666">=</span> <span style="color: #008000">open</span>(obj_file_path, <span style="color: #BA2121">&quot;rb&quot;</span>)
+        <span style="color: #3D7B7B; font-style: italic"># Copy the MTL file to a temporary directory &amp; get the `BufferedReader` from it, if requested:</span>
+        <span style="color: #008000; font-weight: bold">if</span> mtl <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #AA22FF; font-weight: bold">not</span> <span style="color: #008000; font-weight: bold">None</span>:
+            mtl_file_path <span style="color: #666666">=</span> os<span style="color: #666666">.</span>path<span style="color: #666666">.</span>join(tmpdir, mtl<span style="color: #666666">.</span>filename)
+            to_file(mtl, mtl_file_path)
+            files[<span style="color: #BA2121">&quot;mtl&quot;</span>] <span style="color: #666666">=</span> <span style="color: #008000">open</span>(mtl_file_path, <span style="color: #BA2121">&quot;rb&quot;</span>)
+        <span style="color: #3D7B7B; font-style: italic"># Copy the PNG palette file to a temporary directory &amp; get the `BufferedReader` from it, if requested:</span>
+        <span style="color: #008000; font-weight: bold">if</span> palette <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #AA22FF; font-weight: bold">not</span> <span style="color: #008000; font-weight: bold">None</span>:
+            palette_file_path <span style="color: #666666">=</span> os<span style="color: #666666">.</span>path<span style="color: #666666">.</span>join(tmpdir, palette<span style="color: #666666">.</span>filename)
+            to_file(palette, palette_file_path)
+            files[<span style="color: #BA2121">&quot;palette&quot;</span>] <span style="color: #666666">=</span> <span style="color: #008000">open</span>(palette_file_path, <span style="color: #BA2121">&quot;rb&quot;</span>)
+        <span style="color: #3D7B7B; font-style: italic"># Upload these files to the Blender Flask server:</span>
+        res <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_post(<span style="color: #BA2121">&quot;upload_object&quot;</span>, {<span style="color: #BA2121">&quot;colorize&quot;</span>: colorize}, files)
+
+    <span style="color: #3D7B7B; font-style: italic"># Apply random leaf displacement, if requested:</span>
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>add_leaf_displacement:
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;add_random_displacement/leaf&quot;</span>)
+
+    <span style="color: #008000; font-weight: bold">return</span> res
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.render" class="doc doc-heading">
+          <code class="highlight language-python">render(channel<span style="color: #666666">=</span><span style="color: #BA2121">&#39;rgb&#39;</span>)</code>
+
+<a href="#plantimager.vscan.VirtualScanner.render" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Use the Blender server to render an image of the virtual plant.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>channel</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The name of the channel to render.
+If not 'rgb' grab a picture of a specific part of the virtual plant.
+Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;rgb&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" title="numpy.ndarray" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The image array.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">492</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">493</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">494</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">495</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">496</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">497</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">498</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">499</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">500</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">504</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">505</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">506</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">507</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">508</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">509</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">510</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">511</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">512</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">513</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">514</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">515</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">516</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">517</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">518</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">render</span>(<span style="color: #008000">self</span>, channel<span style="color: #666666">=</span><span style="color: #BA2121">&#39;rgb&#39;</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Use the Blender server to render an image of the virtual plant.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    channel : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The name of the channel to render.</span>
+<span style="color: #BA2121; font-style: italic">        If not &#39;rgb&#39; grab a picture of a specific part of the virtual plant.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to &#39;rgb&#39;, grab a picture of the whole virtual plant.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    numpy.ndarray</span>
+<span style="color: #BA2121; font-style: italic">        The image array.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">if</span> channel <span style="color: #666666">==</span> <span style="color: #BA2121">&#39;rgb&#39;</span>:
+        ep <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;render&quot;</span>
+        <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>flash:
+            ep <span style="color: #666666">=</span> ep <span style="color: #666666">+</span> <span style="color: #BA2121">&quot;?flash=1&quot;</span>
+        x <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_bytes(ep)
+        data <span style="color: #666666">=</span> iio<span style="color: #666666">.</span>imread(BytesIO(x))
+        <span style="color: #008000; font-weight: bold">return</span> data
+    <span style="color: #008000; font-weight: bold">else</span>:
+        x <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_bytes(<span style="color: #BA2121">&quot;render_class/</span><span style="color: #A45A77; font-weight: bold">%s</span><span style="color: #BA2121">&quot;</span> <span style="color: #666666">%</span> channel)
+        data <span style="color: #666666">=</span> iio<span style="color: #666666">.</span>imread(BytesIO(x))
+        data <span style="color: #666666">=</span> np<span style="color: #666666">.</span>array(<span style="color: #666666">255</span> <span style="color: #666666">*</span> (data[:, :, <span style="color: #666666">3</span>] <span style="color: #666666">&gt;</span> <span style="color: #666666">10</span>), dtype<span style="color: #666666">=</span>np<span style="color: #666666">.</span>uint8)
+        <span style="color: #008000; font-weight: bold">return</span> data
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.set_intrinsics" class="doc doc-heading">
+          <code class="highlight language-python">set_intrinsics(width, height, focal)</code>
+
+<a href="#plantimager.vscan.VirtualScanner.set_intrinsics" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Set the intrinsic parameters of the camera for the virtual scanner.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>width</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The width of the image to acquire.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>height</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The height of the image to acquire.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>focal</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The focal distance to the object to acquire.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">298</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">299</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">300</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">301</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">302</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">303</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">304</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">305</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">306</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">308</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">309</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">311</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">312</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">313</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">314</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">315</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">316</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">317</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">318</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">set_intrinsics</span>(<span style="color: #008000">self</span>, width: <span style="color: #008000">int</span>, height: <span style="color: #008000">int</span>, focal: <span style="color: #008000">float</span>) <span style="color: #666666">-&gt;</span> <span style="color: #008000; font-weight: bold">None</span>:
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Set the intrinsic parameters of the camera for the virtual scanner.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    width : int</span>
+<span style="color: #BA2121; font-style: italic">        The width of the image to acquire.</span>
+<span style="color: #BA2121; font-style: italic">    height : int</span>
+<span style="color: #BA2121; font-style: italic">        The height of the image to acquire.</span>
+<span style="color: #BA2121; font-style: italic">    focal : int</span>
+<span style="color: #BA2121; font-style: italic">        The focal distance to the object to acquire.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>width <span style="color: #666666">=</span> width
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>height <span style="color: #666666">=</span> height
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>focal <span style="color: #666666">=</span> focal
+    data <span style="color: #666666">=</span> {
+        <span style="color: #BA2121">&quot;width&quot;</span>: width,
+        <span style="color: #BA2121">&quot;height&quot;</span>: height,
+        <span style="color: #BA2121">&quot;focal&quot;</span>: focal,
+    }
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>request_post(<span style="color: #BA2121">&quot;camera_intrinsics&quot;</span>, data)
+    <span style="color: #008000; font-weight: bold">return</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScanner.set_position" class="doc doc-heading">
+          <code class="highlight language-python">set_position(pose)</code>
+
+<a href="#plantimager.vscan.VirtualScanner.set_position" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Set the new position of the camera.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">286</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">287</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">288</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">289</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">290</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">291</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">292</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">293</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">294</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">295</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">set_position</span>(<span style="color: #008000">self</span>, pose: path<span style="color: #666666">.</span>Pose) <span style="color: #666666">-&gt;</span> <span style="color: #008000; font-weight: bold">None</span>:
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Set the new position of the camera.&quot;&quot;&quot;</span>
+    data <span style="color: #666666">=</span> {
+        <span style="color: #BA2121">&quot;rx&quot;</span>: <span style="color: #666666">90</span> <span style="color: #666666">-</span> pose<span style="color: #666666">.</span>tilt,
+        <span style="color: #BA2121">&quot;rz&quot;</span>: pose<span style="color: #666666">.</span>pan,
+        <span style="color: #BA2121">&quot;tx&quot;</span>: pose<span style="color: #666666">.</span>x,
+        <span style="color: #BA2121">&quot;ty&quot;</span>: pose<span style="color: #666666">.</span>y,
+        <span style="color: #BA2121">&quot;tz&quot;</span>: pose<span style="color: #666666">.</span>z
+    }
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>request_post(<span style="color: #BA2121">&quot;camera_pose&quot;</span>, data)
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>position <span style="color: #666666">=</span> pose
+    <span style="color: #008000; font-weight: bold">return</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="plantimager.vscan.VirtualScannerRunner" class="doc doc-heading">
+            <code class="highlight language-python">VirtualScannerRunner(scene<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, port<span style="color: #666666">=9001</span>)</code>
+
+<a href="#plantimager.vscan.VirtualScannerRunner" class="headerlink" title="Permanent link">Link</a></h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Run a Flask server in Blender to act as the virtual scanner.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScannerRunner.subprocess">subprocess</span></code></td>
+          <td>
+                <code><span title="plantimager.vscan.VirtualScannerRunner.subprocess.Popen">Popen</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The subprocess instance, initialized by the <code>start</code> method.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScannerRunner.scene">scene</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to a Blender scene file to load.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="plantimager.vscan.VirtualScannerRunner.port">port</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The port to use to instantiate and communicate with the Flask server in Blender.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<details class="notes" open>
+  <summary>Notes</summary>
+  <p>It initializes the flask server and then listens to HTTP requests on that port.
+The process is started with the <code>start()</code> method and stopped with the <code>stop()</code> method.</p>
+</details>  
+      <p>Instantiate a <code>VirtualScannerRunner</code>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>scene</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to a Blender scene file to load.
+Defaults to <code>None</code>.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>port</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The port to use to instantiate and communicate with the Flask server in Blender.
+Defaults to <code>9001</code>.</p>
+            </div>
+          </td>
+          <td>
+                <code>9001</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+                <details class="quote">
+                  <summary>Source code in <code>plantimager/vscan.py</code></summary>
+                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">130</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">131</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">132</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">133</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">134</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">135</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">136</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">137</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">138</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">139</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">140</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">141</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">142</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">143</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>, scene<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, port<span style="color: #666666">=9001</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Instantiate a ``VirtualScannerRunner``.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    scene : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        Path to a Blender scene file to load.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``None``.</span>
+<span style="color: #BA2121; font-style: italic">    port : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        The port to use to instantiate and communicate with the Flask server in Blender.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``9001``.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>subprocess <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span>
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>scene <span style="color: #666666">=</span> scene
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>port <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>_select_port(port)
+</code></pre></div></td></tr></table></div>
+                </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScannerRunner.start" class="doc doc-heading">
+          <code class="highlight language-python">start()</code>
+
+<a href="#plantimager.vscan.VirtualScannerRunner.start" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Start the Flask server in Blender.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">158</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">159</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">160</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">161</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">162</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">163</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">164</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">165</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">166</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">167</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">168</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">169</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">170</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">171</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">172</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">173</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">174</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">175</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">176</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">177</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">178</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">179</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">180</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">start</span>(<span style="color: #008000">self</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Start the Flask server in Blender.&quot;&quot;&quot;</span>
+    logger<span style="color: #666666">.</span>info(<span style="color: #BA2121">&#39;Starting the Flask server in Blender...&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># Initialize the list of subprocess arguments:</span>
+    proclist <span style="color: #666666">=</span> [<span style="color: #BA2121">&quot;romi_virtualplantimager.py&quot;</span>, <span style="color: #BA2121">&quot;--&quot;</span>, <span style="color: #BA2121">&quot;--port&quot;</span>, <span style="color: #008000">str</span>(<span style="color: #008000">self</span><span style="color: #666666">.</span>port)]
+    <span style="color: #3D7B7B; font-style: italic"># Add the scene file path to the list of subprocess arguments:</span>
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>scene <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #AA22FF; font-weight: bold">not</span> <span style="color: #008000; font-weight: bold">None</span>:
+        logger<span style="color: #666666">.</span>debug(<span style="color: #BA2121">&quot;scene = </span><span style="color: #A45A77; font-weight: bold">%s</span><span style="color: #BA2121">&quot;</span> <span style="color: #666666">%</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>scene)
+        proclist<span style="color: #666666">.</span>extend([<span style="color: #BA2121">&#39;--scene&#39;</span>, <span style="color: #008000">self</span><span style="color: #666666">.</span>scene])
+    <span style="color: #3D7B7B; font-style: italic"># Execute the subprocess as a child process:</span>
+    <span style="color: #008000">self</span><span style="color: #666666">.</span>subprocess <span style="color: #666666">=</span> subprocess<span style="color: #666666">.</span>Popen(proclist)
+    <span style="color: #3D7B7B; font-style: italic"># Register the stop method to be executed upon normal subprocess termination</span>
+    atexit<span style="color: #666666">.</span>register(VirtualScannerRunner<span style="color: #666666">.</span>stop, <span style="color: #008000">self</span>)
+    <span style="color: #3D7B7B; font-style: italic"># Wait for the Flask server to be ready...</span>
+    <span style="color: #008000; font-weight: bold">while</span> <span style="color: #008000; font-weight: bold">True</span>:
+        <span style="color: #008000; font-weight: bold">try</span>:
+            x <span style="color: #666666">=</span> requests<span style="color: #666666">.</span>get(<span style="color: #BA2121">&quot;http://localhost:</span><span style="color: #A45A77; font-weight: bold">%i</span><span style="color: #BA2121">&quot;</span> <span style="color: #666666">%</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>port)
+            <span style="color: #008000; font-weight: bold">break</span>
+        <span style="color: #008000; font-weight: bold">except</span>:
+            logger<span style="color: #666666">.</span>debug(<span style="color: #BA2121">&quot;Virtual scanner not ready yet...&quot;</span>)
+            time<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+            <span style="color: #008000; font-weight: bold">continue</span>
+    <span style="color: #008000; font-weight: bold">return</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="plantimager.vscan.VirtualScannerRunner.stop" class="doc doc-heading">
+          <code class="highlight language-python">stop()</code>
+
+<a href="#plantimager.vscan.VirtualScannerRunner.stop" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Stop the Flask server in Blender.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">182</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">183</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">184</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">185</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">186</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">187</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">188</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">189</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">190</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">191</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">192</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">193</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">194</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">195</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">196</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">197</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">198</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">199</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">200</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">stop</span>(<span style="color: #008000">self</span>):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Stop the Flask server in Blender.&quot;&quot;&quot;</span>
+    logger<span style="color: #666666">.</span>warning(<span style="color: #BA2121">&#39;Stopping the Flask server in Blender...&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># Get the &#39;Flask server&#39; subprocess PID:</span>
+    parent_pid <span style="color: #666666">=</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>pid
+    parent <span style="color: #666666">=</span> psutil<span style="color: #666666">.</span>Process(parent_pid)
+    <span style="color: #3D7B7B; font-style: italic"># Recursively send SIGKILL signal to kill all children processes:</span>
+    <span style="color: #008000; font-weight: bold">for</span> child <span style="color: #AA22FF; font-weight: bold">in</span> parent<span style="color: #666666">.</span>children(recursive<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">True</span>):  <span style="color: #3D7B7B; font-style: italic"># or parent.children() for recursive=False</span>
+        child<span style="color: #666666">.</span>kill()
+    <span style="color: #3D7B7B; font-style: italic"># Send SIGKILL signal to kill &#39;Flask server&#39; subprocess:</span>
+    parent<span style="color: #666666">.</span>kill()
+    <span style="color: #3D7B7B; font-style: italic"># Check the subprocess has been killed:</span>
+    <span style="color: #008000; font-weight: bold">while</span> <span style="color: #008000; font-weight: bold">True</span>:
+        <span style="color: #3D7B7B; font-style: italic"># If the subprocess has been killed this will return something...</span>
+        <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>poll() <span style="color: #AA22FF; font-weight: bold">is</span> <span style="color: #AA22FF; font-weight: bold">not</span> <span style="color: #008000; font-weight: bold">None</span>:
+            <span style="color: #3D7B7B; font-style: italic"># See: https://docs.python.org/3/library/subprocess.html#subprocess.Popen.poll</span>
+            <span style="color: #008000; font-weight: bold">break</span>
+        time<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+    <span style="color: #008000; font-weight: bold">return</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="plantimager.vscan.available_port" class="doc doc-heading">
+          <code class="highlight language-python">available_port(port)</code>
+
+<a href="#plantimager.vscan.available_port" class="headerlink" title="Permanent link">Link</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Test if it is possible to listen to this port for TCP/IPv4 connections.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>port</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The localhost port to test.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><code>True</code> if it's possible to listen on this port, <code>False</code> otherwise.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.vscan</span> <span style="color: #008000; font-weight: bold">import</span> available_port
+<span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>available_port(<span style="color: #666666">9001</span>)
+<span style="color: #717171">True</span>
+</code></pre></div>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">53</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">54</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">55</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">56</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">57</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">58</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">59</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">60</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">61</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">62</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">63</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">64</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">65</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">66</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">67</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">68</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">69</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">70</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">71</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">72</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">73</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">74</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">75</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">76</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">77</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">78</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">79</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">80</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">available_port</span>(port):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Test if it is possible to listen to this port for TCP/IPv4 connections.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    port : int</span>
+<span style="color: #BA2121; font-style: italic">        The localhost port to test.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    bool</span>
+<span style="color: #BA2121; font-style: italic">        ``True`` if it&#39;s possible to listen on this port, ``False`` otherwise.</span>
+
+<span style="color: #BA2121; font-style: italic">    Examples</span>
+<span style="color: #BA2121; font-style: italic">    --------</span>
+<span style="color: #BA2121; font-style: italic">    &gt;&gt;&gt; from plantimager.vscan import available_port</span>
+<span style="color: #BA2121; font-style: italic">    &gt;&gt;&gt; available_port(9001)</span>
+<span style="color: #BA2121; font-style: italic">    True</span>
+
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">try</span>:
+        sock <span style="color: #666666">=</span> socket<span style="color: #666666">.</span>socket(socket<span style="color: #666666">.</span>AF_INET, socket<span style="color: #666666">.</span>SOCK_STREAM)
+        sock<span style="color: #666666">.</span>bind((<span style="color: #BA2121">&#39;127.0.0.1&#39;</span>, port))
+        sock<span style="color: #666666">.</span>listen(<span style="color: #666666">5</span>)
+        sock<span style="color: #666666">.</span>close()
+    <span style="color: #008000; font-weight: bold">except</span> socket<span style="color: #666666">.</span>error <span style="color: #008000; font-weight: bold">as</span> e:
+        <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000; font-weight: bold">False</span>
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000; font-weight: bold">True</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="plantimager.vscan.find_available_port" class="doc doc-heading">
+          <code class="highlight language-python">find_available_port(port_range)</code>
+
+<a href="#plantimager.vscan.find_available_port" class="headerlink" title="Permanent link">Link</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find an available port.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>port_range</code></td>
+          <td>
+                <code>list of int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A len-2 list of integers specifying the range of ports to test for availability.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The available port.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.vscan</span> <span style="color: #008000; font-weight: bold">import</span> find_available_port
+<span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>find_available_port([<span style="color: #666666">9001</span>, <span style="color: #666666">9999</span>])
+</code></pre></div>
+
+          <details class="quote">
+            <summary>Source code in <code>plantimager/vscan.py</code></summary>
+            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 83</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 84</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 85</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 86</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 87</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 88</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 89</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 90</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 91</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 92</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 93</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 94</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 95</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 96</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 97</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 98</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 99</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">100</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">101</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">102</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">103</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">104</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">105</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">106</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">107</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">find_available_port</span>(port_range):
+<span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Find an available port.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    port_range : list of int</span>
+<span style="color: #BA2121; font-style: italic">        A len-2 list of integers specifying the range of ports to test for availability.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    int</span>
+<span style="color: #BA2121; font-style: italic">        The available port.</span>
+
+<span style="color: #BA2121; font-style: italic">    Examples</span>
+<span style="color: #BA2121; font-style: italic">    --------</span>
+<span style="color: #BA2121; font-style: italic">    &gt;&gt;&gt; from plantimager.vscan import find_available_port</span>
+<span style="color: #BA2121; font-style: italic">    &gt;&gt;&gt; find_available_port([9001, 9999])</span>
+
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    port_range <span style="color: #666666">=</span> <span style="color: #008000">range</span>(<span style="color: #666666">*</span>port_range)
+    rng <span style="color: #666666">=</span> np<span style="color: #666666">.</span>random<span style="color: #666666">.</span>default_rng(<span style="color: #666666">5</span>)
+    <span style="color: #008000; font-weight: bold">for</span> port <span style="color: #AA22FF; font-weight: bold">in</span> rng<span style="color: #666666">.</span>choice(port_range, size<span style="color: #666666">=</span><span style="color: #008000">len</span>(port_range)):
+        <span style="color: #008000; font-weight: bold">if</span> available_port(port):
+            <span style="color: #008000; font-weight: bold">break</span>
+
+    <span style="color: #008000; font-weight: bold">return</span> port
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      CC Attribution-NonCommercial-ShareAlike 4.0 International
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/ROMI_EU_PROJECT" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.facebook.com/ROMIEUProject" target="_blank" rel="noopener" title="www.facebook.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/romi/plantdb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      
+        <script src="../../../assets/_markdown_exec_pyodide.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+        <script src="https://buttons.github.io/buttons.js"></script>
+      
+    
+  </body>
+</html>
