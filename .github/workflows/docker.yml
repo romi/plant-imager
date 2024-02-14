@@ -12,7 +12,11 @@
 name: Docker image
 
 on:
-  - push
+  # Automatic trigger on release
+  release:
+    types: [ published ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   plantimager-docker:
