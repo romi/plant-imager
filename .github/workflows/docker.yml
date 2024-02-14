@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  plantimager_docker:
+  plantimager-docker:
     name: Build & Push Docker plantimager image to Docker Hub
     runs-on: ubuntu-latest
     environment: docker-hub
@@ -69,7 +69,7 @@ jobs:
             ${{ steps.meta.outputs.tags }}
             roboticsmicrofarms/plantimager:latest
 
-  virtualplantimager_docker:
+  virtualplantimager-docker:
     name: Build & Push Docker virtualplantimager image to Docker Hub
     runs-on: ubuntu-latest
     environment: docker-hub
