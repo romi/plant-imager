@@ -29,8 +29,9 @@ import datetime
 import sys
 
 from serial.tools import list_ports
+from plantimager.log import configure_logger
 
-from plantimager.log import logger
+logger = configure_logger(__name__)
 
 
 def guess_port(info):

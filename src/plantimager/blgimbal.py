@@ -39,11 +39,12 @@ import atexit
 import time
 
 import serial
-
 from plantimager.error import Error
 from plantimager.hal import AbstractGimbal
-from plantimager.log import logger
+from plantimager.log import configure_logger
 from plantimager.utils import guess_port
+
+logger = configure_logger(__name__)
 
 
 class Gimbal(AbstractGimbal):

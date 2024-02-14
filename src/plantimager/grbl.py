@@ -34,8 +34,10 @@ import time
 
 import serial
 from plantimager.hal import AbstractCNC
-from plantimager.log import logger
+from plantimager.log import configure_logger
 from plantimager.utils import guess_port
+
+logger = configure_logger(__name__)
 
 #: Dictionary mapping the Grbl codes to their meaning and units.
 GRBL_SETTINGS = {
