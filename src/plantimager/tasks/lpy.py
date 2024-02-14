@@ -34,7 +34,7 @@ import luigi
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.lpy import LpyFileset
 from romitask import RomiTask
-from romitask.log import configure_logger
+from plantimager.log import configure_logger
 
 logger = configure_logger(__name__)
 

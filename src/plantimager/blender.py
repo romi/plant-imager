@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 
 import bpy
 
-from romitask.log import configure_logger
+from plantimager.log import configure_logger
 
 logger = configure_logger(__name__)
 
