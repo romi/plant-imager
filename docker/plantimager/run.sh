@@ -20,6 +20,8 @@ ERROR="${RED}ERROR${NC}   "
 bold() { echo -e "\e[1m$*\e[0m"; }
 
 # - Default variables
+# Default group id to use when starting the container:
+gid=2020
 # Image tag to use, 'latest' by default:
 vtag="latest"
 # Command to execute after starting the docker container:
@@ -30,6 +32,7 @@ mount_option=""
 cnc_device="/dev/ttyACM0"
 # Serial port to use to communicate with the Gimbal:
 gimbal_device="/dev/ttyACM1"
+
 # If the `ROMI_DB` variable is set, use it as default database location, else set it to empty:
 if [ -z ${ROMI_DB+x} ]; then
   echo -e "${WARNING}Environment variable 'ROMI_DB' is not defined, set it to use as default database location!"
@@ -40,7 +43,7 @@ fi
 
 usage() {
   echo -e "$(bold USAGE):"
-  echo "  ./run.sh [OPTIONS]"
+  echo "  ./docker/plantimager/run.sh [OPTIONS]"
   echo ""
 
   echo -e "$(bold DESCRIPTION):"
@@ -69,6 +72,10 @@ usage() {
     The serial port of the Gimbal, default to '${gimbal_device}'."
   echo "  -h, --help
     Output a usage message and exit."
+}
+
+bind_mount_options() {
+  mount_option="${mount_option} -v ${host_db}:/myapp/db"
 }
 
 while [ "$1" != "" ]; do
@@ -115,46 +122,62 @@ done
 
 # Use local database path `$host_db` to create a bind mount to '/myapp/db':
 if [ "${host_db}" != "" ]; then
-  mount_option="${mount_option} -v ${host_db}:/myapp/db"
+  bind_mount_options
   echo -e "${INFO}Automatic bind mount of '${host_db}' (host) to '/myapp/db' (container)!"
 else
-  echo -e "${ERROR}No local host database defined!"
+  # Else raise an error:
+  echo -e "${WARNING}No local host database defined!"
   echo -e "${INFO}Set 'ROMI_DB' or use the '-db' | '--database' option to define it."
-  exit 1
+fi
+
+# If a 'host database path' is provided, get the name of the group and its id to, later used with the `--user` option
+if [ "${host_db}" != "" ]; then
+  group_name=$(stat -c "%G" ${host_db})                              # get the name of the group for the 'host database path'
+  gid=$(getent group ${group_name} | cut --delimiter ':' --fields 3) # get the 'gid' of this group
+  echo -e "${INFO}Automatic group id definition to '$gid'!"
+else
+  echo -e "${WARNING}Using default group id '${gid}'."
 fi
 
 # Check if we have a TTY or not
 if [ -t 1 ]; then
-  USE_TTY="-it"
+  USE_TTY="-t"
 else
   USE_TTY=""
 fi
+
 if [ "${cmd}" = "" ]; then
-  # Start in interactive mode. ~/.bashrc will be loaded.
+  # Start in interactive mode, `~/.bashrc` will be loaded.
   docker run --rm ${mount_option} \
     --group-add=dialout \
     --device=${cnc_device} \
     --device=${gimbal_device} \
-    ${USE_TTY} roboticsmicrofarms/plantimager:${vtag} \
+    -i ${USE_TTY} \
+    roboticsmicrofarms/plantimager:${vtag} \
     bash
 else
+  echo -e "${INFO}Running: '${cmd}'."
+  echo -e "${INFO}Bind mount: '${mount_option}'."
   # Get the date to estimate command execution time:
   start_time=$(date +%s)
   # Start in non-interactive mode (run the command).
-  # Request a login shell (-l) to load ~/.profile.
+  # Use the `-i` flag to load `~/.bashrc` (defining the right `umask`).
   docker run --rm ${mount_option} \
     --group-add=dialout \
     --device=${cnc_device} \
     --device=${gimbal_device} \
-    ${USE_TTY} roboticsmicrofarms/plantimager:${vtag} \
-    bash -lc "${cmd}"
+    ${USE_TTY} \
+    roboticsmicrofarms/plantimager:${vtag} \
+    bash -ic "${cmd}"
   # Get command exit code:
   cmd_status=$?
-  # Print build time if successful (code 0), else print command exit code
+
+  # Print elapsed time if successful (code 0), else print command exit code
+  elapsed_time=$(expr $(date +%s) - ${start_time})
   if [ ${cmd_status} == 0 ]; then
-    echo -e "\n${INFO}Command SUCCEEDED in $(expr $(date +%s) - ${start_time})s!"
+    echo -e "\n${INFO}Command SUCCEEDED in ${elapsed_time}s!"
   else
-    echo -e "\n${ERROR}Command FAILED after $(expr $(date +%s) - ${start_time})s with code ${cmd_status}!"
+    echo -e "\n${ERROR}Command FAILED after ${elapsed_time}s with code ${cmd_status}!"
   fi
   # Exit with status code:
   exit ${cmd_status}
