@@ -160,35 +160,30 @@ fi
 
 # Check if we have a TTY or not
 if [ -t 1 ]; then
-  USE_TTY="-it"
+  USE_TTY="-t"
 else
   USE_TTY=""
 fi
 
 if [ "${cmd}" = "" ]; then
-  # Start in interactive mode. ~/.bashrc will be loaded.
+  # Start in interactive mode, `~/.bashrc` will be loaded.
   docker run --rm --gpus all ${mount_option} \
     --user romi:${gid} \
-    ${USE_TTY} \
+    -i ${USE_TTY} \
     roboticsmicrofarms/virtualplantimager:${vtag} \
     bash
 else
   echo -e "${INFO}Running: '${cmd}'."
   echo -e "${INFO}Bind mount: '${mount_option}'."
-  echo -e "  docker run --rm --gpus all ${mount_option} \
-    --user romi:${gid} \
-    ${USE_TTY} \
-    roboticsmicrofarms/virtualplantimager:${vtag} \
-    bash -c ${cmd}"
   # Get the date to estimate command execution time:
   start_time=$(date +%s)
   # Start in non-interactive mode (run the command).
-  # Request a login shell (-l) to load ~/.profile.
+  # Use the `-i` flag to load `~/.bashrc` (defining the right `umask`).
   docker run --rm --gpus all ${mount_option} \
     --user romi:${gid} \
     ${USE_TTY} \
     roboticsmicrofarms/virtualplantimager:${vtag} \
-    bash -c "${cmd}"
+    bash -ic "${cmd}"
   # Get command exit code:
   cmd_status=$?
 
