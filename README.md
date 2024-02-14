@@ -4,7 +4,7 @@ To be as clear as possible, we first define the following names:
 - _PlantImager_: hardware control of the ROMI _3D plant imager_.
 - _VirtualPlantImager_: simulate the plant imager using [LPY](https://github.com/fredboudon/lpy) to generate virtual plants and [Blender](https://www.blender.org/) for rendering. **We recommend using it inside a docker container.**
 
-The API documentation of the `plantdb` library can be found here: https://romi.github.io/plant-imager/ 
+The API documentation of the `plant-imager` library can be found here: https://romi.github.io/plant-imager/ 
 
 
 ## Getting started
