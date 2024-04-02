@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../assets/images/ROMI_ICON_green.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.f2e4d321.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bcfcd587.min.css">
       
       
 
@@ -1613,7 +1613,7 @@
   
       <p>Creates a calibration path for the Plant Imager.</p>
 
-<details class="notes" open>
+<details class="note" open>
   <summary>Notes</summary>
   <p>The calibration path is made of the path to calibrate, plus four linear paths:
   1. a "y-line" (from <code>y_min</code> to <code>y_max</code>) at <code>x_min</code>, facing <code>x_max</code> with <code>n_points_line</code> poses
@@ -1629,7 +1629,7 @@ The central and extreme points of the "x-line" at <code>y_max/2</code> are remov
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> CalibrationPath
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> CalibrationPath
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Circle
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>n_points_circle <span style="color: #666666">=</span> <span style="color: #666666">36</span>
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>circular_path <span style="color: #666666">=</span> Circle(<span style="color: #666666">300</span>, <span style="color: #666666">300</span>, <span style="color: #666666">50</span>, <span style="color: #666666">0</span>, <span style="color: #666666">250</span>, n_points_circle)
@@ -1731,7 +1731,7 @@ Else, will be set from the min/max of the path to calibrate on the y-axis.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">474</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">474</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">475</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">476</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">477</span>
@@ -1900,7 +1900,7 @@ Else, will be set from the min/max of the path to calibrate on the y-axis.</p>
       <p>Creates a circular path for the scanner.</p>
 <p>Compute the <code>x</code>, <code>y</code> &amp; <code>pan</code> <code>PathElement</code> values to create that circle.</p>
 
-<details class="notes" open>
+<details class="note" open>
   <summary>Notes</summary>
   <p>The <code>pan</code> is computed to always face the center of the circle.
 If an iterable is given for <code>tilt</code>, performs more than one camera acquisition at same xyz position.</p>
@@ -1912,7 +1912,7 @@ If an iterable is given for <code>tilt</code>, performs more than one camera acq
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Circle
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Circle
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>circular_path <span style="color: #666666">=</span> Circle(<span style="color: #666666">200</span>, <span style="color: #666666">200</span>, <span style="color: #666666">50</span>, <span style="color: #666666">0</span>, <span style="color: #666666">200</span>, <span style="color: #666666">9</span>)
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>circular_path
 <span style="color: #717171">[x: 0.0, y: 200.0, z: 50, pan: 270.0, tilt: 0, exact_pose: False,</span>
@@ -2036,7 +2036,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">205</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">205</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">206</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">207</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">208</span>
@@ -2133,7 +2133,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
       <p>Creates a z-axis aligned cylinder path for the scanner.</p>
 <p>Makes as much circular paths as <code>n_circles</code> within the given z range.</p>
 
-<details class="notes" open>
+<details class="note" open>
   <summary>Notes</summary>
   <p>The <code>pan</code> is computed to always face the center of the circle.
 If an iterable is given for <code>tilt</code>, performs more than one camera acquisition at same xyz position.</p>
@@ -2145,7 +2145,7 @@ If an iterable is given for <code>tilt</code>, performs more than one camera acq
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Cylinder
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Cylinder
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>cylinder_path <span style="color: #666666">=</span> Cylinder(<span style="color: #666666">200</span>, <span style="color: #666666">200</span>, (<span style="color: #666666">0</span>, <span style="color: #666666">50</span>), <span style="color: #666666">0</span>, <span style="color: #666666">200</span>, n_points<span style="color: #666666">=2</span>, n_circles<span style="color: #666666">=2</span>)
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>cylinder_path
 <span style="color: #717171">[x: 0.0, y: 200.0, z: 0, pan: 270.0, tilt: 0, exact_pose: False,</span>
@@ -2304,7 +2304,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">269</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">269</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">270</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">272</span>
@@ -2423,7 +2423,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Line
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Line
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>linear_path <span style="color: #666666">=</span> Line(<span style="color: #666666">0</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>, <span style="color: #666666">10</span>, <span style="color: #666666">10</span>, <span style="color: #666666">0</span>, <span style="color: #666666">180</span>, <span style="color: #666666">0</span>, n_points<span style="color: #666666">=2</span>)
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>linear_path
 <span style="color: #717171">[x: 0.0, y: 0.0, z: 0.0, pan: 180, tilt: 0, exact_pose: True,</span>
@@ -2576,7 +2576,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">393</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">395</span>
@@ -2692,7 +2692,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">117</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>):
     <span style="color: #008000">super</span>()<span style="color: #666666">.</span><span style="color: #0000FF">__init__</span>()
 </code></pre></div></td></tr></table></div>
@@ -2743,7 +2743,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> PathElement
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> PathElement
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>elt <span style="color: #666666">=</span> PathElement(<span style="color: #666666">50</span>, <span style="color: #666666">250</span>, <span style="color: #666666">80</span>, <span style="color: #666666">270</span>, <span style="color: #666666">0</span>, <span style="color: #008000; font-weight: bold">True</span>)
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000">print</span>(elt)
 <span style="color: #717171">x: 50, y: 250, z: 80, pan: 270, tilt: 0, exact_pose: True</span>
@@ -2852,7 +2852,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 88</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 88</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 89</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 90</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 91</span>
@@ -2935,7 +2935,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Pose
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> Pose
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>p <span style="color: #666666">=</span> Pose(<span style="color: #666666">50</span>, <span style="color: #666666">250</span>, <span style="color: #666666">80</span>, <span style="color: #666666">270</span>, <span style="color: #666666">0</span>)
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000">print</span>(p)
 <span style="color: #717171">x: 50, y: 250, z: 80, pan: 270, tilt: 0</span>
@@ -3031,7 +3031,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/path.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">43</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">43</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">44</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">45</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">46</span>
@@ -3232,7 +3232,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> circle
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> circle
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>x, y, p <span style="color: #666666">=</span> circle(<span style="color: #666666">0</span>, <span style="color: #666666">0</span>, <span style="color: #666666">5</span>, <span style="color: #666666">5</span>)
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000">list</span>(<span style="color: #008000">zip</span>(x, y, p))  <span style="color: #3D7B7B; font-style: italic"># to get set of 2D coordinates (x, y) and associated pan.</span>
 <span style="color: #717171">[(-5.0, 0.0, 270.0),</span>
@@ -3244,7 +3244,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
           <details class="quote">
             <summary>Source code in <code>plantimager/path.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
@@ -3441,14 +3441,14 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> line1d
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> line1d
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>line1d(<span style="color: #666666">0</span>, <span style="color: #666666">10</span>, n_points<span style="color: #666666">=5</span>)
 <span style="color: #717171">[0.0, 2.5, 5.0, 7.5, 10.0]</span>
 </code></pre></div>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/path.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">308</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">309</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span>
@@ -3679,7 +3679,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> line3d
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.path</span> <span style="color: #008000; font-weight: bold">import</span> line3d
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>line3d(<span style="color: #666666">0</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>, <span style="color: #666666">10</span>, <span style="color: #666666">10</span>, <span style="color: #666666">10</span>, n_points<span style="color: #666666">=5</span>)
 <span style="color: #717171">([0.0, 2.5, 5.0, 7.5, 10.0],</span>
 <span style="color: #717171"> [0.0, 2.5, 5.0, 7.5, 10.0],</span>
@@ -3688,7 +3688,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
 
           <details class="quote">
             <summary>Source code in <code>plantimager/path.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">336</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">337</span>
@@ -3879,7 +3879,7 @@ If an iterable is given, performs more than one camera acquisition at same xyz p
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.1e8ae164.min.js"></script>
       
         <script src="../../../assets/_markdown_exec_pyodide.js"></script>
       

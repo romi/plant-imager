@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../assets/images/ROMI_ICON_green.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.f2e4d321.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bcfcd587.min.css">
       
       
 
@@ -1988,7 +1988,7 @@ Defaults to <code>"/dev/ttyUSB0"</code>.</p>
 
 
 <p><strong>Examples:</strong></p>
-    <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.grbl</span> <span style="color: #008000; font-weight: bold">import</span> CNC
+    <div class="language-pycon highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span><span style="color: #008000; font-weight: bold">from</span> <span style="color: #0000FF; font-weight: bold">plantimager.grbl</span> <span style="color: #008000; font-weight: bold">import</span> CNC
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>cnc <span style="color: #666666">=</span> CNC(<span style="color: #BA2121">&quot;Arduino&quot;</span>,x_lims<span style="color: #666666">=</span>[<span style="color: #666666">0</span>, <span style="color: #666666">780</span>],y_lims<span style="color: #666666">=</span>[<span style="color: #666666">0</span>, <span style="color: #666666">780</span>],z_lims<span style="color: #666666">=</span>[<span style="color: #666666">0</span>, <span style="color: #666666">90</span>])
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>cnc<span style="color: #666666">.</span>moveto(<span style="color: #666666">200</span>, <span style="color: #666666">200</span>, <span style="color: #666666">50</span>)  <span style="color: #3D7B7B; font-style: italic"># move the CNC to this XYZ coordinate (in mm)</span>
 <span style="color: #000080; font-weight: bold">&gt;&gt;&gt; </span>cnc<span style="color: #666666">.</span>home()  <span style="color: #3D7B7B; font-style: italic"># homing command (automatically called on startup)</span>
@@ -2000,7 +2000,7 @@ Defaults to <code>"/dev/ttyUSB0"</code>.</p>
 
                 <details class="quote">
                   <summary>Source code in <code>plantimager/grbl.py</code></summary>
-                  <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
+                  <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">130</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">131</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">132</span>
@@ -2145,7 +2145,7 @@ Defaults to <code>"/dev/ttyUSB0"</code>.</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
@@ -2207,7 +2207,7 @@ Defaults to <code>"/dev/ttyUSB0"</code>.</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_position</span>(<span style="color: #008000">self</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Returns the x, y &amp; z positions of the CNC.&quot;&quot;&quot;</span>
@@ -2235,7 +2235,7 @@ Defaults to <code>"/dev/ttyUSB0"</code>.</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">393</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">395</span>
@@ -2296,7 +2296,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">286</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">287</span>
@@ -2408,7 +2408,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">317</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">317</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">318</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">319</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span>
@@ -2526,7 +2526,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">336</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">337</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">338</span>
@@ -2604,7 +2604,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">431</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">431</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">432</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">433</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">434</span>
@@ -2700,7 +2700,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">371</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">371</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">372</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">373</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">374</span>
@@ -2762,7 +2762,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">272</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">273</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
@@ -2798,7 +2798,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/grbl.py</code></summary>
-            <div class="highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">360</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">360</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">361</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">362</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">363</span>
@@ -2941,7 +2941,7 @@ http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g92</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.1e8ae164.min.js"></script>
       
         <script src="../../../assets/_markdown_exec_pyodide.js"></script>
       
