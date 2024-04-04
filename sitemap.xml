@@ -106,6 +106,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://romi.github.io/plant-imager/reference/plantimager/redirect/</loc>
+         <lastmod>2024-04-04</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://romi.github.io/plant-imager/reference/plantimager/scanner/</loc>
          <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
