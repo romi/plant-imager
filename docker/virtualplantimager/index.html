@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#docker-for-virtualplantimager" class="md-skip">
+        <a href="#docker-for-virtualvirtualplantimager" class="md-skip">
           Skip to content
         </a>
       
@@ -1419,6 +1419,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../developer/blender/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blender
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../developer/virtualplantimager/" class="md-nav__link">
         
   
@@ -1586,7 +1607,7 @@
   
 
 
-<h1 id="docker-for-virtualplantimager">Docker for VirtualPlantImager<a class="headerlink" href="#docker-for-virtualplantimager" title="Permanent link">Link</a></h1>
+<h1 id="docker-for-virtualvirtualplantimager">Docker for Virtualvirtualplantimager<a class="headerlink" href="#docker-for-virtualvirtualplantimager" title="Permanent link">Link</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">Link</a></h2>
 <p>Follow the <a href="../#getting-started-with-docker">getting started with docker</a> instructions to install the required software.</p>
 <div class="admonition important">
@@ -1596,7 +1617,7 @@ To see how to create a local database directory, look <a href="/plant_imager/ins
 </div>
 <h2 id="start-a-container">Start a container<a class="headerlink" href="#start-a-container" title="Permanent link">Link</a></h2>
 <p>Assuming you have a valid ROMI database directory under <code>/data/ROMI/DB</code>, you can easily download and start the
-pre-built <code>roboticsmicrofarms/plantimager</code> docker image with one of the following command:</p>
+pre-built <code>roboticsmicrofarms/virtualplantimager</code> docker image with one of the following command:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">run.sh &amp; <code>ROMI_DB</code></label><label for="__tabbed_1_2">run.sh &amp; <code>-db</code></label><label for="__tabbed_1_3">docker run</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1611,17 +1632,21 @@ pre-built <code>roboticsmicrofarms/plantimager</code> docker image with one of t
 </code></pre></div></p>
 </div>
 <div class="tabbed-block">
-<p>From any directory, use the <code>docker run</code> command as follows:
+<p>From any directory, assuming you created a <code>romi</code> group, use the <code>docker run</code> command as follows:
 <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #008000">export</span><span style="color: #bbbbbb"> </span><span style="color: #19177C">ROMI_DB</span><span style="color: #666666">=</span>/data/ROMI/DB
+<span style="color: #3D7B7B; font-style: italic"># Get the GID associtated to the &#39;romi&#39; group:</span>
+<span style="color: #19177C">gid</span><span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">$(</span>getent<span style="color: #bbbbbb"> </span>group<span style="color: #bbbbbb"> </span>romi<span style="color: #bbbbbb"> </span>|<span style="color: #bbbbbb"> </span>cut<span style="color: #bbbbbb"> </span>--delimiter<span style="color: #bbbbbb"> </span><span style="color: #BA2121">&#39;:&#39;</span><span style="color: #bbbbbb"> </span>--fields<span style="color: #bbbbbb"> </span><span style="color: #666666">3</span><span style="color: #008000; font-weight: bold">)</span><span style="color: #bbbbbb"> </span><span style="color: #3D7B7B; font-style: italic"># get the &#39;gid&#39; of this group</span>
+<span style="color: #3D7B7B; font-style: italic"># Start the container:</span>
 docker<span style="color: #bbbbbb"> </span>run<span style="color: #bbbbbb"> </span>--runtime<span style="color: #666666">=</span>nvidia<span style="color: #bbbbbb"> </span>--gpus<span style="color: #bbbbbb"> </span>all<span style="color: #bbbbbb"> </span><span style="color: #AA5D1F; font-weight: bold">\</span>
 --env<span style="color: #bbbbbb"> </span><span style="color: #19177C">PYOPENCL_CTX</span><span style="color: #666666">=</span><span style="color: #BA2121">&#39;0&#39;</span><span style="color: #bbbbbb"> </span><span style="color: #AA5D1F; font-weight: bold">\</span>
+--user<span style="color: #bbbbbb"> </span>romi:<span style="color: #A45A77; font-weight: bold">${</span><span style="color: #19177C">gid</span><span style="color: #A45A77; font-weight: bold">}</span><span style="color: #bbbbbb"> </span><span style="color: #AA5D1F; font-weight: bold">\</span>
 -v<span style="color: #bbbbbb"> </span><span style="color: #19177C">$ROMI_DB</span>:/myapp/db<span style="color: #bbbbbb"> </span><span style="color: #AA5D1F; font-weight: bold">\</span>
--it<span style="color: #bbbbbb"> </span>roboticsmicrofarms/plantimager:latest
+-it<span style="color: #bbbbbb"> </span>roboticsmicrofarms/virtualplantimager:latest
 </code></pre></div></p>
 </div>
 </div>
 </div>
-<p>This should start the latest pre-built <code>roboticsmicrofarms/plantimager</code> docker image in interactive mode.
+<p>This should start the latest pre-built <code>roboticsmicrofarms/virtualplantimager</code> docker image in interactive mode.
 The database location inside the docker container is <code>/myapp/db</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1632,9 +1657,9 @@ See the official <a href="https://docs.docker.com/storage/bind-mounts/">document
 </ul>
 </div>
 <h2 id="build-a-docker-image">Build a docker image<a class="headerlink" href="#build-a-docker-image" title="Permanent link">Link</a></h2>
-<p>If you do not wish to use one of the <code>roboticsmicrofarms/plantimager</code> pre-built image, you may build an image using
-the <code>docker/Dockerfile</code> recipe accessible in the repository of <code>plantimager</code>.</p>
-<p>We provide a convenience bash script to ease the build of <code>roboticsmicrofarms/plantimager</code> docker image.
+<p>If you do not wish to use one of the <code>roboticsmicrofarms/virtualplantimager</code> pre-built image, you may build an image using
+the <code>docker/virtualplantimager/Dockerfile</code> recipe.</p>
+<p>We provide a convenience bash script to ease the build of <code>roboticsmicrofarms/virtualplantimager</code> docker image.
 You can choose to use this script OR to "manually" call the <code>docker build</code> command.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">build.sh</label><label for="__tabbed_2_2">docker build</label></div>
 <div class="tabbed-content">
@@ -1646,7 +1671,7 @@ You can choose to use this script OR to "manually" call the <code>docker build</
 <div class="tabbed-block">
 <p>From the root directory of the repository, use the <code>docker build</code> command as follows:
 <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #008000">export</span><span style="color: #bbbbbb"> </span><span style="color: #19177C">VTAG</span><span style="color: #666666">=</span><span style="color: #BA2121">&quot;latest&quot;</span>
-docker<span style="color: #bbbbbb"> </span>build<span style="color: #bbbbbb"> </span>-t<span style="color: #bbbbbb"> </span>roboticsmicrofarms/plantimager:<span style="color: #19177C">$VTAG</span><span style="color: #bbbbbb"> </span>.
+docker<span style="color: #bbbbbb"> </span>build<span style="color: #bbbbbb"> </span>-t<span style="color: #bbbbbb"> </span>roboticsmicrofarms/virtualplantimager:<span style="color: #19177C">$VTAG</span><span style="color: #bbbbbb"> </span>.
 </code></pre></div></p>
 </div>
 </div>
@@ -1664,13 +1689,13 @@ docker<span style="color: #bbbbbb"> </span>build<span style="color: #bbbbbb"> </
 <h2 id="publish-docker-image">Publish docker image<a class="headerlink" href="#publish-docker-image" title="Permanent link">Link</a></h2>
 <p>To push a newly built image on docker hub:</p>
 <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #008000">export</span><span style="color: #bbbbbb"> </span><span style="color: #19177C">VTAG</span><span style="color: #666666">=</span><span style="color: #BA2121">&quot;latest&quot;</span>
-docker<span style="color: #bbbbbb"> </span>push<span style="color: #bbbbbb"> </span>roboticsmicrofarms/plantdb:<span style="color: #19177C">$VTAG</span>
+docker<span style="color: #bbbbbb"> </span>push<span style="color: #bbbbbb"> </span>roboticsmicrofarms/virtualplantimager:<span style="color: #19177C">$VTAG</span>
 </code></pre></div>
 <p>This requires a valid account &amp; token on dockerhub!</p>
 <h2 id="example-usage">Example usage<a class="headerlink" href="#example-usage" title="Permanent link">Link</a></h2>
 <h3 id="test">Test<a class="headerlink" href="#test" title="Permanent link">Link</a></h3>
 <p>You can test the creation of a virtual plant and its acquisition by the virtual scanner as follows:</p>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>./docker/run.sh<span style="color: #bbbbbb"> </span>--test
+<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>./docker/virtualplantimager/run.sh<span style="color: #bbbbbb"> </span>--test
 </code></pre></div>
 <h3 id="executing-a-romi-task">Executing a ROMI task<a class="headerlink" href="#executing-a-romi-task" title="Permanent link">Link</a></h3>
 <p>To call a ROMI task, as defined in the <code>romitask</code> library, you should use the <code>romi_run_task</code> CLI.</p>
