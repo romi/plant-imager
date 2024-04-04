@@ -1,4 +1,4 @@
-# Docker for VirtualPlantImager
+# Docker for Virtualvirtualplantimager
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ Follow the [getting started with docker](index.md#getting-started-with-docker) i
 ## Start a container
 
 Assuming you have a valid ROMI database directory under `/data/ROMI/DB`, you can easily download and start the
-pre-built `roboticsmicrofarms/plantimager` docker image with one of the following command:
+pre-built `roboticsmicrofarms/virtualplantimager` docker image with one of the following command:
 
 === "run.sh & `ROMI_DB`"
     From the root directory of the repository, use the convenience `run.sh` script:
@@ -26,16 +26,20 @@ pre-built `roboticsmicrofarms/plantimager` docker image with one of the followin
     ./docker/run.sh -db /data/ROMI/DB
     ```
 === "docker run"
-    From any directory, use the `docker run` command as follows:
+    From any directory, assuming you created a `romi` group, use the `docker run` command as follows:
     ```shell
     export ROMI_DB=/data/ROMI/DB
+    # Get the GID associtated to the 'romi' group:
+    gid=$(getent group romi | cut --delimiter ':' --fields 3) # get the 'gid' of this group
+    # Start the container:
     docker run --runtime=nvidia --gpus all \
     --env PYOPENCL_CTX='0' \
+    --user romi:${gid} \
     -v $ROMI_DB:/myapp/db \
-    -it roboticsmicrofarms/plantimager:latest
+    -it roboticsmicrofarms/virtualplantimager:latest
     ```
 
-This should start the latest pre-built `roboticsmicrofarms/plantimager` docker image in interactive mode.
+This should start the latest pre-built `roboticsmicrofarms/virtualplantimager` docker image in interactive mode.
 The database location inside the docker container is `/myapp/db`.
 
 !!! note
@@ -45,10 +49,10 @@ The database location inside the docker container is `/myapp/db`.
 
 ## Build a docker image
 
-If you do not wish to use one of the `roboticsmicrofarms/plantimager` pre-built image, you may build an image using
-the `docker/Dockerfile` recipe accessible in the repository of `plantimager`.
+If you do not wish to use one of the `roboticsmicrofarms/virtualplantimager` pre-built image, you may build an image using
+the `docker/virtualplantimager/Dockerfile` recipe.
 
-We provide a convenience bash script to ease the build of `roboticsmicrofarms/plantimager` docker image.
+We provide a convenience bash script to ease the build of `roboticsmicrofarms/virtualplantimager` docker image.
 You can choose to use this script OR to "manually" call the `docker build` command.
 
 === "build.sh"
@@ -61,7 +65,7 @@ You can choose to use this script OR to "manually" call the `docker build` comma
     From the root directory of the repository, use the `docker build` command as follows:
     ```shell
     export VTAG="latest"
-    docker build -t roboticsmicrofarms/plantimager:$VTAG .
+    docker build -t roboticsmicrofarms/virtualplantimager:$VTAG .
     ```
 
 !!! tips
@@ -80,7 +84,7 @@ To push a newly built image on docker hub:
 
 ```shell
 export VTAG="latest"
-docker push roboticsmicrofarms/plantdb:$VTAG
+docker push roboticsmicrofarms/virtualplantimager:$VTAG
 ```
 
 This requires a valid account & token on dockerhub!
@@ -92,7 +96,7 @@ This requires a valid account & token on dockerhub!
 You can test the creation of a virtual plant and its acquisition by the virtual scanner as follows:
 
 ```shell
-./docker/run.sh --test
+./docker/virtualplantimager/run.sh --test
 ```
 
 ### Executing a ROMI task
