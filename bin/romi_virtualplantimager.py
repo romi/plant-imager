@@ -20,16 +20,29 @@ from flask import send_from_directory
 from mathutils import Vector
 from werkzeug.utils import secure_filename
 
-from plantimager.blender import _get_log_filepath
 from plantimager.blender import Camera
 from plantimager.blender import VirtualPlant
+from plantimager.blender import _get_log_filepath
 from plantimager.blender import check_engine
 from plantimager.log import configure_logger
 
 logger = configure_logger("FlaskVPI")
 
-
 image_extensions = [".png", ".jpg"]
+
+
+def parsing():
+    parser = argparse.ArgumentParser(description='Run a plant imaging task.')
+
+    parser.add_argument('--data-dir', dest='data_dir', default='data',
+                        help='location of obj and mtl files')
+    parser.add_argument('--hdri-dir', dest='hdri_dir', default='hdri',
+                        help='location of hdr files')
+    parser.add_argument('--port', dest='port', default=5000,
+                        help='port for flask server')
+    parser.add_argument('--scene', dest='scene', default=None,
+                        help='load blender scene')
+    return parser.parse_args()
 
 
 def main():
@@ -54,36 +67,26 @@ def main():
         sys.argv = ["null"] + sys.argv[idx + 1:]
 
     # - Parse arguments:
-    parser = argparse.ArgumentParser(description='Run a plant imaging task.')
-
-    parser.add_argument('--data-dir', dest='data_dir', default='data',
-                        help='location of obj and mtl files')
-    parser.add_argument('--hdri-dir', dest='hdri_dir', default='hdri',
-                        help='location of hdr files')
-    parser.add_argument('--port', dest='port', default=5000,
-                        help='port for flask server')
-    parser.add_argument('--scene', dest='scene', default=None,
-                        help='load blender scene')
-
-    args = parser.parse_args()
-
+    args = parsing()
     data_dir = args.data_dir
     hdri_dir = args.hdri_dir
-
+    # Gather the list of objects:
     object_list = glob.glob(os.path.join(data_dir, "*.obj"))
     object_list = [os.path.basename(o) for o in object_list]
-
+    # Gather the list of backgrounds:
     background_list = glob.glob(os.path.join(hdri_dir, "*.hdr"))
     background_list = [os.path.basename(o) for o in background_list]
     L = len(background_list)
-
+    # Open the Blender scene file, if any:
     if args.scene is not None:
         bpy.ops.wm.open_mainfile(filepath=args.scene)
 
+    # -- Initialize a `Camera` instance:
     cam = Camera(bpy.context.scene, bpy.data, False)
     cam.set_intrinsics(1616, 1080, 24)
     cam.move(-100, 0, 50, 90, 0, -90)
 
+    # -- Initialize a `VirtualPlant` instance:
     obj = VirtualPlant(bpy.context.scene, bpy.data)
 
     # The whole Flask app will run in a temporary directory.
@@ -350,35 +353,31 @@ def main():
                     bpy.ops.render.render(write_still=True)
             return send_from_directory(tmpdir, "plant.png")
 
-        # Detect available CUDA devices
+        # Detect available CUDA devices:
         cuda_dev = bpy.context.preferences.addons['cycles'].preferences.get_devices_for_type("CUDA")
-        # Select only GPU devices:
-        if len(cuda_dev) > 0:
-            cuda_dev = [dev for dev in cuda_dev if dev.type == "CUDA"]
         # Inform if CUDA compatible devices have been found:
         if len(cuda_dev) == 1:
-            cuda_dev = cuda_dev[0]
             logger.info(f"Found a CUDA compatible device: {cuda_dev.name}")
-            cuda_dev.use = True
         elif len(cuda_dev) > 1:
-            logger.info(f"Found multiple CUDA compatible devices: {[', '.join(dev.name) for dev in cuda_dev]}")
-            cuda_dev = cuda_dev[0]
-            cuda_dev.use = True
+            logger.info(f"Found multiple CUDA compatible devices: {[', '.join([dev.name for dev in cuda_dev])]}")
         else:
-            cuda_dev = None
             logger.warning("No CUDA devices found!")
+            cuda_dev = None
 
         if cuda_dev is not None:
-            # Activate "CYCLES" engine and GPU rendering:
+            # Activate "CYCLES" engine:
             # bpy.context.scene.render.engine = 'CYCLES'  # should be set with `-E CYCLES` when calling blender
+            # Set the `compute_device_type` to "CUDA"
+            bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
+            # Use all CUDA compatible devices:
+            for device in bpy.context.preferences.addons["cycles"].preferences.devices:
+                device.use = 1
+                logger.info(f"Using CUDA compatible device: {device.name}")
             # Activate GPU rendering for current scene:
             bpy.context.scene.cycles.device = 'GPU'
-
-            # for scene in bpy.data.scenes:
-            #     scene.cycles.device = 'GPU'
-            # # Set the `compute_device_type` and use it
-            # bpy.context.preferences.addons['cycles'].preferences.compute_device_type = "CUDA"
-            # bpy.context.preferences.addons['cycles'].preferences.devices[0].use = True
+            # Activate GPU rendering for all scenes:
+            for scene in bpy.data.scenes:
+                scene.cycles.device = 'GPU'
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))
 
