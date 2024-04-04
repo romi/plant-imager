@@ -8,8 +8,7 @@ import os
 import subprocess
 import sys
 import tempfile
-from contextlib import redirect_stderr
-from contextlib import redirect_stdout
+from io import BytesIO
 
 import bpy
 import numpy as np
@@ -25,6 +24,7 @@ from plantimager.blender import VirtualPlant
 from plantimager.blender import _get_log_filepath
 from plantimager.blender import check_engine
 from plantimager.log import configure_logger
+from plantimager.redirect import stdout_redirector
 
 logger = configure_logger("FlaskVPI")
 
@@ -77,7 +77,11 @@ def main():
     background_list = glob.glob(os.path.join(hdri_dir, "*.hdr"))
     background_list = [os.path.basename(o) for o in background_list]
     L = len(background_list)
-    # Open the Blender scene file, if any:
+
+    # -------------------------------------------------------------------------
+    # BLENDER
+    # -------------------------------------------------------------------------
+    # -- Open the Blender scene file, if any:
     if args.scene is not None:
         bpy.ops.wm.open_mainfile(filepath=args.scene)
 
@@ -89,6 +93,44 @@ def main():
     # -- Initialize a `VirtualPlant` instance:
     obj = VirtualPlant(bpy.context.scene, bpy.data)
 
+    # -- Add a blender point light named 'flash'
+    light_data = bpy.data.lights.new(type='POINT', name="flash")
+
+    # -- Set rendering options:
+    # Detect available CUDA devices:
+    cuda_dev = bpy.context.preferences.addons['cycles'].preferences.get_devices_for_type("CUDA")
+    # Inform if CUDA compatible devices have been found:
+    if len(cuda_dev) == 1:
+        logger.info(f"Found a CUDA compatible device: {cuda_dev.name}")
+    elif len(cuda_dev) > 1:
+        logger.info(f"Found multiple CUDA compatible devices: {[', '.join([dev.name for dev in cuda_dev])]}")
+    else:
+        logger.warning("No CUDA devices found!")
+        cuda_dev = None
+
+    if cuda_dev is not None:
+        # Activate "CYCLES" engine:
+        # bpy.context.scene.render.engine = 'CYCLES'  # should be set with `-E CYCLES` when calling blender
+        # Set the max number of samples:
+        bpy.context.scene.cycles.samples = 1024
+        # Deactivate denoising (slows down rendering):
+        bpy.context.scene.cycles.use_denoising = False
+        # Set the `compute_device_type` to "CUDA"
+        bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
+        # Use GPU CUDA compatible devices:
+        for device in bpy.context.preferences.addons["cycles"].preferences.devices:
+            if device.type == "GPU":
+                device.use = 1
+                logger.info(f"Using CUDA compatible device: {device.name}")
+        # Activate GPU rendering for current scene:
+        bpy.context.scene.cycles.device = 'GPU'
+        # Activate GPU rendering for all scenes:
+        for scene in bpy.data.scenes:
+            scene.cycles.device = 'GPU'
+
+    # -------------------------------------------------------------------------
+    # Flask API
+    # -------------------------------------------------------------------------
     # The whole Flask app will run in a temporary directory.
     # When the app close, it will clean the whole temporary directory.
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -312,8 +354,6 @@ def main():
             obj.add_leaf_displacement(class_id)
             return jsonify('OK')
 
-        light_data = bpy.data.lights.new(type='POINT', name="flash")
-
         @app.route('/render', methods=['GET'])
         def render():
             flash = request.args.get('flash')
@@ -334,50 +374,28 @@ def main():
             obj.show_all()
 
             bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
-            with open(logfile, mode="a") as f:
-                # Redirect blender outputs to a log file:
-                with redirect_stdout(f), redirect_stderr(f):
-                    bpy.ops.render.render(write_still=True)
+            # Redirect blender outputs to a log file:
+            f = BytesIO()
+            with stdout_redirector(f):
+                bpy.ops.render.render(write_still=True)
+            # with open(logfile, mode="a") as lf:
+            #     lf.writelines(f.getvalue().decode('utf-8'))
+            # Remove the light object, if any:
             if light_obj is not None:
                 bpy.data.objects.remove(light_obj, do_unlink=True)
-
             return send_from_directory(tmpdir, "plant.png")
 
         @app.route('/render_class/<class_id>', methods=['GET'])
         def render_class(class_id):
             obj.show_class(class_id)
             bpy.context.scene.render.filepath = os.path.join(tmpdir, "plant.png")
-            with open(logfile, mode="a") as f:
-                # Redirect blender outputs to a log file:
-                with redirect_stdout(f), redirect_stderr(f):
-                    bpy.ops.render.render(write_still=True)
+            # Redirect blender outputs to a log file:
+            f = BytesIO()
+            with stdout_redirector(f):
+                bpy.ops.render.render(write_still=True)
+            # with open(logfile, mode="a") as lf:
+            #     lf.writelines(f.getvalue().decode('utf-8'))
             return send_from_directory(tmpdir, "plant.png")
-
-        # Detect available CUDA devices:
-        cuda_dev = bpy.context.preferences.addons['cycles'].preferences.get_devices_for_type("CUDA")
-        # Inform if CUDA compatible devices have been found:
-        if len(cuda_dev) == 1:
-            logger.info(f"Found a CUDA compatible device: {cuda_dev.name}")
-        elif len(cuda_dev) > 1:
-            logger.info(f"Found multiple CUDA compatible devices: {[', '.join([dev.name for dev in cuda_dev])]}")
-        else:
-            logger.warning("No CUDA devices found!")
-            cuda_dev = None
-
-        if cuda_dev is not None:
-            # Activate "CYCLES" engine:
-            # bpy.context.scene.render.engine = 'CYCLES'  # should be set with `-E CYCLES` when calling blender
-            # Set the `compute_device_type` to "CUDA"
-            bpy.context.preferences.addons["cycles"].preferences.compute_device_type = "CUDA"
-            # Use all CUDA compatible devices:
-            for device in bpy.context.preferences.addons["cycles"].preferences.devices:
-                device.use = 1
-                logger.info(f"Using CUDA compatible device: {device.name}")
-            # Activate GPU rendering for current scene:
-            bpy.context.scene.cycles.device = 'GPU'
-            # Activate GPU rendering for all scenes:
-            for scene in bpy.data.scenes:
-                scene.cycles.device = 'GPU'
 
         app.run(debug=False, host="0.0.0.0", port=int(args.port))
 

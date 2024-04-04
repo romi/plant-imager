@@ -19,8 +19,12 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 # Required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
 
-# Defines URL to download blender from:
-ENV BLENDER_URL="https://ftp.halifax.rwth-aachen.de/blender/release/Blender2.93/blender-2.93.16-linux-x64.tar.xz"
+# Defines blender variables:
+ENV BLENDER_VERSION="3.6"
+ENV BLENDER_ZIP="blender-3.6.10-linux-x64.tar.xz"
+ENV BLENDER_URL="https://ftp.halifax.rwth-aachen.de/blender/release/Blender3.6/${BLENDER_ZIP}"
+ENV BLENDER_PYTHON="3.10"
+
 # Defines Blender installation path:
 ENV BLENDER_PATH="/opt/blender"
 # Add Blender install path to PATH:
@@ -37,7 +41,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       libgl1-mesa-dev \
       libxi6 \
-      libc++-dev && \
+      libc++-dev \
+      libxkbcommon0 && \
     # Clean cache:
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -51,14 +56,14 @@ RUN apt-get update && \
     # Allow user to call conda:
     chown -R ${USER_NAME}: /opt/conda/ && \
     # Download Blender and move it to `/opt/blender`: \
-    echo "Downloading Blender from '${BLENDER_URL}'..." && \
+    echo "Downloading Blender${BLENDER_VERSION} from '${BLENDER_URL}'..." && \
     wget --progress=bar:force:noscroll ${BLENDER_URL} && \
-    echo "Installing Blender in '${BLENDER_PATH}'..." && \
+    echo "Installing Blender${BLENDER_VERSION} in '${BLENDER_PATH}'..." && \
     mkdir -p ${BLENDER_PATH} && \
-    tar -xJf blender-2.93.16-linux-x64.tar.xz --directory ${BLENDER_PATH} --strip-components=1 && \
-    rm blender-2.93.16-linux-x64.tar.xz && \
+    tar -xJf ${BLENDER_ZIP} --directory ${BLENDER_PATH} --strip-components=1 && \
+    rm ${BLENDER_ZIP} && \
     # Give 'r+w' rights over Blender's embedded Python directory to the non-root user:
-    chown -R ${USER_NAME} ${BLENDER_PATH}/2.93/python/
+    chown -R ${USER_NAME} ${BLENDER_PATH}/${BLENDER_VERSION}/python/
 
 # Change to non-root user:
 USER ${USER_NAME}
@@ -70,9 +75,9 @@ COPY --chown=${USER_NAME} ./ plant-imager/
 
 RUN echo "\n\n# Installing dependencies for Blender's embedded Python..." && \
     python3 -m pip \
-      --python ${BLENDER_PATH}/2.93/python/bin/python3.9 \
+      --python ${BLENDER_PATH}/${BLENDER_VERSION}/python/bin/python${BLENDER_PYTHON} \
       install --no-cache-dir \
-      --prefix ${BLENDER_PATH}/2.93/python/ \
+      --prefix ${BLENDER_PATH}/${BLENDER_VERSION}/python/ \
       plant-imager/.[virtual] && \
     conda install -y -n base conda-libmamba-solver && \
     conda config --set solver libmamba && \
