@@ -1,30 +1,31 @@
 FROM continuumio/miniconda3
+
 LABEL maintainer="Jonathan LEGRAND <jonathan.legrand@ens-lyon.fr>"
 LABEL corresponding_author="Peter Hanappe <peter@romi-project.eu>"
 LABEL project="Robotics for microfarms"
-LABEL homepage="https://docs.romi-project.eu/"
+LABEL homepage="https://docs.romi-project.eu/documentation"
 LABEL repository="https://github.com/romi/plant-imager"
 LABEL license="LGPL-3.0-or-later"
 LABEL description="Virtual Plant Imager"
 
-ENV LANG=C.UTF-8
-ENV PYTHONUNBUFFERED=1
-ENV USER_NAME="romi"
-ENV USER_ID=1010
-
-# Required by `nvidia-container-runtime`
+# Variables required by `nvidia-container-runtime`:
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-
-# Required by `pip`:
+# Variables required by Python:
+ENV LANG=C.UTF-8
+ENV PYTHONUNBUFFERED=1
+# Variables required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
+
+# Set user name and id variables:
+ENV USER_NAME="romi"
+ENV USER_ID=2020
 
 # Defines blender variables:
 ENV BLENDER_VERSION="3.6"
 ENV BLENDER_ZIP="blender-3.6.10-linux-x64.tar.xz"
 ENV BLENDER_URL="https://ftp.halifax.rwth-aachen.de/blender/release/Blender3.6/${BLENDER_ZIP}"
 ENV BLENDER_PYTHON="3.10"
-
 # Defines Blender installation path:
 ENV BLENDER_PATH="/opt/blender"
 # Add Blender install path to PATH:
@@ -53,7 +54,7 @@ RUN apt-get update && \
     mkdir -p ${ROMI_DB} && \
     touch ${ROMI_DB}/romidb && \
     chown -R ${USER_NAME} ${ROMI_DB} && \
-    # Allow user to call conda:
+    # Allow non-user to call conda:
     chown -R ${USER_NAME}: /opt/conda/ && \
     # Download Blender and move it to `/opt/blender`: \
     echo "Downloading Blender${BLENDER_VERSION} from '${BLENDER_URL}'..." && \
@@ -79,8 +80,6 @@ RUN echo "\n\n# Installing dependencies for Blender's embedded Python..." && \
       install --no-cache-dir \
       --prefix ${BLENDER_PATH}/${BLENDER_VERSION}/python/ \
       plant-imager/.[virtual] && \
-    conda install -y -n base conda-libmamba-solver && \
-    conda config --set solver libmamba && \
     echo "\n\n# Installing LPY dependencies in the 'base' environment..." && \
     conda install -y -n base "python >=3.8,<=3.11" flask imageio toml openalea.lpy -c conda-forge -c fredboudon && \
     ## Clean conda cache:

@@ -1,19 +1,26 @@
 FROM continuumio/miniconda3
+
 LABEL maintainer="Jonathan LEGRAND <jonathan.legrand@ens-lyon.fr>"
 LABEL corresponding_author="Peter Hanappe <peter@romi-project.eu>"
 LABEL project="Robotics for microfarms"
-LABEL homepage="https://docs.romi-project.eu/documentation/"
+LABEL homepage="https://docs.romi-project.eu/documentation"
 LABEL repository="https://github.com/romi/plant-imager"
 LABEL license="LGPL-3.0-or-later"
-LABEL description="Plant Imager"
+LABEL description="Virtual Plant Imager"
 
+# Variables required by `nvidia-container-runtime`:
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+# Variables required by Python:
 ENV LANG=C.UTF-8
 ENV PYTHONUNBUFFERED=1
-ENV USER_NAME="romi"
-ENV USER_ID=1010
-
-# Required by `pip`:
+# Variables required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
+
+# Set user name and id variables:
+ENV USER_NAME="romi"
+ENV USER_ID=2020
+
 # Required by `romi_run_task`:
 ENV ROMI_DB="/myapp/db"
 
@@ -41,7 +48,7 @@ WORKDIR /home/${USER_NAME}
 
 # Copy the source files (repository):
 COPY --chown=${USER_NAME} ./ plant-imager/
-# Install plant-imager from host's local source files
+
 RUN echo "\n\n# Installing 'plant-imager' and dependencies..." && \
     echo "\n\n## Installing 'plantdb' from sources..." && \
     python3 -m pip install --no-cache-dir plant-imager/plantdb/ && \
