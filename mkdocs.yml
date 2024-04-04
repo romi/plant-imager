@@ -15,6 +15,7 @@ nav:
   - 'Developer':
     - developer/index.md
     - developer/documentation.md
+    - developer/blender.md
     - developer/virtualplantimager.md
 
 
