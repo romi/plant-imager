@@ -8,6 +8,10 @@ LABEL repository="https://github.com/romi/plant-imager"
 LABEL license="LGPL-3.0-or-later"
 LABEL description="Virtual Plant Imager"
 
+# Set user name and id variables:
+ENV USER_NAME="romi"
+ENV USER_ID=2020
+
 # Variables required by `nvidia-container-runtime`:
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
@@ -16,10 +20,6 @@ ENV LANG=C.UTF-8
 ENV PYTHONUNBUFFERED=1
 # Variables required by `pip`:
 ENV PATH="${PATH}:/home/${USER_NAME}/.local/bin"
-
-# Set user name and id variables:
-ENV USER_NAME="romi"
-ENV USER_ID=2020
 
 # Defines blender variables:
 ENV BLENDER_VERSION="3.6"
