@@ -435,9 +435,9 @@ class MultiClassObject():
 
 
 class VirtualPlant(MultiClassObject):
-    def add_leaf_displacement(self, leaf_class_name):
+    def add_displacement(self, class_name):
         for o in self.data.objects:
-            if leaf_class_name in o.name:
+            if class_name in o.name:
                 displace_modifier = o.modifiers.new(name="Displace.01", type='DISPLACE')
                 tex = self.data.textures.new("Displace.01", 'CLOUDS')
                 tex.noise_scale = 2.0

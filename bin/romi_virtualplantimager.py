@@ -351,7 +351,7 @@ def main():
 
         @app.route("/add_random_displacement/<class_id>", methods=['GET'])
         def add_random_displacement(class_id):
-            obj.add_leaf_displacement(class_id)
+            obj.add_displacement(class_id)
             return jsonify('OK')
 
         @app.route('/render', methods=['GET'])

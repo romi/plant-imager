@@ -274,8 +274,6 @@ class VirtualScanner(AbstractScanner):
         self.ext = "png"
         self.position = path.Pose()
         self.add_leaf_displacement = add_leaf_displacement
-        if self.add_leaf_displacement:
-            logger.warning("Random leaf displacement has been requested!")
 
     def get_position(self) -> path.Pose:
         """Returns the current position of the camera."""
