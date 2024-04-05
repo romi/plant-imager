@@ -2111,9 +2111,7 @@ Defaults to <code>None</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">273</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>, width, height, focal, flash<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, host<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, port<span style="color: #666666">=9001</span>, scene<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>, width, height, focal, flash<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, host<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, port<span style="color: #666666">=9001</span>, scene<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>,
              add_leaf_displacement<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>, classes<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Instantiate a ``VirtualScanner``.</span>
 
@@ -2163,8 +2161,6 @@ Defaults to <code>None</code>.</p>
     <span style="color: #008000">self</span><span style="color: #666666">.</span>ext <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;png&quot;</span>
     <span style="color: #008000">self</span><span style="color: #666666">.</span>position <span style="color: #666666">=</span> path<span style="color: #666666">.</span>Pose()
     <span style="color: #008000">self</span><span style="color: #666666">.</span>add_leaf_displacement <span style="color: #666666">=</span> add_leaf_displacement
-    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>add_leaf_displacement:
-        logger<span style="color: #666666">.</span>warning(<span style="color: #BA2121">&quot;Random leaf displacement has been requested!&quot;</span>)
 </code></pre></div></td></tr></table></div>
                 </details>
 
@@ -2202,7 +2198,9 @@ If classes are defined, they will be returned in addition to the default and the
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">437</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">435</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">436</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">437</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">438</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">439</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span>
@@ -2211,9 +2209,7 @@ If classes are defined, they will be returned in addition to the default and the
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">444</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">445</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">446</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">447</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">448</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">channels</span>(<span style="color: #008000">self</span>) <span style="color: #666666">-&gt;</span> <span style="color: #008000">list</span>:
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">446</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">channels</span>(<span style="color: #008000">self</span>) <span style="color: #666666">-&gt;</span> <span style="color: #008000">list</span>:
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;List the channels to acquire.</span>
 
 <span style="color: #BA2121; font-style: italic">    Notes</span>
@@ -2248,9 +2244,9 @@ If classes are defined, they will be returned in addition to the default and the
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">451</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">452</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_bounding_box</span>(<span style="color: #008000">self</span>):
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">448</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">449</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_bounding_box</span>(<span style="color: #008000">self</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Returns the bounding-box coordinates from the Blender server.&quot;&quot;&quot;</span>
     <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;bounding_box&quot;</span>)
 </code></pre></div></td></tr></table></div>
@@ -2276,9 +2272,9 @@ If classes are defined, they will be returned in addition to the default and the
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_position</span>(<span style="color: #008000">self</span>) <span style="color: #666666">-&gt;</span> path<span style="color: #666666">.</span>Pose:
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">get_position</span>(<span style="color: #008000">self</span>) <span style="color: #666666">-&gt;</span> path<span style="color: #666666">.</span>Pose:
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Returns the current position of the camera.&quot;&quot;&quot;</span>
     <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>position
 </code></pre></div></td></tr></table></div>
@@ -2372,7 +2368,9 @@ If classes are defined, they will be returned in addition to the default and the
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">454</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">452</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">453</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">454</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">455</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">456</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">457</span>
@@ -2406,9 +2404,7 @@ If classes are defined, they will be returned in addition to the default and the
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">485</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">486</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">487</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">488</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">489</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">490</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">grab</span>(<span style="color: #008000">self</span>, idx: <span style="color: #008000">int</span>, metadata: <span style="color: #008000">dict</span> <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span>) <span style="color: #666666">-&gt;</span> DataItem:
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">488</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">grab</span>(<span style="color: #008000">self</span>, idx: <span style="color: #008000">int</span>, metadata: <span style="color: #008000">dict</span> <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">None</span>) <span style="color: #666666">-&gt;</span> DataItem:
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Grab a picture using the virtual scanner.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2468,9 +2464,9 @@ If classes are defined, they will be returned in addition to the default and the
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">324</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">325</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">list_backgrounds</span>(<span style="color: #008000">self</span>):
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">322</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">323</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">324</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">list_backgrounds</span>(<span style="color: #008000">self</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;List the available backgrounds.&quot;&quot;&quot;</span>
     <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;backgrounds&quot;</span>)
 </code></pre></div></td></tr></table></div>
@@ -2496,9 +2492,9 @@ If classes are defined, they will be returned in addition to the default and the
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">321</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">322</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">list_objects</span>(<span style="color: #008000">self</span>):
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">318</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">319</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">list_objects</span>(<span style="color: #008000">self</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;List the available objects.&quot;&quot;&quot;</span>
     <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">self</span><span style="color: #666666">.</span>request_get_dict(<span style="color: #BA2121">&quot;objects&quot;</span>)
 </code></pre></div></td></tr></table></div>
@@ -2582,7 +2578,9 @@ If classes are defined, they will be returned in addition to the default and the
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">393</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">395</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">396</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">397</span>
@@ -2604,9 +2602,7 @@ If classes are defined, they will be returned in addition to the default and the
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">418</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">load_background</span>(<span style="color: #008000">self</span>, file: File):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">load_background</span>(<span style="color: #008000">self</span>, file: File):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Loads a background from a HDRI file.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2763,7 +2759,9 @@ If classes are defined, they will be returned in addition to the default and the
 </details>
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">327</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">329</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">330</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">331</span>
@@ -2825,9 +2823,7 @@ If classes are defined, they will be returned in addition to the default and the
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">387</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">388</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">389</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">390</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">391</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">load_object</span>(<span style="color: #008000">self</span>, file, mtl<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, palette<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, colorize<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">390</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">load_object</span>(<span style="color: #008000">self</span>, file, mtl<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, palette<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">None</span>, colorize<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Upload the OBJ, MTL and palette files to the Blender Flask server with the POST method.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2971,7 +2967,9 @@ Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">492</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">490</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">491</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">492</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">493</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">494</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">495</span>
@@ -2995,9 +2993,7 @@ Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">513</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">514</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">515</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">516</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">517</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">518</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">render</span>(<span style="color: #008000">self</span>, channel<span style="color: #666666">=</span><span style="color: #BA2121">&#39;rgb&#39;</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">516</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">render</span>(<span style="color: #008000">self</span>, channel<span style="color: #666666">=</span><span style="color: #BA2121">&#39;rgb&#39;</span>):
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Use the Blender server to render an image of the virtual plant.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -3105,7 +3101,9 @@ Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">295</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">296</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">298</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">299</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">300</span>
@@ -3124,9 +3122,7 @@ Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">313</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">314</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">315</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">316</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">317</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">318</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">set_intrinsics</span>(<span style="color: #008000">self</span>, width: <span style="color: #008000">int</span>, height: <span style="color: #008000">int</span>, focal: <span style="color: #008000">float</span>) <span style="color: #666666">-&gt;</span> <span style="color: #008000; font-weight: bold">None</span>:
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">316</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">set_intrinsics</span>(<span style="color: #008000">self</span>, width: <span style="color: #008000">int</span>, height: <span style="color: #008000">int</span>, focal: <span style="color: #008000">float</span>) <span style="color: #666666">-&gt;</span> <span style="color: #008000; font-weight: bold">None</span>:
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Set the intrinsic parameters of the camera for the virtual scanner.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -3171,7 +3167,9 @@ Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
 
           <details class="quote">
             <summary>Source code in <code>plantimager/vscan.py</code></summary>
-            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
+            <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">283</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">286</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">287</span>
@@ -3180,9 +3178,7 @@ Defaults to 'rgb', grab a picture of the whole virtual plant.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">290</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">291</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">292</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">293</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">294</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">295</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">set_position</span>(<span style="color: #008000">self</span>, pose: path<span style="color: #666666">.</span>Pose) <span style="color: #666666">-&gt;</span> <span style="color: #008000; font-weight: bold">None</span>:
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">293</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">set_position</span>(<span style="color: #008000">self</span>, pose: path<span style="color: #666666">.</span>Pose) <span style="color: #666666">-&gt;</span> <span style="color: #008000; font-weight: bold">None</span>:
 <span style="color: #bbbbbb">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Set the new position of the camera.&quot;&quot;&quot;</span>
     data <span style="color: #666666">=</span> {
         <span style="color: #BA2121">&quot;rx&quot;</span>: <span style="color: #666666">90</span> <span style="color: #666666">-</span> pose<span style="color: #666666">.</span>tilt,
