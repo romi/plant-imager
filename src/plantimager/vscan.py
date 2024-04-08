@@ -36,14 +36,14 @@ import imageio.v3 as iio
 import numpy as np
 import psutil
 import requests
-from plantimager import path
-from plantimager.hal import AbstractScanner
-from plantimager.hal import DataItem
-from plantimager.log import configure_logger
 
 from plantdb.db import File
 from plantdb.utils import fsdb_file_from_local_file
 from plantdb.utils import to_file
+from plantimager import path
+from plantimager.hal import AbstractScanner
+from plantimager.hal import DataItem
+from plantimager.log import configure_logger
 
 logger = configure_logger(__name__)
 
@@ -258,7 +258,7 @@ class VirtualScanner(AbstractScanner):
         """
         super().__init__()
         self.exact_pose = True  # VirtualScanner poses are exact!
-        self.ext = "png"        # override default to use PNG.
+        self.ext = "png"  # override default to use PNG.
 
         if host is None:
             # Instantiate a `VirtualScannerRunner`
@@ -483,11 +483,14 @@ class VirtualScanner(AbstractScanner):
 
         if metadata is None:
             metadata = {}
-
+        else:
+            metadata = data_item.metadata
         metadata["camera"] = {
             "camera_model": self.request_get_dict("camera_intrinsics"),
             **self.request_get_dict("camera_pose")
         }
+        # Add metadata to `DataItem` instance:
+        data_item.metadata = metadata
         return data_item
 
     def render(self, channel='rgb'):
