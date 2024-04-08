@@ -25,6 +25,7 @@ from plantimager.blender import _get_log_filepath
 from plantimager.blender import check_engine
 from plantimager.log import configure_logger
 from plantimager.redirect import stdout_redirector
+from plantimager.utils import parse_python_version
 
 logger = configure_logger("FlaskVPI")
 
@@ -145,11 +146,33 @@ def main():
             s += [f"I am a Flask server named '{app.name}'."]
             # Get Blender version & build date:
             s += [f"I run Blender {bpy.app.version_string} built on {bpy.app.build_date.decode()}."]
+            # Get Blender Python version:
+            bpyv = subprocess.run(['blender', '-b', '--python-expr', 'import sys; v=sys.version_info; print(f"{v.major}.{v.minor}.{v.micro}")'], capture_output=True)
+            bpyv = bpyv.stdout.decode().split('\n')[1]
+            s += [f"I run Blender Python {bpyv}."]
+            # Get Python version:
+            pyv = subprocess.run(['python', '--version'], capture_output=True)
+            pyv = parse_python_version(pyv.stdout.decode())
+            s += [f"I run Python {pyv}."]
+            return jsonify(s)
+
+        @app.route('/info', methods=['GET'])
+        def info():
+            # Get Blender Python version:
+            bpyv = subprocess.run(['blender', '-b', '--python-expr', 'import sys; v=sys.version_info; print(f"{v.major}.{v.minor}.{v.micro}")'], capture_output=True)
+            bpyv = bpyv.stdout.decode().split('\n')[1]
             # Get Python version:
             pyv = subprocess.run(['python', '--version'], capture_output=True)
             pyv = pyv.stdout.decode().replace('\n', '')
-            s += [f"I run {pyv}."]
-            return jsonify(s)
+            pyv = pyv.replace('Python', '')
+            pyv = pyv.replace(' ', '')
+            info_dict = {
+                "Blender" : bpy.app.version_string,
+                "Blender_build_date" : bpy.app.build_date.decode(),
+                "Blender Python": bpyv,
+                "Python": pyv,
+            }
+            return jsonify(info_dict)
 
         @app.route('/classes', methods=['GET'])
         def classes():
