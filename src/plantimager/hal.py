@@ -156,12 +156,15 @@ class AbstractScanner(metaclass=ABCMeta):
     scan_count : int
         Incremental counter saving last picture index for the ``grab`` method.
         Modified by the ``inc_count`` method.
+    exact_pose : bool
+        States whether the camera pose is exact or approximate.
     ext : str
         Extension to use to write image data from the ``grab`` method.
     """
 
     def __init__(self):
         self.scan_count = 0
+        self.exact_pose = False
         self.ext = 'jpg'
         super().__init__()
 
@@ -251,7 +254,7 @@ class AbstractScanner(metaclass=ABCMeta):
         """
         for x in tqdm(path, unit='pose'):
             pose = self.get_target_pose(x)
-            data_item = self.scan_at(pose, x.exact_pose)
+            data_item = self.scan_at(pose, self.exact_pose)
             for c in self.channels():
                 f = fileset.create_file(data_item.channels[c].format_id())
                 data = data_item.channels[c].data

@@ -29,6 +29,7 @@ import datetime
 import sys
 
 from serial.tools import list_ports
+
 from plantimager.log import configure_logger
 
 logger = configure_logger(__name__)
@@ -91,3 +92,10 @@ def now(fmt="%Y-%m-%d %H:%M:%S"):
     >>> now()
     """
     return datetime.datetime.now().strftime(fmt)
+
+
+def parse_python_version(py_version: str) -> str:
+    py_version = py_version.replace('\n', '')
+    py_version = py_version.replace('Python', '')
+    py_version = py_version.replace(' ', '')
+    return py_version

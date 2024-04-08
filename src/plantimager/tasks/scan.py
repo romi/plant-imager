@@ -28,6 +28,8 @@ import os
 import random
 
 import luigi
+
+from plantdb import io
 from plantimager import path
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath
@@ -35,8 +37,6 @@ from plantimager.log import configure_logger
 from plantimager.scanner import Scanner
 from plantimager.tasks.lpy import VirtualPlant
 from plantimager.vscan import VirtualScanner
-
-from plantdb import io
 from romitask import DatabaseConfig
 from romitask import FilesetTarget
 from romitask import RomiTask
@@ -230,17 +230,36 @@ class Scan(RomiTask):
             scanner = self.load_scanner()
 
         metadata = json.loads(luigi.DictParameter().serialize(self.metadata))
-        # Import the axes limits from the ``plantimager.scanner.Scanner`` instance & add them to the "hardware" metadata
-        if "hardware" not in metadata:
-            logger.warning("Metadata entry 'hardware' is missing from the configuration file!")
-            metadata["hardware"] = {}
 
+        # Get extra metadata from the `scanner` object:
         if isinstance(scanner, Scanner):
+            # Import the axes limits from the ``plantimager.scanner.Scanner`` instance & add them to the metadata:
+            if "hardware" not in metadata:
+                logger.warning("Metadata entry 'hardware' is missing from the configuration file!")
+                metadata["hardware"] = {}
             metadata["hardware"]['x_lims'] = getattr(scanner.cnc, "x_lims", None)
             metadata["hardware"]['y_lims'] = getattr(scanner.cnc, "y_lims", None)
             metadata["hardware"]['z_lims'] = getattr(scanner.cnc, "z_lims", None)
+        elif isinstance(scanner, VirtualScanner):
+            # Import software info from the ``plantimager.vscan.VirtualScanner`` instance & add them to the metadata:
+            metadata["software"] = scanner.request_get_dict('info')
+        else:
+            pass
 
-        # Add the extra metadata to the metadata:
+        # Set if the poses are exact or approximate depending on the type of `scanner`:
+        if isinstance(scanner, Scanner):
+            # In case of a Scanner, the poses are approximate:
+            for p in path:
+                p.exact = False
+        elif isinstance(scanner, VirtualScanner):
+            # In case of a VirtualScanner, the poses are exact:
+            for p in path:
+                p.exact = True
+        else:
+            logger.warning(f"Unknown type of scanner: {type(scanner)}!")
+            logger.info(f"Could not change the `exact` attribute of the PathElements!")
+
+        # Add the extra metadata to the metadata, if any:
         if extra_md is not None:
             metadata.update(extra_md)
         # Add the acquisition time to the metadata:

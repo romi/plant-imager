@@ -207,7 +207,7 @@ class VirtualScanner(AbstractScanner):
     ----------
     runner : plantimager.vscan.VirtualScannerRunner
         The runner for the virtual scanner process.
-        It must accept POST & GET HTTP requests.
+        It must accept 'POST' & 'GET' HTTP requests.
     host : str
         The virtual scanner host ip.
     port : int
@@ -221,7 +221,7 @@ class VirtualScanner(AbstractScanner):
     position : plantimager.path.Pose
         The current position of the camera.
     add_leaf_displacement : bool
-        If ``True``, add a random displacement to the leaf class objects after loading the virtual plant.
+        If ``True``, add a random displacement to the texture of the leaf class objects after loading the virtual plant.
     """
 
     def __init__(self, width, height, focal, flash=False, host=None, port=9001, scene=None,
@@ -250,20 +250,24 @@ class VirtualScanner(AbstractScanner):
             Path to the scene file to create in the  ``VirtualScannerRunner``.
             Used only if ``host`` is NOT set.
         add_leaf_displacement : bool, optional
-            If ``True``, add a random displacement to the leaf class objects after loading the virtual plant.
+            If ``True``, add a random displacement to the texture of the leaf class objects after loading the virtual plant.
             Defaults to ``False``.
         classes : list of str, optional
             The list of classes to generate pictures for, must be found in the loaded OBJ.
             Defaults to ``None``.
         """
         super().__init__()
+        self.exact_pose = True  # VirtualScanner poses are exact!
+        self.ext = "png"        # override default to use PNG.
 
         if host is None:
+            # Instantiate a `VirtualScannerRunner`
             self.runner = VirtualScannerRunner(scene=scene, port=port)
             self.runner.start()
             self.host = "localhost"
             self.port = self.runner.port
         else:
+            # TODO: Here we consider a runner to be active, maybe we should send some request to assert this?!
             self.runner = None
             self.host = host
             self.port = port
@@ -271,7 +275,6 @@ class VirtualScanner(AbstractScanner):
         self.classes = classes
         self.flash = flash
         self.set_intrinsics(width, height, focal)
-        self.ext = "png"
         self.position = path.Pose()
         self.add_leaf_displacement = add_leaf_displacement
 
