@@ -34,9 +34,6 @@ ENV PATH="${BLENDER_PATH}:${PATH}"
 # Required by `romi_run_task`:
 ENV ROMI_DB="/myapp/db"
 
-# Expose the port to communicate with the blender server:
-EXPOSE 9001
-
 RUN apt-get update && \
     # Install system dependencies:
     apt-get install -y --no-install-recommends \
@@ -92,6 +89,7 @@ RUN echo "\n\n# Installing dependencies for Blender's embedded Python..." && \
     echo "\n\n## Installing 'plant-imager' from sources..." && \
     python3 -m pip install --no-cache-dir plant-imager/ && \
     # Clean pip cache:
-    python3 -m pip cache purge && \
-    # Change `umask` to be able to write files and directory with 'r+w' as group rights (else just 'r'):
-    echo "umask 002" >> .bashrc
+    python3 -m pip cache purge
+
+COPY --chown=${USER_NAME} docker/entrypoint.sh .
+ENTRYPOINT ["./entrypoint.sh"]
