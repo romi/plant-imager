@@ -378,6 +378,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting started
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-local-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a local database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-the-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set the permissions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#getting-started-with-docker" class="md-nav__link">
     <span class="md-ellipsis">
       Getting started with Docker
@@ -732,6 +765,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting started
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-local-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a local database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-the-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set the permissions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#getting-started-with-docker" class="md-nav__link">
     <span class="md-ellipsis">
       Getting started with Docker
@@ -834,9 +900,46 @@
 <p><img alt="ROMI_ICON2_greenB.png" src="assets/images/ROMI_ICON2_greenB.png" /></p>
 <p>For full documentation of the ROMI project visit <a href="https://docs.romi-project.eu/">docs.romi-project.eu</a>.</p>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">Link</a></h2>
-<p>To be as clear as possible, we first define the following names:
-- <em>PlantImager</em>: hardware control of the ROMI <em>3D plant imager</em>.
-- <em>VirtualPlantImager</em>: simulate the plant imager using <a href="https://github.com/fredboudon/lpy">LPY</a> to generate virtual plants and <a href="https://www.blender.org/">Blender</a> for rendering. <strong>We recommend using it inside a docker container.</strong></p>
+<p>To be as clear as possible, we first define the following names:</p>
+<ul>
+<li><em>PlantImager</em>: hardware control of the ROMI <em>3D plant imager</em>.</li>
+<li><em>VirtualPlantImager</em>: simulate the <em>3D plant imager</em> using <a href="https://github.com/fredboudon/lpy">LPY</a> to generate virtual plants and <a href="https://www.blender.org/">Blender</a> for rendering RGB images.</li>
+</ul>
+<p><strong>We recommend using the <em>VirtualPlantImager</em> with a docker container.</strong></p>
+<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">Link</a></h2>
+<h3 id="create-a-local-database">Create a local database<a class="headerlink" href="#create-a-local-database" title="Permanent link">Link</a></h3>
+<p>If not done yet, start by creating a local <code>plantdb</code> database, whose path will be known as <code>$ROMI_DB</code>:
+<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #008000">export</span><span style="color: #bbbbbb"> </span><span style="color: #19177C">ROMI_DB</span><span style="color: #666666">=</span><span style="color: #BA2121">&quot;/data/ROMI/&quot;</span>
+mkdir<span style="color: #bbbbbb"> </span>-p<span style="color: #bbbbbb"> </span><span style="color: #BA2121">&quot;</span><span style="color: #A45A77; font-weight: bold">${</span><span style="color: #19177C">ROMI_DB</span><span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">&quot;</span>
+touch<span style="color: #bbbbbb"> </span><span style="color: #BA2121">&quot;</span><span style="color: #A45A77; font-weight: bold">${</span><span style="color: #19177C">ROMI_DB</span><span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">/romidb&quot;</span>
+</code></pre></div></p>
+<p>To use the <em>VirtualPlantImager</em>, yu will also need the <code>vscan_data</code> folder accessible under <code>plant-imager/database_example</code>.</p>
+<h3 id="set-the-permissions">Set the permissions<a class="headerlink" href="#set-the-permissions" title="Permanent link">Link</a></h3>
+<p>Create a <code>romi</code> group and give it rights over the local <code>plantdb</code> database</p>
+<ol>
+<li>Create the <code>romi</code> group with <code>2020</code> as GID:
+   <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>sudo<span style="color: #bbbbbb"> </span>addgroup<span style="color: #bbbbbb"> </span>romi<span style="color: #bbbbbb"> </span>--gid<span style="color: #bbbbbb"> </span><span style="color: #666666">2020</span>
+</code></pre></div></li>
+<li>Add the current user to the <code>romi</code> group:
+   <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>sudo<span style="color: #bbbbbb"> </span>usermod<span style="color: #bbbbbb"> </span>-a<span style="color: #bbbbbb"> </span>-G<span style="color: #bbbbbb"> </span>romi<span style="color: #bbbbbb"> </span><span style="color: #19177C">$USER</span>
+</code></pre></div></li>
+<li>Change the group of the local database:
+   <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>sudo<span style="color: #bbbbbb"> </span>chown<span style="color: #bbbbbb"> </span>-R<span style="color: #bbbbbb"> </span>:romi<span style="color: #bbbbbb"> </span><span style="color: #19177C">$ROMI_DB</span>
+</code></pre></div></li>
+<li>Check the rights with:
+   <div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>ls<span style="color: #bbbbbb"> </span>-al<span style="color: #bbbbbb"> </span><span style="color: #19177C">$ROMI_DB</span>
+</code></pre></div>
+   This should yield something like:
+   <div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>drwxrwxr-x  2 myuser romi     4096 nov.  21 12:00 .
+drwxrwxrwx 31 myuser myuser   4096 nov.  21 12:00 ..
+-rw-rw-r--  1 myuser romi        0 nov.  21 12:00 romidb
+</code></pre></div>
+   Where <code>myuser</code> is your username.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After step 2 you will need to re-open a terminal to belong to the <code>romi</code> group.</p>
+</div>
 <h2 id="getting-started-with-docker">Getting started with Docker<a class="headerlink" href="#getting-started-with-docker" title="Permanent link">Link</a></h2>
 <p>We strongly recommend using the docker images to use this library.</p>
 <h3 id="plantimager-docker-image">PlantImager docker image<a class="headerlink" href="#plantimager-docker-image" title="Permanent link">Link</a></h3>
