@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 import toml
 from dash import Input
 from dash import Output
+from dash import State
 from dash import callback
 from dash import dcc
 from dash import get_asset_url
@@ -16,9 +17,13 @@ from plantimager.webui.utils import config_upload
 
 register_page(__name__, path_template="/scan")
 
+FORBIDDEN_CHAR = [
+    ":", "/", "*", "#", "@", ">", "<", "?", "|", "\"", "\'"
+]
+
 
 # Update the contents of the TOML configuration file when uploading a configuration file:
-@callback(Output('cfg-toml', 'value'),
+@callback(Output('scan-cfg-toml', 'value'),
           Input('cfg-upload', 'contents'),
           prevent_initial_call=True)
 def update_cfg(contents):
@@ -34,48 +39,72 @@ configuration_card = [
         id="configuration-card",
         children=[
             dbc.CardHeader("Configuration"),
-            dbc.CardBody(
-                [
-                    html.Div([
-                        config_upload(),
-                        dbc.Textarea(id="scan-cfg-toml", className="mb-3", size='md',
-                                     value=toml.dumps(toml.load(get_asset_url('hardware_scan_rx0.toml')[1:])),
-                                     title="The scan configuration in TOML format.",
-                                     placeholder="Scan configuration (TOML).",
-                                     style={'height': 400}, persistence=True),
-                    ]),
-                ]
+            dbc.CardBody([
+                html.Div([
+                    config_upload(),
+                    dbc.Textarea(id="scan-cfg-toml", className="mb-3", size='md',
+                                 value=toml.dumps(toml.load(get_asset_url('hardware_scan_rx0.toml')[1:])),
+                                 title="The scan configuration in TOML format.",
+                                 placeholder="Scan configuration (TOML).",
+                                 style={'height': 400}, persistence=True),
+                ]),
+            ]
             )
         ]
     )
 ]
 
+dataset_name_card = [
+    dbc.Card(
+        id="dataset-card",
+        children=[
+            dbc.CardHeader("Dataset"),
+            dbc.CardBody([
+                html.Div([
+                    dbc.Label("Name of the dataset to create:"),
+                    dbc.Input(id="dataset-name", placeholder="Dataset name", className="mb-3", invalid=True),
+                    dbc.FormText(dcc.Markdown(
+                        "The list of forbidden characters is: " + ', '.join([f'`{c}`' for c in FORBIDDEN_CHAR])
+                    )),
+                ]
+                )
+            ])
+        ]
+    )
+]
 # The card regrouping the buttons to reconstruct and upload:
 scan_card = [
     dbc.Card(
         id="scan-card",
         children=[
             dbc.CardHeader("Scan"),
-            dbc.CardBody(
-                [
-                    html.Div([
-                        dcc.Textarea(id="dataset-name", placeholder="Dataset name", className="mb-3",),
-                        dcc.Loading([dbc.Button('Start scanning', id='scan-button')]),
-                        dcc.Markdown(id='scan-response', children="_Run a scan first..._"),
-                        dbc.Accordion(
-                            dbc.AccordionItem(children=[
-                                dcc.Markdown(id="scan-output", children="_Run a scan first..._"),
-                            ],
-                                title="Detailed scan output:"
-                            ),
-                            start_collapsed=True, flush=True
-                        )
-                    ])
-                ]
-            )
+            dbc.CardBody([
+                dcc.Loading([dbc.Button('Start scanning', id='scan-button')]),
+                dcc.Markdown(id='scan-response', children="_Run a scan first..._"),
+                dbc.Accordion(
+                    dbc.AccordionItem(children=[
+                        dcc.Markdown(id="scan-output", children="_Run a scan first..._"),
+                    ],
+                        title="Detailed scan output:"
+                    ),
+                    start_collapsed=True, flush=True
+                )
+            ])
         ]
     )
 ]
+
+
+@callback(Output('dataset-name', 'valid'),
+          Output('dataset-name', 'invalid'),
+          Input('dataset-name', 'value'),
+          State('dataset-dict', 'data'),
+          prevent_initial_call=True)
+def validate_dataset_name(dataset_name, dataset_dict):
+    if dataset_name not in list(dataset_dict.keys()) and sum([letter in FORBIDDEN_CHAR for letter in dataset_name]) == 0:
+        return True, False
+    else:
+        return False, True
 
 
 def layout(dataset_id=None, **kwargs):
@@ -97,6 +126,9 @@ def layout(dataset_id=None, **kwargs):
         # Content of the reconstruction app:
         dbc.Row(
             id="app-content",
-            children=[dbc.Col(configuration_card, md=6), dbc.Col(scan_card, md=6)],
+            children=[
+                dbc.Col(configuration_card, md=6),
+                dbc.Col(dataset_name_card + [html.Br()] + scan_card, md=6)
+            ],
         ),
     ])
