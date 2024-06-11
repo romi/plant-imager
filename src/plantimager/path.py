@@ -441,7 +441,7 @@ class CalibrationPath(Path):
 
     See Also
     --------
-    plant3dvision.tasks.colmap.use_calibrated_poses
+    plantimager.tasks.colmap.use_calibrated_poses
 
     Examples
     --------

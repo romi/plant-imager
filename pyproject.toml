@@ -13,6 +13,10 @@ dependencies = [
     'requests',
     'pyserial',
     'tqdm',
+    # Required by WebUI:
+    "dash",
+    "dash-bootstrap-components",
+    "dash-ag-grid",
 ]
 description = "ROMI library controlling the PlantImager (hardware) or the VirtualPlantImager (Blender) to acquire images of (virtual) single potted plants."
 readme = "README.md"
