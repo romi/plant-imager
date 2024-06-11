@@ -62,6 +62,9 @@ def main(url, port):
     # Navigation links
     nav_item = dbc.Nav([
         dbc.NavItem(
+            dbc.NavLink("New scan", style={'color': "#f3f3f3"},
+                        href="/scan")),
+        dbc.NavItem(
             dbc.NavLink("PlantDB", style={'color': "#f3f3f3"},
                         href="/plantdb_api")),
         dbc.NavItem(

@@ -39,7 +39,7 @@ configuration_card = [
                     html.Div([
                         config_upload(),
                         dbc.Textarea(id="scan-cfg-toml", className="mb-3", size='md',
-                                     value=toml.dumps(toml.load(get_asset_url('geom_pipe_real.toml')[1:])),
+                                     value=toml.dumps(toml.load(get_asset_url('hardware_scan_rx0.toml')[1:])),
                                      title="The scan configuration in TOML format.",
                                      placeholder="Scan configuration (TOML).",
                                      style={'height': 400}, persistence=True),
