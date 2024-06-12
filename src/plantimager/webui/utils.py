@@ -4,10 +4,9 @@ from pathlib import Path
 import requests
 import toml
 from dash import dcc
-from dash import dcc
-from dash import html
 from dash import html
 
+from plantdb.fsdb import MARKER_FILE_NAME
 from plantdb.rest_api_client import list_scan_names
 from plantdb.rest_api_client import parse_scans_info
 
@@ -148,23 +147,46 @@ def temp_scan_dir(scan_id):
     return temp_fsdb_dir(scan_id) / scan_id
 
 
+def create_temp_fsdb(scan_id):
+    """Creates a temporary FSDB dataset directory.
+
+    Parameters
+    ----------
+    scan_id : str
+        The name of the dataset to create.
+
+    Returns
+    -------
+    pathlib.Path
+        The path to the temporary FSDB directory.
+    pathlib.Path
+        The path to the temporary dataset directory.
+    """
+    # Create a temporary fsdb with the name of the dataset as suffix:
+    tmp_db = temp_fsdb_dir(scan_id)
+    tmp_db.mkdir(parents=True, exist_ok=True)
+    marker_file = tmp_db / MARKER_FILE_NAME  # define the marker file
+    marker_file.open(mode='w').close()  # create the marker file
+    # Define the local dataset path:
+    dataset_path = temp_scan_dir(scan_id)
+    dataset_path.mkdir(parents=True, exist_ok=True)
+    return tmp_db, dataset_path
+
+
 def config_upload():
     """The TOML configuration file upload component."""
-    return dcc.Loading([
-        dcc.Upload(id="cfg-upload",
-                   children=html.Div(['Drag and Drop or ', html.B('Select'), ' a TOML configuration file.']),
-                   style={
-                       'width': '100%',
-                       'height': '60px',
-                       'lineHeight': '60px',
-                       'borderWidth': '1px',
-                       'borderStyle': 'dashed',
-                       'borderRadius': '5px',
-                       'textAlign': 'center',
-                       'margin': '10px'
-                   },
-                   accept=".toml",
-                   # Do not allow multiple files to be uploaded
-                   multiple=False
-                   ),
-    ])
+    return dcc.Upload(id="cfg-upload",
+                      children=['Drag and Drop or ', html.B('Select'), ' a TOML configuration file.'],
+                      style={
+                          'width': '100%',
+                          'height': '60px',
+                          'lineHeight': '60px',
+                          'borderWidth': '1px',
+                          'borderStyle': 'dashed',
+                          'borderRadius': '5px',
+                          'textAlign': 'center',
+                      },
+                      accept=".toml",
+                      # Do not allow multiple files to be uploaded
+                      multiple=False
+                      )
