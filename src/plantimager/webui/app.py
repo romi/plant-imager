@@ -33,10 +33,6 @@ def parsing():
     app_args.add_argument('--port', type=int, default=REST_API_PORT,
                           help="port used to serve the application")
 
-    hw_args = parser.add_argument_group("Hardware options")
-    hw_args.add_argument('--cnc_dev', type=str, default="/dev/ttyACM0")
-    hw_args.add_argument('--gimbal_dev', type=str, default="/dev/ttyACM1")
-
     return parser
 
 
@@ -66,7 +62,7 @@ def main(url, port):
                         href="/scan")),
         dbc.NavItem(
             dbc.NavLink("PlantDB", style={'color': "#f3f3f3"},
-                        href="/plantdb_api")),
+                        href="/config")),
         dbc.NavItem(
             dbc.NavLink("Tutorial", style={'color': "#f3f3f3"},
                         href="https://docs.romi-project.eu/plant_imager/tutorials/reconstruct_scan/")),
