@@ -119,6 +119,7 @@ class Path(list):
 
 def circle(center_x, center_y, radius, n_points):
     """Create a 2D circle of N points with given center and radius.
+def circle(center_x, center_y, radius, n_points, offset_angle=0):
 
     Pan orientations are also computed to always face the center of the circle.
 
@@ -132,6 +133,8 @@ def circle(center_x, center_y, radius, n_points):
         Radius of the circle to create.
     n_points : int
         Number of points used to create the circle.
+    offset_angle : float, optional
+        The angle offset in degrees for the start of the point distribution. Defaults to 0.
 
     Returns
     -------
@@ -155,8 +158,11 @@ def circle(center_x, center_y, radius, n_points):
 
     """
     x, y, p = [], [], []
+    # Convert starting_angle to radians for computation
+    starting_angle_rad = math.radians(offset_angle)
+
     for i in range(n_points):
-        pan = 2 * i * math.pi / n_points
+        pan = 2 * i * math.pi / n_points + starting_angle_rad
         x.append(center_x - radius * math.cos(pan))
         y.append(center_y - radius * math.sin(pan))
         pan = pan * 180 / math.pi
@@ -204,6 +210,7 @@ class Circle(Path):
 
     def __init__(self, center_x, center_y, z, tilt, radius, n_points):
         """
+    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset):
         Parameters
         ----------
         center_x : length_mm
@@ -219,9 +226,12 @@ class Circle(Path):
             Radius, in millimeters, of the circular path to create.
         n_points : int
             Number of points (``PathElement``) used to generate the circular path.
+        start_offset : float
+            The angular offset (in degrees) to shift the starting position
+            along the circle. Measured counter-clockwise from the positive x-axis.
         """
         super().__init__()
-        x, y, pan = circle(center_x, center_y, radius, n_points)
+        x, y, pan = circle(center_x, center_y, radius, n_points, start_offset)
 
         if not isinstance(tilt, Iterable):
             tilt = [tilt]
@@ -267,6 +277,7 @@ class Cylinder(Path):
 
     def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, n_circles=2):
         """
+    def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, n_circles=2, aligned=True):
         Parameters
         ----------
         center_x : length_mm
@@ -284,6 +295,9 @@ class Cylinder(Path):
             Number of points (``PathElement``) used to generate the circular path.
         n_circles : int, optional
             Number of circular path to make within the cylinder, minimum value is 2.
+        aligned : bool, optional
+            If True, aligns the start points of all circles. Otherwise, offsets
+            start points progressively based on the number of circles. Defaults to True.
 
         Raises
         ------
@@ -298,9 +312,12 @@ class Cylinder(Path):
         except AssertionError:
             raise ValueError("You need a minimum of two circles to make a cylinder!")
 
+        step_angle = 360 / n_points
+        start_offset = 0 if aligned else step_angle / n_circles
+
         min_z, max_z = z_range
         for z_circle in np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles - 1)):
-            self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points))
+            self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points, start_offset))
 
 
 def line1d(start, stop, n_points):
