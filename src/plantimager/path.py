@@ -31,6 +31,24 @@ import numpy as np
 class Pose(object):
     """Abstract representation of a 'camera pose' as its 5D coordinates.
 
+    This class is meant to encapsulate a 3D point using Cartesian coordinates
+    (x, y, z) along with additional properties for orientation (pan and tilt).
+
+    Attributes
+    ----------
+    x : float, optional
+        The x-coordinate in 3D space. Initialized in the parent class.
+    y : float, optional
+        The y-coordinate in 3D space. Initialized in the parent class.
+    z : float, optional
+        The z-coordinate in 3D space. Initialized in the parent class.
+    pan : float, optional
+        Angular orientation around the vertical axis, in degrees.
+        Defaults to ``None``.
+    tilt : float, optional
+        Angular orientation around the horizontal axis, in degrees.
+        Defaults to ``None``.
+
     Examples
     --------
     >>> from plantimager.path import Pose
@@ -41,20 +59,22 @@ class Pose(object):
     """
 
     def __init__(self, x=None, y=None, z=None, pan=None, tilt=None):
-        """Pose constructor.
+        """Represents a 3D point in space along with pan and tilt angles.
 
         Parameters
         ----------
-        x : length_mm, optional
-            Relative distance to the origin along the x-axis.
-        y : length_mm, optional
-            Relative distance to the origin along the y-axis.
-        z : length_mm, optional
-            Relative distance to the origin along the z-axis.
-        pan : deg, optional
-            Relative rotation to the origin along the xy-plane.
-        tilt : deg, optional
-            Relative rotation to the origin orthogonal to the xy-plane.
+        x : float, optional
+            The x-coordinate (in millimeters) of the 3D point. Defaults to ``None``.
+        y : float, optional
+            The y-coordinate (in millimeters) of the 3D point. Defaults to ``None``.
+        z : float, optional
+            The z-coordinate (in millimeters) of the 3D point. Defaults to ``None``.
+        pan : float, optional
+            The pan angle (in degrees), _i.e._ horizontal rotation, associated with the point.
+            Defaults to ``None``.
+        tilt : float, optional
+            The tilt angle (in degrees), _i.e._ vertical rotation, associated with the point.
+            Defaults to ``None``.
         """
         self.x = x
         self.y = y
@@ -66,11 +86,40 @@ class Pose(object):
         return ", ".join(f"{k}: {v}" for k, v in self.__dict__.items())
 
     def attributes(self):
+        """Returns a list of attribute names related to the object's position and orientation.
+
+        Returns
+        -------
+        list of str
+            A list containing the names of the attributes: "x", "y", "z", "pan", and "tilt".
+        """
         return ["x", "y", "z", "pan", "tilt"]
 
 
 class PathElement(Pose):
     """Singleton for a `Path` class.
+
+    This class extends the basic coordinates of x, y, z with additional
+    parameters for orientation (pan, tilt) and a boolean flag to specify
+    if the pose must be treated as exact.
+
+    Attributes
+    ----------
+    x : float, optional
+        The x-coordinate in 3D space. Initialized in the parent class.
+    y : float, optional
+        The y-coordinate in 3D space. Initialized in the parent class.
+    z : float, optional
+        The z-coordinate in 3D space. Initialized in the parent class.
+    pan : float, optional
+        Angular orientation around the vertical axis, in degrees.
+        Defaults to ``None``.
+    tilt : float, optional
+        Angular orientation around the horizontal axis, in degrees.
+        Defaults to ``None``.
+    exact_pose : bool, optional
+        Specifies whether the pose represents an exact location and
+        orientation. Defaults to ``True``.
 
     See Also
     --------
@@ -86,21 +135,25 @@ class PathElement(Pose):
     """
 
     def __init__(self, x=None, y=None, z=None, pan=None, tilt=None, exact_pose=True):
-        """
+        """Represents a 3D pose with pan and tilt angles, as well as an
+        indicator for whether the pose is an exact reference or not.
+
         Parameters
         ----------
-        x : length_mm, optional
-            Relative distance, in millimeters, to the origin along the x-axis.
-        y : length_mm, optional
-            Relative distance, in millimeters, to the origin along the y-axis.
-        z : length_mm, optional
-            Relative distance, in millimeters, to the origin along the z-axis.
-        pan : deg, optional
-            Relative rotation, in degrees, to the origin along the xy-plane.
-        tilt : deg, optional
-            Relative rotation, in degrees, to the origin along the xy-plane.
+        x : float, optional
+            The x-coordinate in 3D space. Defaults to None.
+        y : float, optional
+            The y-coordinate in 3D space. Defaults to None.
+        z : float, optional
+            The z-coordinate in 3D space. Defaults to None.
+        pan : float, optional
+            Angular orientation around the vertical axis, in degrees.
+            Defaults to None.
+        tilt : float, optional
+            Angular orientation around the horizontal axis, in degrees.
+            Defaults to None.
         exact_pose : bool, optional
-            If ``True``, the above parameter values are exact, else they are approximations.
+            Specifies if this pose is treated as exact. Defaults to True.
 
         """
         super().__init__(x, y, z, pan, tilt)
@@ -117,33 +170,37 @@ class Path(list):
         super().__init__()
 
 
-def circle(center_x, center_y, radius, n_points):
-    """Create a 2D circle of N points with given center and radius.
 def circle(center_x, center_y, radius, n_points, offset_angle=0):
+    """Generates the 2D coordinates and angles for points evenly distributed on a circle, facing the central point.
 
-    Pan orientations are also computed to always face the center of the circle.
+    This function computes the x and y coordinates of `n_points` evenly distributed
+    on the circumference of a circle centered at (`center_x`, `center_y`) with a
+    specified `radius`. Additionally, the function calculates the angle (in degrees)
+    for each point with respect to the vertical axis, optionally offset by an
+    `offset_angle`.
 
     Parameters
     ----------
-    center_x : length_mm
-        Relative position of the circle center along the X-axis.
-    center_y : length_mm
-        Relative position of the circle center along the Y-axis.
-    radius : length_mm
-        Radius of the circle to create.
+    center_x : float
+        The x-coordinate of the circle's center.
+    center_y : float
+        The y-coordinate of the circle's center.
+    radius : float
+        The radius of the circle.
     n_points : int
-        Number of points used to create the circle.
+        The number of points to generate along the circle's circumference.
     offset_angle : float, optional
         The angle offset in degrees for the start of the point distribution. Defaults to 0.
 
     Returns
     -------
-    list of length_mm
-        Sequence of x positions.
-    list of length_mm
-        Sequence of y positions.
-    list of deg
-        Sequence of pan orientations.
+    list of float
+        A list of x-coordinates for the points on the circle.
+    list of float
+        A list of y-coordinates for the points on the circle.
+    list of float
+        A list of corresponding angles (in degrees, measured clockwise) for the points
+        with respect to the vertical axis.
 
     Examples
     --------
@@ -155,7 +212,6 @@ def circle(center_x, center_y, radius, n_points, offset_angle=0):
      (4.045084971874736, -2.9389262614623664, 54.0),
      (4.045084971874738, 2.938926261462365, 126.0),
      (-1.5450849718747361, 4.755282581475768, 198.0)]
-
     """
     x, y, p = [], [], []
     # Convert starting_angle to radians for computation
@@ -172,13 +228,10 @@ def circle(center_x, center_y, radius, n_points, offset_angle=0):
 
 
 class Circle(Path):
-    """Creates a circular path for the scanner.
-
-    Compute the `x`, `y` & `pan` ``PathElement`` values to create that circle.
+    """A 2D circular path in the XY plane for the scanner, with the camera facing the center of the circle.
 
     Notes
     -----
-    The `pan` is computed to always face the center of the circle.
     If an iterable is given for `tilt`, performs more than one camera acquisition at same xyz position.
 
     See Also
@@ -208,24 +261,28 @@ class Circle(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z, tilt, radius, n_points):
-        """
     def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset):
+        """Initializes an object by generating a circular arrangement of points in 3D space.
+
+        Each path element is defined by the combination of the 2D circle
+        coordinates, a fixed z-value, and specified tilt angles. This results
+        in path elements with varying tilt angles, forming a complete circular
+        motion in 3D space.
+
         Parameters
         ----------
-        center_x : length_mm
-            X-axis position, in millimeters, of the circle's center, relative to the origin.
-        center_y : length_mm
-            Y-axis position, in millimeters, of the circle's center, relative to the origin.
-        z : length_mm
-            Height at which to make the circle.
-        tilt : deg or list(deg)
-            Camera tilt(s), in degrees, to use for this circle.
-            If an iterable is given, performs more than one camera acquisition at same xyz position.
-        radius : length_mm
-            Radius, in millimeters, of the circular path to create.
+        center_x : float
+            The x-coordinate (in millimeters) of the center of the circle.
+        center_y : float
+            The y-coordinate (in millimeters) of the center of the circle.
+        z : float
+            The fixed z-coordinate (in millimeters) for all points along the circle.
+        tilt : Union[float, Iterable[float]]
+            One or more tilt angles (in degrees) to apply at each point.
+        radius : float
+            The radius (in millimeters) of the circle.
         n_points : int
-            Number of points (``PathElement``) used to generate the circular path.
+            The number of points to generate around the circle.
         start_offset : float
             The angular offset (in degrees) to shift the starting position
             along the circle. Measured counter-clockwise from the positive x-axis.
@@ -242,13 +299,12 @@ class Circle(Path):
 
 
 class Cylinder(Path):
-    """Creates a z-axis aligned cylinder path for the scanner.
+    """A cylinder-like path for the scanner as multiple circles, with the camera facing the center of the circle.
 
-    Makes as much circular paths as `n_circles` within the given z range.
+    Makes as much circular paths as `n_circles` within the given z-range.
 
     Notes
     -----
-    The `pan` is computed to always face the center of the circle.
     If an iterable is given for `tilt`, performs more than one camera acquisition at same xyz position.
 
     See Also
@@ -275,26 +331,31 @@ class Cylinder(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, n_circles=2):
-        """
     def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, n_circles=2, aligned=True):
+        """Initialization of a cylinder-like structure composed of multiple circles at different heights within a z-range.
+
+        This class constructor generates `n_circles` at varying heights within a
+        given z-range and aligns the circular points optionally.
+
         Parameters
         ----------
-        center_x : length_mm
-            X-axis position, in millimeters, of the circle's center, relative to the origin.
-        center_y : length_mm
-            Y-axis position, in millimeters, of the circle's center, relative to the origin.
-        z_range : (length_mm, length_mm)
-            Height range, in millimeters, at which to make the cylinder.
-        tilt : deg or list of deg
-            Camera tilt(s), in degrees, to use for this circle.
-            If an iterable is given, performs more than one camera acquisition at same xyz position.
-        radius : length_mm
-            Radius of the circular path to create.
+        center_x : float
+            The x-coordinate (in millimeters) of the center of each circle comprising the cylinder.
+        center_y : float
+            The y-coordinate (in millimeters) of the center of each circle comprising the cylinder.
+        z_range : tuple of float
+            A Pair of values indicating the minimum and maximum z-coordinates (in millimeters)
+            for the cylindrical structure.
+        tilt : float
+            The tilt angle of each circle in degrees relative to its parallel
+            orientation to the XY-plane.
+        radius : float
+            The radius (in millimeters) of each circle forming the cylinder.
         n_points : int
-            Number of points (``PathElement``) used to generate the circular path.
+            The number of evenly spaced points that define each circle.
         n_circles : int, optional
-            Number of circular path to make within the cylinder, minimum value is 2.
+            The total number of circles that make up the cylindrical structure.
+            Defaults to 2.
         aligned : bool, optional
             If True, aligns the start points of all circles. Otherwise, offsets
             start points progressively based on the number of circles. Defaults to True.
@@ -302,8 +363,8 @@ class Cylinder(Path):
         Raises
         ------
         ValueError
-            If the number of circles `n_circles` is not superior or equal to `2`.
-
+            If `n_circles` is less than 2 because at least two circles
+            are required to form a cylinder-like structure.
         """
         super().__init__()
 
@@ -320,80 +381,82 @@ class Cylinder(Path):
             self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points, start_offset))
 
 
-def line1d(start, stop, n_points):
-    """Create a 1D line of N points between start and stop position (included).
+def line_1d(start, stop, n_points):
+    """Generates a 1D linearly spaced sequence of values between `start` and `stop`, inclusive.
+
+    The returned sequence contains `n_points` values equally spaced between these boundary values.
 
     Parameters
     ----------
-    start : length_mm
-        Line starting position, in millimeters.
-    stop : length_mm
-        Line ending position, in millimeters.
+    start : float or int
+        The starting coordinate of the sequence.
+    stop : float or int
+        The ending coordinate of the sequence.
     n_points : int
-        Number of points used to create the line of points.
+        The number of values to generate in the sequence. Must be greater than or equal to 2.
 
     Returns
     -------
-    list of length_mm
-        Sequence of 1D positions.
+    list of float
+        A list containing `n_points` equally spaced values from `start` to `stop`, inclusive.
 
     Examples
     --------
-    >>> from plantimager.path import line1d
-    >>> line1d(0, 10, n_points=5)
+    >>> from plantimager.path import line_1d
+    >>> line_1d(0,10,n_points=5)
     [0.0, 2.5, 5.0, 7.5, 10.0]
-
     """
     return [(1 - i / (n_points - 1)) * start + (i / (n_points - 1)) * stop for i in range(n_points)]
 
 
-def line3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points):
-    """Create a 3D line of N points between start and stop position (included).
+def line_3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points):
+    """Generates coordinates of a 3D line given start and stop points and the number of intermediate points.
+
+    This function computes the coordinates of a 3D line by generating intermediate
+    linearly spaced points between the given start and stop points along the x, y, and z dimensions.
 
     Parameters
     ----------
-    x_start : length_mm
-        Line starting position, in millimeters, for the x-axis.
-    y_start : length_mm
-        Line starting position, in millimeters, for the y-axis.
-    z_start : length_mm
-        Line starting position, in millimeters, for the z-axis.
-    x_stop : length_mm
-        Line ending position, in millimeters, for the x-axis.
-    y_stop : length_mm
-        Line ending position, in millimeters, for the y-axis.
-    z_stop : length_mm
-        Line ending position, in millimeters, for the z-axis.
+    x_start : float
+        The starting coordinate of the line on the x-axis.
+    y_start : float
+        The starting coordinate of the line on the y-axis.
+    z_start : float
+        The starting coordinate of the line on the z-axis.
+    x_stop : float
+        The ending coordinate of the line on the x-axis.
+    y_stop : float
+        The ending coordinate of the line on the y-axis.
+    z_stop : float
+        The ending coordinate of the line on the z-axis.
     n_points : int
-        Number of points used to create the linear path.
+        The number of points to generate along each line segment, including the start
+        and stop points.
 
     Returns
     -------
-    list of length_mm
-        Sequence of x positions.
-    list of length_mm
-        Sequence of y positions.
-    list of length_mm
-        Sequence of z positions.
+    tuple of numpy.ndarray
+        A tuple containing the x, y, and z coordinates of the generated 3D line.
+        Each element of the tuple is a len-3 list of size `n_points` with linearly
+        spaced values between the respective start and stop coordinates.
 
     Examples
     --------
-    >>> from plantimager.path import line3d
-    >>> line3d(0, 0, 0, 10, 10, 10, n_points=5)
+    >>> from plantimager.path import line_3d
+    >>> line_3d(0, 0, 0, 10, 10, 10, n_points=5)
     ([0.0, 2.5, 5.0, 7.5, 10.0],
      [0.0, 2.5, 5.0, 7.5, 10.0],
      [0.0, 2.5, 5.0, 7.5, 10.0])
-
     """
-    return line1d(x_start, x_stop, n_points), line1d(y_start, y_stop, n_points), line1d(z_start, z_stop, n_points)
+    return line_1d(x_start, x_stop, n_points), line_1d(y_start, y_stop, n_points), line_1d(z_start, z_stop, n_points)
 
 
 class Line(Path):
-    """Creates a linear path for the scanner.
+    """A 3D linear path with specified start and stop positions, camera parameters, and number of points along the path.
 
-    See Also
-    --------
-    plantimager.path.line3d
+    Notes
+    -----
+    If an iterable is given for `tilt`, performs more than one camera acquisition at same xyz position.
 
     Examples
     --------
@@ -406,28 +469,42 @@ class Line(Path):
     """
 
     def __init__(self, x_start, y_start, z_start, x_stop, y_stop, z_stop, pan, tilt, n_points):
-        """
+        """Initializes an object by generating a linear arrangement of points in 3D space.
+
+        This class generates a linear sequence of points in 3D space, with each point
+        associated with specific camera pan and tilt values.
+        It can also accommodate multiple camera acquisitions at the same 3D position
+        if multiple tilt values are provided.
+
         Parameters
         ----------
-        x_start : length_mm
-            Line starting position, in millimeters for the x-axis.
-        y_start : length_mm
-            Line starting position, in millimeters for the y-axis.
-        z_start : length_mm
-            Line starting position, in millimeters for the z-axis.
-        x_stop : length_mm
-            Line ending position, in millimeters for the x-axis.
-        y_stop : length_mm
-            Line ending position, in millimeters for the y-axis.
-        z_stop : length_mm
-            Line ending position, in millimeters for the z-axis.
-        pan : deg
-            Camera pan value, in degrees, to use for the linear path.
-        tilt : deg or list(deg)
-            Camera tilt(s), in degrees, to use for this circle.
-            If an iterable is given, performs more than one camera acquisition at same xyz position.
+        x_start : float
+            The starting x-coordinate (in millimeters) of the 3D line path.
+        y_start : float
+            The starting y-coordinate (in millimeters) of the 3D line path.
+        z_start : float
+            The starting z-coordinate (in millimeters) of the 3D line path.
+        x_stop : float
+            The ending x-coordinate (in millimeters) of the 3D line path.
+        y_stop : float
+            The ending y-coordinate (in millimeters) of the 3D line path.
+        z_stop : float
+            The ending z-coordinate (in millimeters) of the 3D line path.
+        pan : float
+            The pan angle (in degrees) for all path elements.
+        tilt : float or Iterable[float]
+            The tilt angle(s) (in degrees) to be applied at each point of the path.
+            If a single float is provided, it will be used for all path elements.
+            If an iterable is provided, each tilt value will be used in conjunction with the generated points.
         n_points : int
-            Number of points used to create the linear path.
+            The number of points to generate along the 3D line path. Must be greater than or equal to 2.
+
+        Raises
+        ------
+        ValueError
+            If `n_points` is less than 2, as at least two points are required to define a line.
+        TypeError
+            If `tilt` is not an iterable, nor a single float.
         """
         super().__init__()
         try:
@@ -438,7 +515,7 @@ class Line(Path):
         if not isinstance(tilt, Iterable):
             tilt = [tilt]
 
-        x, y, z = line3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points)
+        x, y, z = line_3d(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points)
         for i in range(n_points):
             for t in tilt:
                 self.append(PathElement(x[i], y[i], z[i], pan, t, exact_pose=False))
