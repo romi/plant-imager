@@ -320,6 +320,8 @@ class Cylinder(Path):
      x: 400.0, y: 199.99999999999997, z: 0, pan: 90.0, tilt: 0, exact_pose: False,
      x: 0.0, y: 200.0, z: 50, pan: 270.0, tilt: 0, exact_pose: False,
      x: 400.0, y: 199.99999999999997, z: 50, pan: 90.0, tilt: 0, exact_pose: False]
+    >>> cylinder_path = Cylinder(200, 200, (0, 50), 0, 200, n_points=2, n_circles=2, aligned=False)
+    >>> cylinder_path
     >>> cylinder_path = Cylinder(200, 200, (0, 50), 0, 200, n_points=2, n_circles=3)
     >>> cylinder_path
     [x: 0.0, y: 200.0, z: 0.0, pan: 270.0, tilt: 0, exact_pose: False,
@@ -366,19 +368,28 @@ class Cylinder(Path):
             If `n_circles` is less than 2 because at least two circles
             are required to form a cylinder-like structure.
         """
+        # Call the parent class (Path) initializer
         super().__init__()
 
+        # Ensure `n_circles` is at least 2, as a minimum of two circles is required to form a cylinder
         try:
             assert n_circles >= 2
         except AssertionError:
             raise ValueError("You need a minimum of two circles to make a cylinder!")
 
+        # Compute the angle (in degrees) between successive points on a single circle
         step_angle = 360 / n_points
+
+        # Determine the phase offset between the starting point of circles,
+        # differentiating aligned from offset configurations
         start_offset = 0 if aligned else step_angle / n_circles
 
+        # Extract the minimum and maximum z-values (heights) for the cylinder
         min_z, max_z = z_range
-        for z_circle in np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles - 1)):
-            self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points, start_offset))
+        # Calculate and iterate over `n_circles` evenly spaced heights in the z-range
+        for circle_idx, z_circle in enumerate(np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles - 1))):
+            # For each height, create a 2D circular path (Circle) and offset it if required
+            self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points, start_offset*circle_idx))
 
 
 def line_1d(start, stop, n_points):
