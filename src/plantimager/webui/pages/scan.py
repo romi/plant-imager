@@ -24,25 +24,24 @@ from plantimager.webui.utils import create_temp_fsdb
 from plantimager.webui.utils import temp_scan_dir
 from romitask.log import get_log_filename
 
+# Register this page with the Dash app router
 register_page(__name__, path_template="/scan")
 
-FORBIDDEN_CHAR = [
-    ":", "/", "*", "#", "@", ">", "<", "?", "|", "\"", "\'"
-]
+# Characters not allowed in dataset names for system compatibility
+FORBIDDEN_CHAR = [":", "/", "*", "#", "@", ">", "<", "?", "|", "\"", "\'"]
 
 
-# Update the contents of the TOML configuration file when uploading a configuration file:
 @callback(Output('scan-cfg-toml', 'value'),
           Input('cfg-upload', 'contents'),
           prevent_initial_call=True)
 def update_cfg(contents):
-    """Get the contents of the TOML configuration file and return it to the text area."""
+    # Parse base64 encoded config file contents and update TOML text area
     content_type, content_string = contents.split(',')
     cfg = b64decode(content_string)
     return cfg.decode()
 
 
-# Car to configure acquisition (scan) parameters:
+# Card for scan configuration settings using TOML format
 configuration_card = [
     dbc.Card(
         id="configuration-card",
@@ -62,7 +61,7 @@ configuration_card = [
     )
 ]
 
-# Card to select the name of the dataset:
+# Card for dataset name input with validation
 dataset_name_card = [
     dbc.Card(
         id="dataset-card",
@@ -71,7 +70,7 @@ dataset_name_card = [
             dbc.CardBody([
                 html.Div([
                     dbc.Label("Name of the dataset to create:"),
-                    dbc.Input(id="dataset-name", placeholder="Dataset name",
+                    dbc.Input(id="dataset-input-name", placeholder="Dataset name",
                               className="mb-3", invalid=True, persistence=True),
                     dbc.FormText(dcc.Markdown(
                         "The list of forbidden characters is: " + ', '.join([f'`{c}`' for c in FORBIDDEN_CHAR])
@@ -83,7 +82,7 @@ dataset_name_card = [
     )
 ]
 
-# Car to run a scan with the PlantImager:
+# Card containing scan controls and status information
 scan_card = [
     dbc.Card(
         id="scan-card",
@@ -116,7 +115,7 @@ scan_card = [
     )
 ]
 
-# Car to upload acquired dataset to PlantDB REST API.
+# Card for uploading scanned data to PlantDB REST API.
 upload_card = [
     dbc.Card(
         id="upload-card",
@@ -141,6 +140,7 @@ upload_card = [
     )
 ]
 
+# Modal for displaying dataset preview
 preview_modal = dbc.Modal([
     dbc.ModalHeader(
         dbc.ModalTitle(id='preview-title', children="Dataset preview")
@@ -150,12 +150,13 @@ preview_modal = dbc.Modal([
 
 
 # Callback to validate the selected dataset name:
-@callback(Output('dataset-name', 'valid'),
-          Output('dataset-name', 'invalid'),
+@callback(
+          Output('dataset-input-name', 'invalid'),
           Output('dataset-id', 'data'),
-          Input('dataset-name', 'value'),
+          Input('dataset-input-name', 'value'),
           State('dataset-dict', 'data'),
-          prevent_initial_call=True)
+          prevent_initial_call=True
+)
 def validate_dataset_name(dataset_name, dataset_dict):
     """Callback to validate the selected dataset name.
 
@@ -173,17 +174,15 @@ def validate_dataset_name(dataset_name, dataset_dict):
     Returns
     -------
     bool
-        The `valid` state of the 'dataset-name' `Input` component.
-    bool
-        The `invalid` state of the 'dataset-name' `Input` component.
+        The `invalid` state of the 'dataset-input-name' `Input` component.
     str
         The name of the dataset.
     """
     if dataset_name not in list(dataset_dict.keys()) and sum(
             [letter in FORBIDDEN_CHAR for letter in dataset_name]) == 0:
-        return True, False, dataset_name
+        return False, dataset_name
     else:
-        return False, True, dataset_name
+        return True, dataset_name
 
 
 @callback(Output('scan-button', 'disabled'),
@@ -193,7 +192,7 @@ def validate_dataset_name(dataset_name, dataset_dict):
           Output('upload-button', 'disabled'),
           Input('scan-button', 'n_clicks'),
           State('scan-cfg-toml', 'value'),
-          State('dataset-name', 'value'),
+          State('dataset-input-name', 'value'),
           prevent_initial_call=True)
 def run_scan(n_clicks, cfg, dataset_name):
     task = "Scan"  # we will run a scan task
@@ -310,4 +309,5 @@ def layout(dataset_id=None, **kwargs):
                 dbc.Col(dataset_name_card + [html.Br()] + scan_card + [html.Br()] + upload_card, md=6)
             ],
         ),
+        html.Div(id='preview-modal-wrapper', children=preview_modal),
     ])

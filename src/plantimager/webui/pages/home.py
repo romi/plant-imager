@@ -5,6 +5,7 @@ import dash_ag_grid as dag
 import pandas as pd
 from dash import Input
 from dash import Output
+from dash import State
 from dash import callback
 from dash import html
 from dash import register_page
@@ -49,10 +50,12 @@ CHECK = "![alt text: Yes](https://icons.getbootstrap.com/assets/icons/check-circ
 CROSS = "![alt text: No](https://icons.getbootstrap.com/assets/icons/x-circle.svg)"
 
 
-@callback(Output('dataset-table', 'children'),
-          Input('dataset-dict', 'data'),
-          Input('rest-api-host', 'data'),
-          Input('rest-api-port', 'data'))
+@callback(
+    Output('dataset-table', 'children'),
+    Input('dataset-dict', 'data'),
+    State('rest-api-host', 'data'),
+    State('rest-api-port', 'data')
+)
 def update_table(dataset_dict, url, port):
     if dataset_dict is not None:
         table_dict = {col: [] for col in ["Thumbnail", "Name", "Date", "Species", "Images"] + TASKS}

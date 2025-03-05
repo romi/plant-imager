@@ -7,26 +7,9 @@ from dash import dcc
 from dash import html
 
 from plantdb.fsdb import MARKER_FILE_NAME
+from plantdb.rest_api_client import base_url
 from plantdb.rest_api_client import list_scan_names
 from plantdb.rest_api_client import parse_scans_info
-
-
-def base_url(host, port):
-    """Format the URL for the PlantDB REST API at given host and port.
-
-    Parameters
-    ----------
-    host : str
-        The hostname or IP address of the PlantDB REST API server.
-    port : str
-        The port number of the PlantDB REST API server.
-
-    Returns
-    -------
-    str
-        The formatted URL.
-    """
-    return f"http://{host}:{port}"
 
 
 def get_dataset_dict(host, port):
