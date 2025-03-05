@@ -24,9 +24,6 @@ from plantimager.webui.utils import create_temp_fsdb
 from plantimager.webui.utils import temp_scan_dir
 from romitask.log import get_log_filename
 
-# Register this page with the Dash app router
-register_page(__name__, path_template="/scan")
-
 # Characters not allowed in dataset names for system compatibility
 FORBIDDEN_CHAR = [":", "/", "*", "#", "@", ">", "<", "?", "|", "\"", "\'"]
 
@@ -154,7 +151,7 @@ preview_modal = dbc.Modal([
           Output('dataset-input-name', 'invalid'),
           Output('dataset-id', 'data'),
           Input('dataset-input-name', 'value'),
-          State('dataset-dict', 'data'),
+          State('dataset-list', 'data'),
           prevent_initial_call=True
 )
 def validate_dataset_name(dataset_name, dataset_dict):
