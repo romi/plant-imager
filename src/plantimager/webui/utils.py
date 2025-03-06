@@ -4,8 +4,6 @@ from pathlib import Path
 import requests
 import toml
 from dash import dcc
-from dash import html
-
 from plantdb.fsdb import MARKER_FILE_NAME
 from plantdb.rest_api_client import base_url
 from plantdb.rest_api_client import list_scan_names
@@ -158,18 +156,19 @@ def create_temp_fsdb(scan_id):
 
 def config_upload():
     """The TOML configuration file upload component."""
-    return dcc.Upload(id="cfg-upload",
-                      children=['Drag and Drop or ', html.B('Select'), ' a TOML configuration file.'],
-                      style={
-                          'width': '100%',
-                          'height': '60px',
-                          'lineHeight': '60px',
-                          'borderWidth': '1px',
-                          'borderStyle': 'dashed',
-                          'borderRadius': '5px',
-                          'textAlign': 'center',
-                      },
-                      accept=".toml",
-                      # Do not allow multiple files to be uploaded
-                      multiple=False
-                      )
+    return dcc.Upload(
+        children=['Drag and Drop or Select a TOML configuration file.'],
+        id="cfg-upload",
+        style={
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+        },
+        accept=".toml",
+        # Do not allow multiple files to be uploaded
+        multiple=False
+    )

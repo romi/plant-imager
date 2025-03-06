@@ -1,52 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 from base64 import b64decode
-from io import BytesIO
 from logging import getLogger
-from zipfile import ZipFile
 
 import dash_bootstrap_components as dbc
-import requests
 import toml
 from dash import Input
 from dash import Output
 from dash import State
 from dash import callback
 from dash import dcc
-from dash import get_asset_url
 from dash import html
-from dash import register_page
 
-from plantimager.webui.utils import base_url
 from plantimager.webui.utils import config_upload
 from plantimager.webui.utils import create_temp_fsdb
-from plantimager.webui.utils import temp_scan_dir
 from romitask.log import get_log_filename
 
 # Characters not allowed in dataset names for system compatibility
 FORBIDDEN_CHAR = [":", "/", "*", "#", "@", ">", "<", "?", "|", "\"", "\'"]
-
-
-@callback(Output('scan-cfg-toml', 'value'),
-          Input('cfg-upload', 'contents'),
-          prevent_initial_call=True)
-def update_cfg(contents):
-    # Parse base64 encoded config file contents and update TOML text area
-    content_type, content_string = contents.split(',')
-    cfg = b64decode(content_string)
-    return cfg.decode()
-
 
 # Card for scan configuration settings using TOML format
 configuration_card = [
     dbc.Card(
         id="configuration-card",
         children=[
-            dbc.CardHeader("Configuration"),
+            dbc.CardHeader(children=[html.I(className="bi bi-code-square me-2"), "Configuration"]),
             dbc.CardBody([
-                dbc.Textarea(id="scan-cfg-toml", className="mb-3", size='md',
-                             value=toml.dumps(toml.load(get_asset_url('hardware_scan_rx0.toml')[1:])),
+                dbc.Textarea(id="scan-cfg-toml", class_name="mb-3", size='md',
+                             value=toml.dumps(toml.load('assets/hardware_scan_rx0.toml')),
                              title="The scan configuration in TOML format.",
                              placeholder="Scan configuration (TOML).",
                              style={'height': "65vh"}, persistence=True),
@@ -63,18 +44,24 @@ dataset_name_card = [
     dbc.Card(
         id="dataset-card",
         children=[
-            dbc.CardHeader("Dataset"),
-            dbc.CardBody([
+            dbc.CardHeader(children=[html.I(className="bi bi-tag me-2"), "Dataset"]),
+            dbc.CardBody(children=[
                 html.Div([
                     dbc.Label("Name of the dataset to create:"),
                     dbc.Input(id="dataset-input-name", placeholder="Dataset name",
-                              className="mb-3", invalid=True, persistence=True),
+                              class_name="mb-3", invalid=True, persistence=True),
                     dbc.FormText(dcc.Markdown(
                         "The list of forbidden characters is: " + ', '.join([f'`{c}`' for c in FORBIDDEN_CHAR])
                     )),
-                ]
-                )
-            ])
+                ]),
+                html.Div(children=[
+                    dbc.Alert(
+                        "Dataset name already exists. Please choose a different name.",
+                        color="danger",
+                        dismissable=True
+                    )
+                ], id='dataset-exists-message', style={'display': 'none'}),
+            ]),
         ]
     )
 ]
@@ -84,16 +71,19 @@ scan_card = [
     dbc.Card(
         id="scan-card",
         children=[
-            dbc.CardHeader("Scan"),
+            dbc.CardHeader(children=[html.I(className="bi bi-camera me-2"), "Scan"]),
             dbc.CardBody([
                 dbc.Row([
                     dbc.Col([
                         dcc.Loading([
-                            dbc.Button('Start scanning', id='scan-button')
+                            dbc.Button(
+                                children=[
+                                    html.I(className="bi bi-play-fill me-2"),
+                                    'Start scanning'
+                                ],
+                                id='scan-button'
+                            )
                         ]),
-                    ], width=6),
-                    dbc.Col([
-                        dbc.Button('Preview', id='preview-button', disabled=True)
                     ], width=6),
                     dcc.Markdown(id='scan-response', children="_Run a scan first..._"),
                 ])
@@ -112,49 +102,61 @@ scan_card = [
     )
 ]
 
-# Card for uploading scanned data to PlantDB REST API.
-upload_card = [
-    dbc.Card(
-        id="upload-card",
-        children=[
-            dbc.CardHeader("Upload"),
-            dbc.CardBody([
-                dcc.Loading([dbc.Button('Upload', id='upload-button', disabled=True)]),
-                dcc.Markdown(id='upload-response', children="_Upload first..._"),
-            ]
-            ),
-            dbc.CardFooter([
-                dbc.Accordion(
-                    dbc.AccordionItem(children=[
-                        dcc.Markdown(id="upload-output", children="_Upload first..._"),
-                    ],
-                        title="Detailed upload output:"
-                    ),
-                    start_collapsed=True, flush=True, style={'bs-accordion-btn-bg': '#21252908'}
-                )
-            ])
-        ]
-    )
-]
+# Main container for the "scan" layout: two equally sized columns
+# Left column, containing the configuration card
+# Right column, containing multiple stacked cards
+scan_layout = html.Div(
+    children=[
+        dbc.Row([
+            dbc.Col(configuration_card, md=6),
+            dbc.Col(dataset_name_card + [html.Br()] + scan_card, md=6)
+        ])
+    ], id="scan-page-layout"
+)
 
-# Modal for displaying dataset preview
-preview_modal = dbc.Modal([
-    dbc.ModalHeader(
-        dbc.ModalTitle(id='preview-title', children="Dataset preview")
-    ),
-    dbc.ModalBody(id='preview-carousel'),
-], id="modal-fs", fullscreen=True, )
+
+@callback(Output('scan-cfg-toml', 'value'),
+          Input('cfg-upload', 'contents'),
+          prevent_initial_call=True)
+def update_toml_cfg(contents):
+    # Parse base64 encoded config file contents and update TOML text area
+    content_type, content_string = contents.split(',')
+    cfg = b64decode(content_string)
+    return cfg.decode()
+
+
+def all_valid_characters(dataset_name):
+    """Validates if all characters in a given dataset name are permissible.
+
+    Parameters
+    ----------
+    dataset_name : str
+        The name of the dataset to be validated.
+
+    Returns
+    -------
+    bool
+        ``True`` if all characters in the dataset name are valid otherwise, ``False``.
+    """
+    return sum([letter in FORBIDDEN_CHAR for letter in dataset_name]) == 0
+
+
+def is_valid_dataset_name(dataset_name, existing_datasets):
+    if dataset_name not in existing_datasets and all_valid_characters(dataset_name):
+        return True
+    else:
+        return False
 
 
 # Callback to validate the selected dataset name:
 @callback(
-          Output('dataset-input-name', 'invalid'),
-          Output('dataset-id', 'data'),
-          Input('dataset-input-name', 'value'),
-          State('dataset-list', 'data'),
-          prevent_initial_call=True
+    Output('dataset-input-name', 'invalid'),
+    Output('dataset-input-name', 'valid'),
+    Output('dataset-id', 'data'),
+    Input('dataset-input-name', 'value'),
+    State('dataset-list', 'data')
 )
-def validate_dataset_name(dataset_name, dataset_dict):
+def validate_dataset_name(dataset_name, existing_datasets):
     """Callback to validate the selected dataset name.
 
     It should follow two rules:
@@ -165,33 +167,53 @@ def validate_dataset_name(dataset_name, dataset_dict):
     ----------
     dataset_name : str
         The dataset name to validate.
-    dataset_dict : dict
+    existing_datasets : list
         The dataset indexed dictionary that exists in the database.
 
     Returns
     -------
     bool
         The `invalid` state of the 'dataset-input-name' `Input` component.
+    bool
+        The `valid` state of the 'dataset-input-name' `Input` component.
     str
         The name of the dataset.
     """
-    if dataset_name not in list(dataset_dict.keys()) and sum(
-            [letter in FORBIDDEN_CHAR for letter in dataset_name]) == 0:
-        return False, dataset_name
+    if is_valid_dataset_name(dataset_name, existing_datasets):
+        return False, True, dataset_name
     else:
-        return True, dataset_name
+        return True, False, dataset_name
 
 
-@callback(Output('scan-button', 'disabled'),
-          Output('scan-response', 'children'),
-          Output('scan-output', 'children'),
-          Output('preview-button', 'disabled'),
-          Output('upload-button', 'disabled'),
-          Input('scan-button', 'n_clicks'),
-          State('scan-cfg-toml', 'value'),
-          State('dataset-input-name', 'value'),
-          prevent_initial_call=True)
-def run_scan(n_clicks, cfg, dataset_name):
+@callback(
+    Output('dataset-exists-message', 'style'),
+    Input('dataset-input-name', 'value'),
+    State('dataset-list', 'data')
+)
+def check_dataset_name_uniqueness(dataset_name, existing_datasets):
+    if dataset_name in existing_datasets:
+        return {'display': 'block', 'margin-top': '10px'}
+    else:
+        return {'display': 'none'}
+
+
+@callback(
+    Output('scan-button', 'disabled'),
+    Input('dataset-input-name', 'valid'),
+)
+def disable_scan_button(valid):
+    return not valid
+
+
+@callback(
+    Output('scan-response', 'children'),
+    Output('scan-output', 'children'),
+    Input('scan-button', 'n_clicks'),
+    State('scan-cfg-toml', 'value'),
+    State('dataset-input-name', 'value'),
+    prevent_initial_call=True
+)
+def run_scan(_, cfg, dataset_name):
     task = "Scan"  # we will run a scan task
     from romitask.cli.romi_run_task import run_task
     # Create a temporary fsdb with the name of the dataset as suffix:
@@ -212,99 +234,4 @@ def run_scan(n_clicks, cfg, dataset_name):
     with open(dataset_path / log_fname, 'rb') as f:
         log = "```\n" + "".join([line.decode() for line in f.readlines()]) + "```"
 
-    return True, success, log, False, False
-
-
-# Callback of the "upload-button" button:
-@callback(Output('upload-response', 'children'),
-          Output('upload-output', 'children'),
-          Input('upload-button', 'n_clicks'),
-          State('dataset-id', 'data'),
-          State('rest-api-host', 'data'),
-          State('rest-api-port', 'data'),
-          prevent_initial_call=True)
-def upload_archive(n_clicks, scan_id, host, port):
-    """Create an archive of the local dataset and send it to the PlantDB REST API using a POST request."""
-    # Local path to search for files to archive
-    scan_path = temp_scan_dir(scan_id)
-    # List to store file paths to archive
-    file_paths = []
-    # Recursively search for files
-    for root, dirs, files in os.walk(scan_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            file_paths.append(file_path)
-
-    # Create a zip file in memory
-    zip_data = BytesIO()
-    with ZipFile(zip_data, mode='w') as zip_file:
-        for file_path in file_paths:
-            # Check if the file exists
-            if os.path.isfile(file_path):
-                # Add the file to the zip,
-                # removing the path to the scan directory not to get the full path in archived file names
-                zip_file.write(file_path,
-                               arcname=file_path.replace(str(scan_path) + '/', ''))
-            else:
-                print(f"Warning: {file_path} is not a file and will be skipped.")
-
-    # Send the POST request
-    url = f"{base_url(host, port)}/archive/{scan_id}"
-    files = {'zip_file': ('archive.zip', zip_data.getvalue())}
-    response = requests.post(url, files=files)
-
-    # Check the response to the POST request:
-    if response.ok:
-        return 'Zip file uploaded successfully', "```\n" + "\n".join(response.json()['files']) + "```"
-    else:
-        return 'Error uploading zip file', "```\n" + response.text + "```"
-
-
-def preview_carousel(img_uri_list):
-    carousel = dbc.Carousel(
-        items=[{"key": i, "src": img_uri, "caption": f"Image {str(i).zfill(5)}"} for i, img_uri in
-               enumerate(img_uri_list)],
-        controls=True, indicators=True, className="carousel-fade",
-    )
-    return carousel
-
-
-@callback(Output('preview-title', 'children'),
-          Output('preview-carousel', 'children'),
-          Input('preview-button', 'n_clicks'),
-          State('dataset-id', 'data'),
-          prevent_initial_call=True)
-def preview(n_clicks, dataset_id):
-    # Local path to search for image files to preview:
-    scan_path = temp_scan_dir(dataset_id)
-    img_path = scan_path / 'images'
-    img_uri_list = [p for p in img_path.iterdir() if p.is_file()]
-    return f"'{dataset_id}' dataset preview", preview_carousel(img_uri_list)
-
-
-def layout(dataset_id=None, **kwargs):
-    """Create the page layout for the reconstruction page.
-
-    Parameters
-    ----------
-    dataset_id : str
-        The name of the dataset to show in the reconstruction page.
-
-    Returns
-    -------
-    html.Div
-        The layout for the reconstruction page.
-    """
-    return html.Div([
-        # Store the dataset id to use in the callback.
-        dcc.Store(id='dataset-id', data=dataset_id),
-        # Content of the scan page:
-        dbc.Row(
-            id="scan-page-content",
-            children=[
-                dbc.Col(configuration_card, md=6),
-                dbc.Col(dataset_name_card + [html.Br()] + scan_card + [html.Br()] + upload_card, md=6)
-            ],
-        ),
-        html.Div(id='preview-modal-wrapper', children=preview_modal),
-    ])
+    return True, success, log, False
