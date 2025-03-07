@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import hashlib
+import json
 import time
+from urllib.parse import urljoin
 
 import dash_bootstrap_components as dbc
+import requests
 from dash import Input
 from dash import Output
 from dash import State
 from dash import callback
 from dash import html
+
+from plantdb.rest_api_client import base_url
+from plantimager.webui.new_user import new_user_button
 
 # Local storage for users
 USERS_DB = {
@@ -100,12 +106,13 @@ login_modal = html.Div([
                 )
             ]),
             html.Div(children=[
-                dbc.Alert("Login successful!", color="success")
-            ], id='login-success-message', style={'display': 'none'}),
+                dbc.Alert("Try to log-in first...", color="info")
+            ], id='login-attempt-message', style={'display': 'none'}),
         ]),
         dbc.ModalFooter(
             children=html.Div(
                 children=[
+                    new_user_button,
                     dbc.Button(children=[html.I(className="bi bi-box-arrow-right me-2"), 'Login'],
                                id='login-button', n_clicks=0, disabled=False),
                     dbc.Button(children=[html.I(className="bi bi-box-arrow-left me-2"), 'Logout'],
@@ -127,14 +134,17 @@ def toggle_login_modal(_, is_open):
 
 # Handle login form submission and authentication
 @callback(Output('logged-username', 'data'),
-          Output('login-success-message', 'style'),
+          Output('login-attempt-message', 'style'),
+          Output('login-attempt-message', 'children'),
           Input('username-input', 'n_submit'),
           Input('password-input', 'n_submit'),
           Input('login-button', 'n_clicks'),
           State('username-input', 'value'),
           State('password-input', 'value'),
+          State('rest-api-host', 'data'),
+          State('rest-api-port', 'data'),
           prevent_initial_call=True)
-def login(username_submit, password_submit, n_clicks, username, password):
+def login(username_submit, password_submit, n_clicks, username, password, host, port):
     """Callback handling user login functionality.
 
     Parameters
@@ -156,13 +166,49 @@ def login(username_submit, password_submit, n_clicks, username, password):
     bool
         A flag indicating whether the error modal should be opened (``True`` for failure, ``False`` otherwise).
     """
-    # Verify credentials against user database
-    if username in list(USERS_DB.keys()) and password == USERS_DB[username]['password']:
-        # Show the success message
-        success_message_style = {'display': 'block', 'margin-top': '10px'}
-        return username, success_message_style  # Login successful
-    else:
-        return None, {'display': 'none'}  # Login failed
+    message_style = {'display': 'block', 'margin-top': '10px'}
+
+    try:
+        # Send login request to REST API endpoint
+        response = requests.post(
+            urljoin(base_url(host, port), '/login'),
+            data=json.dumps({'username': username, 'password': password}),
+            headers={'Content-Type': 'application/json'}
+        )
+
+        # Debug logging of response
+        print(f"Status code: {response.status_code}")
+        print(f"Response text: {response.text}")
+
+        if response.ok:
+            # Parse successful response
+            loggin_attempt = response.json()
+            is_logged_in = loggin_attempt['authenticated']
+            login_msg = loggin_attempt['message']
+            if is_logged_in:
+                # Setup success message display
+                alert = dbc.Alert(login_msg, color="success")
+                return username, message_style, alert
+
+        # Handle failed login attempts
+        error_msg = "Login failed. Please check your credentials."
+        if response.text:
+            try:
+                # Attempt to extract error message from response
+                error_data = response.json()
+                if 'message' in error_data:
+                    error_msg = error_data['message']
+            except json.JSONDecodeError:
+                # Use raw response text if JSON parsing fails
+                error_msg = response.text
+
+        alert = dbc.Alert(error_msg, color="danger")
+        return None, message_style, alert
+
+    except requests.exceptions.RequestException as e:
+        # Handle connection errors (network issues, server down, etc.)
+        alert = dbc.Alert(f"Connection error: {str(e)}", color="danger")
+        return None, message_style, alert
 
 
 @callback(

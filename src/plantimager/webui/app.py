@@ -12,6 +12,7 @@ from plantdb.rest_api_client import REST_API_URL
 from plantimager.webui.config import plantdb_cfg_modal
 from plantimager.webui.login import login_modal
 from plantimager.webui.nav import navbar_layout
+from plantimager.webui.new_user import new_user_modal
 from plantimager.webui.scan import scan_layout
 
 
@@ -44,7 +45,8 @@ def main(url, port):
         html.Div(children=[
             navbar_layout,
             plantdb_cfg_modal,
-            login_modal
+            login_modal,
+            new_user_modal,
         ]),
         # Main content container
         html.Div(children=[scan_layout], style={"margin": 20}),
