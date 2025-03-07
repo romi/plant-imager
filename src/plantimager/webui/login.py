@@ -78,49 +78,81 @@ login_button_tooltip = dbc.Tooltip(
 # Create login button components for the navigation bar
 login_button = create_login_button()
 
-login_modal = html.Div([
-    dbc.Modal(id='login-modal', children=[
-        dbc.ModalHeader(
-            dbc.ModalTitle(children=[html.I(className="bi bi-person-bounding-box me-2"), "Login"])
-        ),
-        dbc.ModalBody(children=[
-            html.Div(children=[
-                dbc.Label(children=[html.I(className="bi bi-person me-2"), 'Username:']),
-                dbc.Input(
-                    id='username-input',
-                    type='text',
-                    placeholder="Enter username",
-                    persistence=True,
-                    n_submit=0,
-                    n_submit_timestamp=-1
-                )
-            ]),
-            html.Div(children=[
-                dbc.Label(children=[html.I(className="bi bi-lock me-2"), 'Password:']),
-                dbc.Input(
-                    id='password-input',
-                    type='password',
-                    placeholder="Enter password",
-                    n_submit=0,
-                    n_submit_timestamp=-1
-                )
-            ]),
-            html.Div(children=[
-                dbc.Alert("Try to log-in first...", color="info")
-            ], id='login-attempt-message', style={'display': 'none'}),
+login_modal = dbc.Modal(children=[
+    dbc.ModalHeader(
+        dbc.ModalTitle(children=[
+            html.I(className="bi bi-person-bounding-box me-2"),
+            "Login"
+        ])
+    ),
+    dbc.ModalBody(children=[
+        # Username input, e.g., "username" or "firstname"
+        dbc.InputGroup(children=[
+            dbc.InputGroupText(
+                html.I(className="bi bi-person")  # Alternatives: bi-person-badge, bi-at
+            ),
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        id='username-input',
+                        type='text',
+                        placeholder="Username",
+                        persistence=True,
+                        n_submit=0,
+                        n_submit_timestamp=-1
+                    ),
+                    dbc.Label("Username", html_for="username-input"),
+                ]),
+        ], className="mb-3"),
+        # Password input, e.g., "<PASSWORD>" or "<PASSWORD>"
+        dbc.InputGroup(children=[
+            dbc.InputGroupText(
+                html.I(className="bi bi-key")  # Alternatives: bi-lock, bi-shield-lock
+            ),
+            dbc.FormFloating(
+                [
+                    dbc.Input(
+                        id='password-input',
+                        type='password',
+                        placeholder="Password",
+                        n_submit=0,
+                        n_submit_timestamp=-1
+                    ),
+                    dbc.Label("Password", html_for="password-input"),
+                ]),
         ]),
-        dbc.ModalFooter(
-            children=html.Div(
+        # Messages placeholders
+        html.Div(children=[
+            dbc.Alert("Try to log-in first...", color="info")
+        ], id='login-attempt-message', style={'display': 'none'}),
+    ]),
+    dbc.ModalFooter(
+        children=[
+            new_user_button,
+            # Login button
+            dbc.Button(
                 children=[
-                    new_user_button,
-                    dbc.Button(children=[html.I(className="bi bi-box-arrow-right me-2"), 'Login'],
-                               id='login-button', n_clicks=0, disabled=False),
-                    dbc.Button(children=[html.I(className="bi bi-box-arrow-left me-2"), 'Logout'],
-                               id='logout-button', n_clicks=0, disabled=True),
-                ], className="d-grid gap-2 d-md-flex justify-content-md-end")
-            , id='login-modal-footer')
-    ], is_open=True),
-])
+                    html.I(className="bi bi-box-arrow-right me-2"),  # Alternative: bi-check2-circle
+                    'Login'
+                ],
+                id='login-button',
+                n_clicks=0,
+                disabled=False,
+                className="me-2"
+            ),
+            # Logout button
+            dbc.Button(
+                children=[
+                    html.I(className="bi bi-box-arrow-left me-2"),  # Alternative: bi-door-open
+                    'Logout'
+                ],
+                id='logout-button',
+                n_clicks=0,
+                disabled=True,
+                className="me-2"
+            )
+        ])
+], id='login-modal', is_open=True)
 
 
 # Callback to toggle login modal visibility

@@ -24,17 +24,19 @@ new_user_button = dbc.Button(
     className="me-2",
 )
 
-
 # Create the new user registration modal
 new_user_modal = dbc.Modal([
-    dbc.ModalHeader([
-        html.I(className="bi bi-person-plus-fill me-2"),  # Alternative: bi-person-vcard
-        "Create New Account"
-    ]),
-    dbc.ModalBody([
-        dbc.InputGroup([
+    dbc.ModalHeader(
+        dbc.ModalTitle(children=[
+            html.I(className="bi bi-person-plus-fill me-2"),
+            "Create New Account"
+        ])
+    ),
+    dbc.ModalBody(children=[
+        # Username input, e.g., "username" or "firstname"
+        dbc.InputGroup(children=[
             dbc.InputGroupText(
-                html.I(className="bi bi-person-badge")  # Alternatives: bi-person, bi-at
+                html.I(className="bi bi-person")  # Alternatives: bi-person-badge, bi-at
             ),
             dbc.Input(
                 id="new-username-input",
@@ -42,8 +44,8 @@ new_user_modal = dbc.Modal([
                 placeholder="Username",
             )
         ], className="mb-3"),
-
-        dbc.InputGroup([
+        # Full name input, e.g., "Firstname Lastname" or "Firstname Middlename Lastname"
+        dbc.InputGroup(children=[
             dbc.InputGroupText(
                 html.I(className="bi bi-person-vcard")  # Alternatives: bi-person-lines-fill, bi-card-text
             ),
@@ -53,10 +55,10 @@ new_user_modal = dbc.Modal([
                 placeholder="Full Name",
             )
         ], className="mb-3"),
-
-        dbc.InputGroup([
+        # Password input, e.g., "<PASSWORD>" or "<PASSWORD>"
+        dbc.InputGroup(children=[
             dbc.InputGroupText(
-                html.I(className="bi bi-key-fill")  # Alternatives: bi-lock-fill, bi-shield-lock
+                html.I(className="bi bi-key")  # Alternatives: bi-lock, bi-shield-lock
             ),
             dbc.Input(
                 id="new-password-input",
@@ -64,8 +66,8 @@ new_user_modal = dbc.Modal([
                 placeholder="Password",
             )
         ], className="mb-3"),
-
-        dbc.InputGroup([
+        # Password confirmation input
+        dbc.InputGroup(children=[
             dbc.InputGroupText(
                 html.I(className="bi bi-key")  # Alternatives: bi-lock, bi-shield-check
             ),
@@ -74,28 +76,21 @@ new_user_modal = dbc.Modal([
                 type="password",
                 placeholder="Confirm Password",
             )
-        ], className="mb-3"),
-
+        ]),
+        # Messages placeholders
         html.Div(id="password-match-message"),
         html.Div(id="registration-message")
     ]),
     dbc.ModalFooter([
+        # Register button
         dbc.Button(
-            [
-                html.I(className="bi bi-check2-circle me-2"),  # Alternatives: bi-person-check, bi-box-arrow-in-right
+            children=[
+                html.I(className="bi bi-check2-circle me-2"),  # Alternative: bi-box-arrow-in-right
                 "Register"
             ],
             id="register-button",
             color="primary",
             className="me-2"
-        ),
-        dbc.Button(
-            [
-                html.I(className="bi bi-x-circle me-2"),  # Alternatives: bi-door-closed, bi-arrow-left
-                "Close"
-            ],
-            id="close-register-modal",
-            color="secondary"
         )
     ])
 ], id="new-user-modal")
@@ -104,13 +99,12 @@ new_user_modal = dbc.Modal([
 
 @callback(
     Output("new-user-modal", "is_open"),
-    [Input("new-user-button", "n_clicks"),
-     Input("close-register-modal", "n_clicks")],
-    [State("new-user-modal", "is_open")],
+    Input("new-user-button", "n_clicks"),
+    State("new-user-modal", "is_open"),
     prevent_initial_call=True
 )
-def toggle_register_modal(new_user_clicks, close_clicks, is_open):
-    if new_user_clicks or close_clicks:
+def toggle_register_modal(new_user_clicks, is_open):
+    if new_user_clicks:
         return not is_open
     return is_open
 
@@ -128,6 +122,38 @@ def toggle_register_modal(new_user_clicks, close_clicks, is_open):
     prevent_initial_call=True
 )
 def register_user(n_clicks, username, fullname, password, confirm_password, host, port):
+    """Callback handling user registration functionality.
+
+    Validates input fields, matches password and confirmation password, and sends registration data to the
+    backend API for account creation.
+
+    Parameters
+    ----------
+    n_clicks : int
+        The number of times the "register" button is clicked. Used to trigger the
+        callback process.
+    username : str
+        The desired username entered by the user in the input field.
+    fullname : str
+        The full name of the user entered during the registration process.
+    password : str
+        The password provided by the user for their new account.
+    confirm_password : str
+        The confirmation of the password, which must match the `password` field.
+    host : str
+        The host address of the REST API for backend communication.
+    port : int
+        The port number of the REST API for backend communication.
+
+    Returns
+    -------
+    str
+        A message to indicate if passwords match or any other relevant feedback.
+        It is returned as a children property of the "password-match-message" component.
+    str
+        A message to convey the registration result.
+        It is returned as a children property of the "registration-message" component.
+    """
     if not n_clicks:
         return "", ""
 
