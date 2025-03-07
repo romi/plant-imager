@@ -52,8 +52,8 @@ class CNC(AbstractCNC):
     z_lims : (int, int), optional
         The allowed range of Z-axis positions.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from plantimager.dummy import CNC
     >>> cnc = CNC()
     >>> cnc.get_position()
@@ -163,8 +163,8 @@ class Gimbal(AbstractGimbal):
     tilt_lims : (float, float), optional
         The allowed range of tilt-axis positions. Defaults to ``[-90., 90.]``
 
-    Example
-    -------
+    Examples
+    --------
     >>> from plantimager.dummy import Gimbal
     >>> gimbal = Gimbal()
     >>> gimbal.get_position()

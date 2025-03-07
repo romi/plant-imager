@@ -47,8 +47,8 @@ class Scanner(AbstractScanner):
     --------
     plantimager.hal.AbstractScanner
 
-    Example
-    -------
+    Examples
+    --------
     >>> from plantimager.scanner import Scanner
     >>> # Example #1 - A dummy scanner
     >>> from plantimager.dummy import CNC
