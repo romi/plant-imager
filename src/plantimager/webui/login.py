@@ -163,9 +163,31 @@ login_modal = dbc.Modal(children=[
 def toggle_login_modal(_, is_open):
     return not is_open
 
+@callback(
+    Output('username-input', 'valid'),
+    Output('username-input', 'invalid'),
+    Input('username-input', 'value'),
+    State('login-modal', 'is_open'),
+    State('rest-api-host', 'data'),
+    State('rest-api-port', 'data')
+)
+def validate_username(username, is_modal_open, host, port):
+    if not is_modal_open or not username:
+        return False, False
+    # Make request to the login API endpoint
+    try:
+        response = requests.get(urljoin(base_url(host, port), f'/login?username={username}'))
+        user_exists = response.json().get('exists', False)
+        if user_exists:
+            return True, False  # Valid username
+        else:
+            return False, True  # Invalid username
+    except Exception as e:
+        return False, True
 
 # Handle login form submission and authentication
 @callback(Output('logged-username', 'data'),
+          Output('logged-fullname', 'data'),
           Output('login-attempt-message', 'style'),
           Output('login-attempt-message', 'children'),
           Input('username-input', 'n_submit'),
@@ -208,19 +230,16 @@ def login(username_submit, password_submit, n_clicks, username, password, host, 
             headers={'Content-Type': 'application/json'}
         )
 
-        # Debug logging of response
-        print(f"Status code: {response.status_code}")
-        print(f"Response text: {response.text}")
-
         if response.ok:
             # Parse successful response
             loggin_attempt = response.json()
             is_logged_in = loggin_attempt['authenticated']
+            fullname = loggin_attempt['fullname']
             login_msg = loggin_attempt['message']
             if is_logged_in:
                 # Setup success message display
                 alert = dbc.Alert(login_msg, color="success")
-                return username, message_style, alert
+                return username, fullname, message_style, alert
 
         # Handle failed login attempts
         error_msg = "Login failed. Please check your credentials."
@@ -235,23 +254,23 @@ def login(username_submit, password_submit, n_clicks, username, password, host, 
                 error_msg = response.text
 
         alert = dbc.Alert(error_msg, color="danger")
-        return None, message_style, alert
+        return None, None, message_style, alert
 
     except requests.exceptions.RequestException as e:
         # Handle connection errors (network issues, server down, etc.)
         alert = dbc.Alert(f"Connection error: {str(e)}", color="danger")
-        return None, message_style, alert
+        return None, None, message_style, alert
 
 
 @callback(
     Output("login-avatar-button", "children"),
-    Input("logged-username", "data")
+    Input("logged-fullname", "data")
 )
-def update_login_avatar_button(username):
-    if username:
+def update_login_avatar_button(fullname):
+    if fullname:
         return create_login_button(
             is_logged_in=True,
-            user_fullname=USERS_DB.get(username).get("fullname", "??")
+            user_fullname=fullname
         ).children
     return create_login_button(is_logged_in=False).children
 

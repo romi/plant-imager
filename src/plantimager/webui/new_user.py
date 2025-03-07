@@ -95,6 +95,7 @@ new_user_modal = dbc.Modal([
     ])
 ], id="new-user-modal")
 
+
 # Add the following callback functions
 
 @callback(
@@ -107,6 +108,29 @@ def toggle_register_modal(new_user_clicks, is_open):
     if new_user_clicks:
         return not is_open
     return is_open
+
+
+@callback(
+    Output('new-username-input', 'valid'),
+    Output('new-username-input', 'invalid'),
+    Input('new-username-input', 'value'),
+    State('new-user-modal', 'is_open'),
+    State('rest-api-host', 'data'),
+    State('rest-api-port', 'data')
+)
+def validate_new_username(new_username, is_modal_open, host, port):
+    if not is_modal_open or not new_username:
+        return False, False
+    # Make request to the login API endpoint
+    try:
+        response = requests.get(urljoin(base_url(host, port), f'/login?username={new_username}'))
+        user_exists = response.json().get('exists', False)
+        if user_exists:
+            return False, True  # Unavailable username
+        else:
+            return True, False  # Available username
+    except Exception as e:
+        return False, True
 
 
 @callback(

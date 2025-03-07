@@ -39,6 +39,7 @@ def main(url, port):
         dcc.Store(id='rest-api-port', data=port),
         dcc.Store(id='connected', data=None),
         dcc.Store(id='logged-username', data=None),
+        dcc.Store(id='logged-fullname', data=None),
         dcc.Store(id='dataset-list', data=[]),
         dcc.Store(id='dataset-id', data=None),
         # Navigation and modal components
