@@ -17,14 +17,52 @@ from plantdb.rest_api_client import test_host_port_availability
 
 
 def dataset_cfg_status(is_connected):
+    """Generate a database status icon based on connection state.
+
+    Creates a Bootstrap icon element representing the database connection status.
+    Returns a check icon when connected and a gear icon when disconnected.
+
+    Parameters
+    ----------
+    is_connected : bool
+        Flag indicating whether the database connection is established.
+
+    Returns
+    -------
+    dash.html.I
+        A Bootstrap icon component with appropriate class based on connection status.
+    """
     if is_connected:
         return html.I(className="bi bi-database-check fs-3")
     else:
         return html.I(className="bi bi-database-gear fs-3")
 
 
-def create_dataset_cfg_icon(is_connected=False, dataset_list=[]):
-    """Create a badge displaying the number of datasets in the dataset list."""
+def create_dataset_cfg_icon(is_connected=False, dataset_list=None):
+    """Create a navigation link with database status icon and dataset counter badge.
+
+    Creates a Bootstrap NavLink component that displays a database status icon and
+    a badge showing the number of datasets. The icon changes appearance based on
+    connection status.
+
+    Parameters
+    ----------
+    is_connected : bool, optional
+        Flag indicating whether the database connection is established,
+        by default False
+    dataset_list : list, optional
+        List of datasets to count, by default empty list
+
+    Returns
+    -------
+    dash.bootstrap_components.NavLink
+        A navigation link component containing:
+        - Database status icon
+        - Badge showing dataset count
+        The NavLink is styled and positioned according to the application's design.
+    """
+    if dataset_list is None:
+        dataset_list = []
     return dbc.NavLink(
         children=[
             dataset_cfg_status(is_connected),
@@ -112,17 +150,35 @@ plantdb_cfg_modal = html.Div(children=[
 ])
 
 
-# Callback to toggle configuration modal visibility
 @callback(Output("plantdb-cfg-modal", "is_open"),
           Input('plantdb-cfg-button', 'n_clicks'),
           State('plantdb-cfg-modal', 'is_open'),
           prevent_initial_call=True)
 def toggle_plantdb_cfg_modal(n_clicks, is_open):
+    """Toggle the visibility state of the PlantDB configuration modal.
+
+    This callback function controls the opening and closing of the PlantDB configuration
+    modal dialog. It is triggered by clicks on the configuration button and toggles
+    the modal's visibility state.
+
+    Parameters
+    ----------
+    n_clicks : int
+        Number of times the plantdb-cfg-button has been clicked. Used to determine
+        when to toggle the modal state.
+    is_open : bool
+        Current visibility state of the modal.
+
+    Returns
+    -------
+    bool or None
+        The new visibility state of the modal. Returns the opposite of the current
+        state when n_clicks > 0, otherwise returns None.
+    """
     if n_clicks > 0:
         return not is_open
 
 
-# Callback to update IP address from stored value
 @callback(
     Output("ip-address", "value"),
     Input("plantdb-cfg-modal", "is_open"),
@@ -183,6 +239,33 @@ def update_ip_port(modal_is_open, stored_port):
     State("rest-api-port", "data"),
 )
 def show_plantdb_status(status, host, port):
+    """Display the connection status of the PlantDB server in a Bootstrap alert component.
+
+    This callback function generates a styled alert component that shows whether the
+    PlantDB server is available or not. The alert includes an icon and descriptive text
+    with the server's host and port information when applicable.
+
+    Parameters
+    ----------
+    status : bool or None
+        Connection status of the PlantDB server:
+        - None: status unknown
+        - True: server is available
+        - False: server is unavailable
+    host : str
+        Hostname or IP address of the PlantDB server
+    port : int
+        Port number of the PlantDB server
+
+    Returns
+    -------
+    dash_bootstrap_components.Alert
+        A Bootstrap alert component with appropriate styling and message based on
+        the connection status:
+        - Info (blue): when status is unknown
+        - Success (green): when server is available
+        - Danger (red): when server is unavailable
+    """
     if status is None:
         status_form = dbc.Alert(children=[
             html.I(className="bi bi-info-circle-fill me-2"),
@@ -266,6 +349,29 @@ def check_server_availability(_, host, port, stored_host, stored_port):
     State("dataset-list", "data"),
 )
 def update_plantdb_cfg_button(status, dataset_list):
+    """Update the PlantDB configuration button's appearance based on connection status.
+
+    This callback function updates the visual representation of the PlantDB configuration
+    button in the navigation bar depending on the connection status and dataset list state.
+    It uses the create_dataset_cfg_icon function to generate the appropriate icon.
+
+    Parameters
+    ----------
+    status : bool or None
+        The connection status to the PlantDB REST API.
+        ``None`` indicates no connection attempt has been made.
+        ``True`` indicates successful connection.
+        ``False`` indicates failed connection.
+    dataset_list : list or None
+        List of available datasets from the PlantDB.
+        ``None`` if no datasets are loaded or connection is not established.
+
+    Returns
+    -------
+    dash.html.Component
+        A Dash HTML component representing the configuration button icon
+        with appropriate styling based on the connection status.
+    """
     return create_dataset_cfg_icon(status, dataset_list)
 
 
@@ -324,4 +430,20 @@ def update_dataset_list(n_clicks, connected, host, port):
     Input("dataset-list", "data")  # Assuming you have a dataset list stored in dcc.Store
 )
 def update_dataset_badge(dataset_list):
+    """Update the dataset count badge with the current number of datasets.
+
+    This callback function updates a badge element in the UI to display the total
+    number of datasets currently available in the system. It converts the length
+    of the dataset list to a string for display.
+
+    Parameters
+    ----------
+    dataset_list : list
+        A list containing the dataset names stored in the dcc.Store component.
+
+    Returns
+    -------
+    str
+        String representation of the number of datasets in the list.
+    """
     return str(len(dataset_list))

@@ -81,7 +81,7 @@ scan_card = [
                                     html.I(className="bi bi-play-fill me-2"),
                                     'Start scanning'
                                 ],
-                                id='scan-button'
+                                id='start-start-scan-button'
                             )
                         ]),
                     ], width=6),
@@ -119,6 +119,20 @@ scan_layout = html.Div(
           Input('cfg-upload', 'contents'),
           prevent_initial_call=True)
 def update_toml_cfg(contents):
+    """Updates the TOML configuration text area with the content of the uploaded base64 encoded config file.
+
+    Parameters
+    ----------
+    contents : str
+        The base64 encoded string of the config file, containing both the
+        content type and the encoded content, separated by a comma.
+
+    Returns
+    -------
+    str
+        The decoded TOML configuration string extracted from the uploaded
+        base64 encoded config file.
+    """
     # Parse base64 encoded config file contents and update TOML text area
     content_type, content_string = contents.split(',')
     cfg = b64decode(content_string)
@@ -142,6 +156,21 @@ def all_valid_characters(dataset_name):
 
 
 def is_valid_dataset_name(dataset_name, existing_datasets):
+    """Check if a dataset name is valid and does not already exist.
+
+    Parameters
+    ----------
+    dataset_name : str
+        The name of the dataset to be validated.
+    existing_datasets : list of str
+        A list of dataset names that already exist.
+
+    Returns
+    -------
+    bool
+        ``True`` if the dataset name is valid and does not exist in the list of
+        existing datasets, ``False`` otherwise.
+    """
     if dataset_name not in existing_datasets and all_valid_characters(dataset_name):
         return True
     else:
@@ -191,6 +220,23 @@ def validate_dataset_name(dataset_name, existing_datasets):
     State('dataset-list', 'data')
 )
 def check_dataset_name_uniqueness(dataset_name, existing_datasets):
+    """Check if the specified dataset name already exists.
+
+    Parameters
+    ----------
+    dataset_name : str
+        The name of the dataset input by the user, which needs to be checked
+        for uniqueness.
+    existing_datasets : list of str
+        A list containing the names of datasets that already exist.
+
+    Returns
+    -------
+    dict
+        A style dictionary for controlling the visibility of a message. If the
+        dataset name already exists, the dictionary will display the message.
+        Otherwise, it will hide the message.
+    """
     if dataset_name in existing_datasets:
         return {'display': 'block', 'margin-top': '10px'}
     else:
@@ -198,17 +244,36 @@ def check_dataset_name_uniqueness(dataset_name, existing_datasets):
 
 
 @callback(
-    Output('scan-button', 'disabled'),
+    Output('start-scan-button', 'disabled'),
     Input('dataset-input-name', 'valid'),
 )
 def disable_scan_button(valid):
+    """Disables the 'Start scanning' button based on dataset validation status.
+
+    This callback function determines whether the 'start-scan-button' element
+    should be disabled or enabled based on the validity of input provided
+    to the 'dataset-input-name' element. If the input is not valid, the
+    'start-scan-button' is disabled.
+
+    Parameters
+    ----------
+    valid : bool
+        Indicates whether the dataset input is valid.
+        ``True`` if valid, ``False`` otherwise.
+
+    Returns
+    -------
+    bool
+        Returns ``True`` if the scan button should be disabled, and ``False``
+        if it should be enabled.
+    """
     return not valid
 
 
 @callback(
     Output('scan-response', 'children'),
     Output('scan-output', 'children'),
-    Input('scan-button', 'n_clicks'),
+    Input('start-scan-button', 'n_clicks'),
     State('scan-cfg-toml', 'value'),
     State('dataset-input-name', 'value'),
     prevent_initial_call=True

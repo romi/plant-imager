@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
+import time
 from urllib.parse import urljoin
 
 import dash_bootstrap_components as dbc
@@ -10,6 +11,7 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash import html
+from dash import no_update
 
 from plantdb.rest_api_client import base_url
 
@@ -78,8 +80,7 @@ new_user_modal = dbc.Modal([
             )
         ]),
         # Messages placeholders
-        html.Div(id="password-match-message"),
-        html.Div(id="registration-message")
+        html.Div(id="registration-message", className="mt-3")
     ]),
     dbc.ModalFooter([
         # Register button
@@ -96,8 +97,6 @@ new_user_modal = dbc.Modal([
 ], id="new-user-modal")
 
 
-# Add the following callback functions
-
 @callback(
     Output("new-user-modal", "is_open"),
     Input("new-user-button", "n_clicks"),
@@ -105,6 +104,24 @@ new_user_modal = dbc.Modal([
     prevent_initial_call=True
 )
 def toggle_register_modal(new_user_clicks, is_open):
+    """Toggle the visibility state of the new user registration modal.
+
+    This callback controls the opening and closing of the registration modal dialog
+    when the new user button is clicked.
+
+    Parameters
+    ----------
+    new_user_clicks : int or None
+        Number of times the new user button has been clicked. ``None`` before first click.
+    is_open : bool
+        Current state of the modal dialog (True if open, False if closed).
+
+    Returns
+    -------
+    bool
+        The new state of the modal dialog - toggled from current state if button
+        was clicked.
+    """
     if new_user_clicks:
         return not is_open
     return is_open
@@ -119,6 +136,34 @@ def toggle_register_modal(new_user_clicks, is_open):
     State('rest-api-port', 'data')
 )
 def validate_new_username(new_username, is_modal_open, host, port):
+    """Validate if the entered username is available for registration.
+
+    Makes an API request to check if the username already exists in the system.
+    Updates the validation state of the username input field accordingly.
+
+    Parameters
+    ----------
+    new_username : str or None
+        The username entered by the user to validate.
+    is_modal_open : bool
+        Current state of the registration modal.
+    host : str
+        The host address of the REST API server.
+    port : int
+        The port number of the REST API server.
+
+    Returns
+    -------
+    bool
+        ``True`` if username is available (valid new username), ``False`` otherwise.
+    bool
+        ``True`` if username exists or there's an error (invalid new username), ``False`` otherwise.
+
+    Raises
+    ------
+    requests.exceptions.RequestException
+        If there are network connectivity issues or API errors.
+    """
     if not is_modal_open or not new_username:
         return False, False
     # Make request to the login API endpoint
@@ -134,8 +179,65 @@ def validate_new_username(new_username, is_modal_open, host, port):
 
 
 @callback(
-    [Output("password-match-message", "children"),
-     Output("registration-message", "children")],
+    [
+        Output("new-password-input", "valid"),
+        Output("new-password-input", "invalid"),
+        Output("confirm-password-input", "valid"),
+        Output("confirm-password-input", "invalid")
+    ],
+    [
+        Input("new-password-input", "value"),
+        Input("confirm-password-input", "value")
+    ]
+)
+def validate_password_match(password, confirm_password):
+    """Validate that the password and confirmation password match.
+
+    Provides real-time validation feedback for both password input fields,
+    ensuring they contain identical values.
+
+    Parameters
+    ----------
+    password : str or None
+        The value entered in the new password field.
+    confirm_password : str or None
+        The value entered in the password confirmation field.
+
+    Returns
+    -------
+    tuple
+        A tuple of four boolean values in the order:
+    bool
+        ``True`` if passwords match and not empty, ``False`` otherwise.
+    bool
+        ``True`` if passwords don't match, ``False`` otherwise.
+    bool
+        ``True`` if passwords match and not empty, ``False`` otherwise.
+    bool
+        ``True`` if passwords don't match, ``False`` otherwise.
+
+    Notes
+    -----
+    Returns all ``False`` values if either password field is empty.
+    """
+    if not password or not confirm_password:
+        return (
+            False,  # new password not valid
+            False,  # new password not invalid
+            False,  # confirm password not valid
+            False  # confirm password not invalid
+        )
+    passwords_match = password == confirm_password
+    return (
+        passwords_match,  # new password valid state
+        not passwords_match,  # new password invalid state
+        passwords_match,  # confirm password valid state
+        not passwords_match  # confirm password invalid state
+    )
+
+
+@callback(
+     Output("registration-message", "children"),
     [Input("register-button", "n_clicks")],
     [State("new-username-input", "value"),
      State("new-fullname-input", "value"),
@@ -146,46 +248,63 @@ def validate_new_username(new_username, is_modal_open, host, port):
     prevent_initial_call=True
 )
 def register_user(n_clicks, username, fullname, password, confirm_password, host, port):
-    """Callback handling user registration functionality.
+    """Process user registration by validating inputs and creating a new account.
 
-    Validates input fields, matches password and confirmation password, and sends registration data to the
-    backend API for account creation.
+    This callback handles the complete user registration process, including input
+    validation, password matching, and account creation through the backend API.
 
     Parameters
     ----------
-    n_clicks : int
-        The number of times the "register" button is clicked. Used to trigger the
-        callback process.
+    n_clicks : int or None
+        Number of times the register button has been clicked. ``None`` before first click.
     username : str
-        The desired username entered by the user in the input field.
+        The desired username for the new account.
     fullname : str
-        The full name of the user entered during the registration process.
+        The full name of the user.
     password : str
-        The password provided by the user for their new account.
+        The desired password for the new account.
     confirm_password : str
-        The confirmation of the password, which must match the `password` field.
+        Password confirmation entry.
     host : str
-        The host address of the REST API for backend communication.
+        The host address of the REST API server.
     port : int
-        The port number of the REST API for backend communication.
+        The port number of the REST API server.
 
     Returns
     -------
-    str
-        A message to indicate if passwords match or any other relevant feedback.
-        It is returned as a children property of the "password-match-message" component.
-    str
-        A message to convey the registration result.
-        It is returned as a children property of the "registration-message" component.
+    dash_bootstrap_components.Alert
+        A Bootstrap alert component containing either:
+        - Success message if registration is successful
+        - Error message if validation fails or API request fails
+
+    Notes
+    -----
+    This callback uses prevent_initial_call=True to avoid triggering on page load.
+    The function performs the following validations:
+    - All fields must be non-empty
+    - Passwords must match
+    - Backend API must successfully create the account
+
+    Raises
+    ------
+    requests.exceptions.RequestException
+        If there are network connectivity issues or API errors.
+    json.JSONDecodeError
+        If the API response contains invalid JSON data.
+
+    See Also
+    --------
+    validate_new_username : Function for validating username availability
+    validate_password_match : Function for validating password matching
     """
     if not n_clicks:
-        return "", ""
+        return ""
 
     if not all([username, fullname, password, confirm_password]):
-        return "", dbc.Alert("All fields are required", color="danger")
+        return dbc.Alert("All fields are required", color="danger", class_name="mb-0")
 
     if password != confirm_password:
-        return dbc.Alert("Passwords do not match", color="danger"), ""
+        return dbc.Alert("Passwords do not match", color="danger", class_name="mb-0")
 
     try:
         response = requests.post(
@@ -199,7 +318,7 @@ def register_user(n_clicks, username, fullname, password, confirm_password, host
         )
 
         if response.ok:
-            return "", dbc.Alert("Registration successful! You can now login.", color="success")
+            return dbc.Alert("Registration successful! You can now login.", color="success", class_name="mb-0")
         else:
             error_msg = "Registration failed"
             try:
@@ -208,7 +327,7 @@ def register_user(n_clicks, username, fullname, password, confirm_password, host
                     error_msg = error_data['message']
             except json.JSONDecodeError:
                 error_msg = response.text
-            return "", dbc.Alert(error_msg, color="danger")
+            return dbc.Alert(error_msg, color="danger", class_name="mb-0")
 
     except requests.exceptions.RequestException as e:
-        return "", dbc.Alert(f"Connection error: {str(e)}", color="danger")
+        return dbc.Alert(f"Connection error: {str(e)}", color="danger", class_name="mb-0")

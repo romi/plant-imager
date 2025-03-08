@@ -7,6 +7,7 @@ import dash_bootstrap_components as dbc
 from dash import Dash
 from dash import dcc
 from dash import html
+
 from plantdb.rest_api_client import REST_API_PORT
 from plantdb.rest_api_client import REST_API_URL
 from plantimager.webui.config import plantdb_cfg_modal
@@ -28,9 +29,38 @@ def parsing():
 
 
 def main(url, port):
-    # Initialize Dash application with Bootstrap styling and multipage support
-    app = Dash(name="PlantImager_WebUI", title="Plant Imager",
-               external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP])
+    """Initialize and configure the Plant Imager Dash web application.
+
+    Creates a Dash application instance with Bootstrap styling and sets up the main
+    layout including navigation bar, modals, and content areas. The application
+    is configured with global state storage for REST API connection details,
+    user authentication, and dataset management.
+
+    Parameters
+    ----------
+    url : str
+        The base URL for the REST API server (e.g., 'http://localhost')
+    port : int
+        The port number for the REST API server connection
+
+    Returns
+    -------
+    dash.Dash
+        Configured Dash application instance with complete layout and callbacks
+
+    Notes
+    -----
+    The application layout includes several components:
+    - Global state management using dcc.Store components
+    - Navigation bar with ROMI branding
+    - Configuration and authentication modals
+    - Main content area for scan management
+    """
+    app = Dash(
+        name="PlantImager_WebUI",
+        title="Plant Imager",
+        external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
+    )
 
     # Main application layout definition
     app.layout = html.Div([
