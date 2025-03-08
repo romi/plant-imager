@@ -81,7 +81,7 @@ scan_card = [
                                     html.I(className="bi bi-play-fill me-2"),
                                     'Start scanning'
                                 ],
-                                id='start-start-scan-button'
+                                id='start-scan-button'
                             )
                         ]),
                     ], width=6),
