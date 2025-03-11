@@ -1,6 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Plant Imager Web Interface
+
+A web-based user interface for the Plant Imager system, providing a graphical front-end to interact with the PlantDB REST API for plant imaging, analysis, and dataset management.
+
+Key Features
+------------
+    - Bootstrap-styled Dash web application for plant imaging
+    - REST API connectivity for data operations
+    - User authentication and account management
+    - Dataset acquisition with metadata management
+
+Usage Examples
+--------------
+# Run the web interface with default REST API settings
+$ python app.py
+
+# Connect to a specific REST API server
+$ python app.py --host http://example-server --port 5000
+"""
+
 import argparse
 
 import dash_bootstrap_components as dbc
