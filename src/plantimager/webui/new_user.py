@@ -283,8 +283,8 @@ def register_user(n_clicks, username, fullname, password, confirm_password, host
 
     Notes
     -----
-    This callback uses prevent_initial_call=True to avoid triggering on page load.
     The function performs the following validations:
+    - Username must not already exist in the Backend API
     - All fields must be non-empty
     - Passwords must match
     - Backend API must successfully create the account
@@ -295,20 +295,18 @@ def register_user(n_clicks, username, fullname, password, confirm_password, host
         If there are network connectivity issues or API errors.
     json.JSONDecodeError
         If the API response contains invalid JSON data.
-
-    See Also
-    --------
-    validate_new_username : Function for validating username availability
-    validate_password_match : Function for validating password matching
     """
     if not n_clicks:
         return ""
 
+    if not _validate_new_username(username, host, port):
+        return dbc.Alert(f"Username '{username}' is unavailable!", color="danger", class_name="mb-0")
+
     if not all([username, fullname, password, confirm_password]):
-        return dbc.Alert("All fields are required", color="danger", class_name="mb-0")
+        return dbc.Alert("All fields are required!", color="danger", class_name="mb-0")
 
     if password != confirm_password:
-        return dbc.Alert("Passwords do not match", color="danger", class_name="mb-0")
+        return dbc.Alert("Passwords do not match!", color="danger", class_name="mb-0")
 
     try:
         response = requests.post(
