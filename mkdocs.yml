@@ -90,6 +90,20 @@ plugins:
           import:
             - https://docs.python.org/3/objects.inv
             - https://numpy.org/doc/stable/objects.inv
+            - https://flask.palletsprojects.com/en/latest/objects.inv
+            - https://networkx.org/documentation/stable/objects.inv
+            - https://werkzeug.palletsprojects.com/en/latest/objects.inv
+            - https://flask-restful.readthedocs.io/en/latest/objects.inv
+            - https://pytorch.org/docs/stable/objects.inv
+            - http://www.open3d.org/docs/latest/objects.inv
+            - https://docs.python-requests.org/en/latest/objects.inv
+            - https://dash.plotly.com/objects.inv
+            - https://dash-bootstrap-components.opensource.faculty.ai/objects.inv
+            - https://pyserial.readthedocs.io/en/latest/objects.inv
+            - https://click.palletsprojects.com/en/latest/objects.inv
+            - https://imageio.readthedocs.io/en/stable/objects.inv
+            - https://python-colorlog.readthedocs.io/en/latest/objects.inv
+            - https://psutil.readthedocs.io/en/latest/objects.inv
           options:
             docstring_style: numpy
             docstring_section_style: table
@@ -98,7 +112,14 @@ plugins:
             show_docstring_examples: true
             show_docstring_raises: true
             signature_crossrefs: true
-
+            show_root_full_path: true
+            show_root_heading: true
+            show_category_heading: False
+            show_bases: true
+            separate_signature: true
+            show_symbol_type_heading: False
+            show_symbol_type_toc: true
+            inherited_members: true
 
 extra_css:
   - assets/css/extra.css
