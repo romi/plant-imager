@@ -12,25 +12,25 @@
         <meta name="author" content="ROMI Team">
       
       
-        <link rel="canonical" href="https://romi.github.io/plant-imager/rest_api/">
+        <link rel="canonical" href="https://romi.github.io/plant-imager/reference/plantimager/tasks/lpy/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../reference/plantimager/">
+        <link rel="next" href="../scan/">
       
       
-      <link rel="icon" href="../assets/images/ROMI_ICON_green.png">
+      <link rel="icon" href="../../../../assets/images/ROMI_ICON_green.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
     
     
       
-        <title>REST API - PlantImager</title>
+        <title>lpy - PlantImager</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.8608ea7d.min.css">
       
       
 
@@ -49,15 +49,15 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_markdown_exec_pyodide.css">
+      <link rel="stylesheet" href="../../../../assets/_markdown_exec_pyodide.css">
     
-      <link rel="stylesheet" href="../assets/_markdown_exec_ansi.css">
+      <link rel="stylesheet" href="../../../../assets/_markdown_exec_ansi.css">
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../assets/css/extra.css">
+      <link rel="stylesheet" href="../../../../assets/css/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#virtualplantimager-rest-api" class="md-skip">
+        <a href="#plantimager.tasks.lpy" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="https://romi.github.io/plant-imager/" title="PlantImager" class="md-header__button md-logo" aria-label="PlantImager" data-md-component="logo">
       
-  <img src="../assets/images/ROMI_logo_white.svg" alt="logo">
+  <img src="../../../../assets/images/ROMI_logo_white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              REST API
+              lpy
             
           </span>
         </div>
@@ -186,7 +186,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../../../.." class="md-tabs__link">
         
   
     
@@ -201,11 +201,9 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../../../../rest_api/" class="md-tabs__link">
         
   
     
@@ -220,11 +218,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../reference/plantimager/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
           
   
   Reference API
@@ -240,7 +240,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../docker/" class="md-tabs__link">
+      <a href="../../../../docker/" class="md-tabs__link">
         
   
     
@@ -257,7 +257,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../developer/" class="md-tabs__link">
+      <a href="../../../../developer/" class="md-tabs__link">
         
   
     
@@ -299,7 +299,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="https://romi.github.io/plant-imager/" title="PlantImager" class="md-nav__button md-logo" aria-label="PlantImager" data-md-component="logo">
       
-  <img src="../assets/images/ROMI_logo_white.svg" alt="logo">
+  <img src="../../../../assets/images/ROMI_logo_white.svg" alt="logo">
 
     </a>
     PlantImager
@@ -326,7 +326,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -344,31 +344,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    REST API
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../../rest_api/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -378,155 +357,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#rest-urls" class="md-nav__link">
-    <span class="md-ellipsis">
-      REST URLs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="REST URLs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#objects" class="md-nav__link">
-    <span class="md-ellipsis">
-      Objects
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#classes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Classes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#backgrounds" class="md-nav__link">
-    <span class="md-ellipsis">
-      Backgrounds
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#camera" class="md-nav__link">
-    <span class="md-ellipsis">
-      Camera
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rendering" class="md-nav__link">
-    <span class="md-ellipsis">
-      Rendering
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setup-camera" class="md-nav__link">
-    <span class="md-ellipsis">
-      Setup camera
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#load-arabidopsis_0-obj" class="md-nav__link">
-    <span class="md-ellipsis">
-      Load arabidopsis_0 OBJ
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#load-old-tree-in-the-park-background" class="md-nav__link">
-    <span class="md-ellipsis">
-      Load "old tree in the park" background
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#move-camera" class="md-nav__link">
-    <span class="md-ellipsis">
-      Move camera
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#render-scene-and-download-image" class="md-nav__link">
-    <span class="md-ellipsis">
-      Render scene and download image
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#render-only-leaves" class="md-nav__link">
-    <span class="md-ellipsis">
-      Render only leaves
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -535,23 +365,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -563,7 +398,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Reference API
@@ -574,6 +409,8 @@
                 
   
   
+    
+  
   
   
     
@@ -583,16 +420,16 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/plantimager/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -610,7 +447,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             plantimager
@@ -624,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/blender/" class="md-nav__link">
+      <a href="../../blender/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -646,7 +483,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/blgimbal/" class="md-nav__link">
+      <a href="../../blgimbal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -683,7 +520,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/plantimager/cli/" class="md-nav__link ">
+            <a href="../../cli/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -715,7 +552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/cli/generate_dataset/" class="md-nav__link">
+      <a href="../../cli/generate_dataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -737,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/cli/hardware_robustness/" class="md-nav__link">
+      <a href="../../cli/hardware_robustness/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -759,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/cli/multi_scan/" class="md-nav__link">
+      <a href="../../cli/multi_scan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -804,7 +641,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/plantimager/configs/" class="md-nav__link ">
+            <a href="../../configs/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -836,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/configs/lpy/" class="md-nav__link">
+      <a href="../../configs/lpy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -858,7 +695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/configs/scan/" class="md-nav__link">
+      <a href="../../configs/scan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -888,7 +725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/dummy/" class="md-nav__link">
+      <a href="../../dummy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -910,7 +747,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/dynamixel/" class="md-nav__link">
+      <a href="../../dynamixel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -932,7 +769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/error/" class="md-nav__link">
+      <a href="../../error/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -954,7 +791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/gp2/" class="md-nav__link">
+      <a href="../../gp2/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -976,7 +813,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/grbl/" class="md-nav__link">
+      <a href="../../grbl/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -998,7 +835,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/hal/" class="md-nav__link">
+      <a href="../../hal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1020,7 +857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/log/" class="md-nav__link">
+      <a href="../../log/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1042,7 +879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/lpy/" class="md-nav__link">
+      <a href="../../lpy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1064,7 +901,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/path/" class="md-nav__link">
+      <a href="../../path/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1086,7 +923,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/redirect/" class="md-nav__link">
+      <a href="../../redirect/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1108,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/scanner/" class="md-nav__link">
+      <a href="../../scanner/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1130,7 +967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/sony/" class="md-nav__link">
+      <a href="../../sony/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1149,6 +986,8 @@
                 
   
   
+    
+  
   
   
     
@@ -1158,16 +997,16 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_17" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/plantimager/tasks/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1185,7 +1024,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_17_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_17_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_1_17">
             <span class="md-nav__icon md-icon"></span>
             tasks
@@ -1196,10 +1035,29 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../reference/plantimager/tasks/lpy/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    lpy
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1209,6 +1067,63 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#plantimager.tasks.lpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;lpy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" lpy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.tasks.lpy.VirtualPlant" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VirtualPlant
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" VirtualPlant">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plantimager.tasks.lpy.VirtualPlant.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;run
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1221,7 +1136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/tasks/scan/" class="md-nav__link">
+      <a href="../scan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1251,7 +1166,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/units/" class="md-nav__link">
+      <a href="../../units/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1273,7 +1188,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/urlcam/" class="md-nav__link">
+      <a href="../../urlcam/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1295,7 +1210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/utils/" class="md-nav__link">
+      <a href="../../utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1317,7 +1232,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plantimager/vscan/" class="md-nav__link">
+      <a href="../../vscan/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1369,7 +1284,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../docker/" class="md-nav__link ">
+            <a href="../../../../docker/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1401,7 +1316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../docker/virtualplantimager/" class="md-nav__link">
+      <a href="../../../../docker/virtualplantimager/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1445,7 +1360,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../developer/" class="md-nav__link ">
+            <a href="../../../../developer/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1477,7 +1392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../developer/documentation/" class="md-nav__link">
+      <a href="../../../../developer/documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1499,7 +1414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../developer/blender/" class="md-nav__link">
+      <a href="../../../../developer/blender/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1521,7 +1436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../developer/virtualplantimager/" class="md-nav__link">
+      <a href="../../../../developer/virtualplantimager/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1560,8 +1475,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1570,55 +1483,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rest-urls" class="md-nav__link">
+  <a href="#plantimager.tasks.lpy" class="md-nav__link">
     <span class="md-ellipsis">
-      REST URLs
+      <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;lpy
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="REST URLs">
+    <nav class="md-nav" aria-label=" lpy">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#objects" class="md-nav__link">
+  <a href="#plantimager.tasks.lpy.VirtualPlant" class="md-nav__link">
     <span class="md-ellipsis">
-      Objects
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;VirtualPlant
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label=" VirtualPlant">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#classes" class="md-nav__link">
+  <a href="#plantimager.tasks.lpy.VirtualPlant.run" class="md-nav__link">
     <span class="md-ellipsis">
-      Classes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#backgrounds" class="md-nav__link">
-    <span class="md-ellipsis">
-      Backgrounds
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#camera" class="md-nav__link">
-    <span class="md-ellipsis">
-      Camera
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rendering" class="md-nav__link">
-    <span class="md-ellipsis">
-      Rendering
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;run
     </span>
   </a>
   
@@ -1626,70 +1513,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#setup-camera" class="md-nav__link">
-    <span class="md-ellipsis">
-      Setup camera
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#load-arabidopsis_0-obj" class="md-nav__link">
-    <span class="md-ellipsis">
-      Load arabidopsis_0 OBJ
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#load-old-tree-in-the-park-background" class="md-nav__link">
-    <span class="md-ellipsis">
-      Load "old tree in the park" background
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#move-camera" class="md-nav__link">
-    <span class="md-ellipsis">
-      Move camera
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#render-scene-and-download-image" class="md-nav__link">
-    <span class="md-ellipsis">
-      Render scene and download image
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#render-only-leaves" class="md-nav__link">
-    <span class="md-ellipsis">
-      Render only leaves
-    </span>
-  </a>
   
 </li>
         
@@ -1717,64 +1540,298 @@
   
 
 
-<h1 id="virtualplantimager-rest-api">VirtualPlantImager REST API<a class="headerlink" href="#virtualplantimager-rest-api" title="Permanent link">Link</a></h1>
-<p>The Python implementation is done in the <code>bin/romi_virtualplantimager.py</code> file, that is also used to start a Flask server.</p>
-<p>Hereafter we list the GET/POST requests that can be made and give some examples.</p>
-<h2 id="rest-urls">REST URLs<a class="headerlink" href="#rest-urls" title="Permanent link">Link</a></h2>
-<h3 id="objects">Objects<a class="headerlink" href="#objects" title="Permanent link">Link</a></h3>
-<ul>
-<li><code>/objects</code> (GET): retrieve the list of <code>obj</code> files in the data folder that can be loaded.</li>
-<li><code>/load_object/&lt;object_id&gt;</code> (GET) load the given object in the scene. Takes a translation vector as URL parameters (<code>dx</code>, <code>dy</code>, <code>dz</code>)</li>
-</ul>
-<h3 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">Link</a></h3>
-<ul>
-<li><code>/classes</code> (GET): retrieve the list of classes.</li>
-</ul>
-<h3 id="backgrounds">Backgrounds<a class="headerlink" href="#backgrounds" title="Permanent link">Link</a></h3>
-<ul>
-<li><code>/backgrounds</code> (GET): retrieve the list of <code>hdr</code> files in the <code>hdri</code> folder that can be loaded.</li>
-<li><code>/load_background/&lt;background_id&gt;</code> (GET) load the given background in the scene.</li>
-</ul>
-<h3 id="camera">Camera<a class="headerlink" href="#camera" title="Permanent link">Link</a></h3>
-<ul>
-<li><code>/camera_intrinsics</code> (POST): set camera intrinsics. Keys: <code>width</code>, <code>height</code>, <code>focal</code></li>
-<li><code>/camera_pose</code> (POST): set camera pose. Keys: <code>tx</code>, <code>ty</code>, <code>tz</code>, <code>rx</code>, <code>ry</code>, <code>rz</code></li>
-</ul>
-<h3 id="rendering">Rendering<a class="headerlink" href="#rendering" title="Permanent link">Link</a></h3>
-<ul>
-<li><code>/render</code> (GET): gets the rendering of the scene</li>
-<li><code>/render_class/&lt;class_id&gt;</code> (GET) renders the scene, with everything transparent except the given class</li>
-</ul>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>Missing endpoints.</p>
+  <h1>lpy</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="plantimager.tasks.lpy" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">plantimager.tasks.lpy</span>
+
+
+<a href="#plantimager.tasks.lpy" class="headerlink" title="Permanent link">Link</a></h2>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="plantimager.tasks.lpy.VirtualPlant" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VirtualPlant</span>
+
+
+<a href="#plantimager.tasks.lpy.VirtualPlant" class="headerlink" title="Permanent link">Link</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="romitask.RomiTask">RomiTask</span></code></p>
+
+
+        <p>Task generating a virtual plant from an LPY model.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="plantimager.tasks.lpy.VirtualPlant.upstream_task">upstream_task</span></code></td>
+            <td>
+                  <code><span title="plantimager.lpy.LpyFileset">LpyFileset</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The fileset specific to LPY model.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="plantimager.tasks.lpy.VirtualPlant.lpy_file_id">lpy_file_id</span></code></td>
+            <td>
+                  <code><span title="luigi.Parameter">Parameter</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the LPY file used as model.
+Should exist in the <code>LpyFileset</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="plantimager.tasks.lpy.VirtualPlant.metadata">metadata</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The list of metadata to export with the model.
+By default, ask for "angles" &amp; "internodes".</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="plantimager.tasks.lpy.VirtualPlant.lpy_globals">lpy_globals</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Global LPY variables used by <code>lpy.Lsystem()</code> method.
+By default, set the "SEED" LPY variable to a random integer in <code>[0, 100000]</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="plantimager.tasks.lpy.VirtualPlant.run" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">run</span>
+
+
+<a href="#plantimager.tasks.lpy.VirtualPlant.run" class="headerlink" title="Permanent link">Link</a></h4>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>run()
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generates the virtual plant.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>plantimager/tasks/lpy.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 64</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 65</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 66</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 67</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 68</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 69</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 70</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 71</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 72</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 73</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 74</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 75</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 76</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 77</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 78</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 79</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 80</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 81</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 82</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 83</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 84</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 85</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 86</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 87</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 88</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 89</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 90</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 91</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 92</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 93</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 94</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 95</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 96</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 97</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 98</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 99</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">100</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">101</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">102</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">103</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">104</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">105</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">106</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">107</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">109</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">110</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">111</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">112</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">113</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">114</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">115</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">117</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">119</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">124</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">125</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">run</span>(<span style="color: #008000">self</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Generates the virtual plant.&quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">openalea</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> lpy
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">openalea.plantgl</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> <span style="color: #008000">all</span>
+
+    lpy_globals <span style="color: #666">=</span> json<span style="color: #666">.</span>loads(luigi<span style="color: #666">.</span>DictParameter()<span style="color: #666">.</span>serialize(<span style="color: #008000">self</span><span style="color: #666">.</span>lpy_globals))
+
+    <span style="color: #008000; font-weight: bold">with</span> tempfile<span style="color: #666">.</span>TemporaryDirectory() <span style="color: #008000; font-weight: bold">as</span> tmpdir:
+        x <span style="color: #666">=</span> <span style="color: #008000">self</span><span style="color: #666">.</span>input()<span style="color: #666">.</span>get()<span style="color: #666">.</span>get_file(<span style="color: #008000">self</span><span style="color: #666">.</span>lpy_file_id)
+        tmp_filename <span style="color: #666">=</span> os<span style="color: #666">.</span>path<span style="color: #666">.</span>join(tmpdir, <span style="color: #BA2121">&quot;f.lpy&quot;</span>)
+        <span style="color: #008000; font-weight: bold">with</span> <span style="color: #008000">open</span>(tmp_filename, <span style="color: #BA2121">&quot;wb&quot;</span>) <span style="color: #008000; font-weight: bold">as</span> f:
+            f<span style="color: #666">.</span>write(x<span style="color: #666">.</span>read_raw())
+
+        lsystem <span style="color: #666">=</span> lpy<span style="color: #666">.</span>Lsystem(tmp_filename, <span style="color: #008000">globals</span><span style="color: #666">=</span>lpy_globals)
+        <span style="color: #008000; font-weight: bold">for</span> lstring <span style="color: #A2F; font-weight: bold">in</span> lsystem:
+            t <span style="color: #666">=</span> <span style="color: #008000">all</span><span style="color: #666">.</span>PglTurtle()
+            lsystem<span style="color: #666">.</span>turtle_interpretation(lstring, t)
+        scene <span style="color: #666">=</span> t<span style="color: #666">.</span>getScene()
+
+        output_file <span style="color: #666">=</span> <span style="color: #008000">self</span><span style="color: #666">.</span>output_file()
+        fname <span style="color: #666">=</span> os<span style="color: #666">.</span>path<span style="color: #666">.</span>join(tmpdir, <span style="color: #BA2121">&quot;plant.obj&quot;</span>)
+        scene<span style="color: #666">.</span>save(fname)
+        classes <span style="color: #666">=</span> luigi<span style="color: #666">.</span>DictParameter()<span style="color: #666">.</span>serialize(VirtualPlantConfig()<span style="color: #666">.</span>classes)<span style="color: #666">.</span>replace(<span style="color: #BA2121">&quot; &quot;</span>, <span style="color: #BA2121">&quot;&quot;</span>)
+
+        logger<span style="color: #666">.</span>info(<span style="color: #BA2121">&quot;Splitting mesh by classes in Blender with `romi_split_by_material`...&quot;</span>)
+        subprocess<span style="color: #666">.</span>run([<span style="color: #BA2121">&quot;romi_split_by_material.py&quot;</span>, <span style="color: #BA2121">&quot;--&quot;</span>, <span style="color: #BA2121">&quot;--classes&quot;</span>, classes, fname, fname], check<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
+
+        logger<span style="color: #666">.</span>info(<span style="color: #BA2121">&quot;Cleaning mesh in Blender with `romi_clean_mesh`...&quot;</span>)
+        subprocess<span style="color: #666">.</span>run([<span style="color: #BA2121">&quot;romi_clean_mesh.py&quot;</span>, <span style="color: #BA2121">&quot;--&quot;</span>, fname, fname], check<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
+
+        output_file<span style="color: #666">.</span>import_file(fname)
+        output_mtl_file <span style="color: #666">=</span> <span style="color: #008000">self</span><span style="color: #666">.</span>output()<span style="color: #666">.</span>get()<span style="color: #666">.</span>create_file(output_file<span style="color: #666">.</span>id <span style="color: #666">+</span> <span style="color: #BA2121">&quot;_mtl&quot;</span>)
+        output_mtl_file<span style="color: #666">.</span>import_file(fname<span style="color: #666">.</span>replace(<span style="color: #BA2121">&quot;obj&quot;</span>, <span style="color: #BA2121">&quot;mtl&quot;</span>))
+
+    <span style="color: #3D7B7B; font-style: italic"># -- UGLY HACK --</span>
+    <span style="color: #3D7B7B; font-style: italic"># We need to replace the MTL file name referenced in OBJ file!</span>
+    <span style="color: #3D7B7B; font-style: italic"># The OBJ file is originally saved as a temporary file named &#39;plant.obj&#39; by `scene.save(fname)`</span>
+    <span style="color: #3D7B7B; font-style: italic"># The associated MTL (material) file is thus named &#39;plant.mtl&#39;...</span>
+    <span style="color: #3D7B7B; font-style: italic"># We thus edit the `output_file` OBJ file to match the renaming done by `output_mtl_file.import_file()`</span>
+    <span style="color: #3D7B7B; font-style: italic"># ---------------</span>
+    <span style="color: #3D7B7B; font-style: italic"># - Load the OBJ to edit:</span>
+    <span style="color: #008000; font-weight: bold">with</span> <span style="color: #008000">open</span>(output_file<span style="color: #666">.</span>path(), <span style="color: #BA2121">&quot;r&quot;</span>) <span style="color: #008000; font-weight: bold">as</span> f:
+        obj_lines <span style="color: #666">=</span> f<span style="color: #666">.</span>readlines()
+        <span style="color: #3D7B7B; font-style: italic"># It seems that there is only one ref to the &#39;plant.mtl&#39; file but, just in case, we check all lines...</span>
+        fixed_obj_lines <span style="color: #666">=</span> [re<span style="color: #666">.</span>sub(<span style="color: #BA2121">&#39;plant.mtl&#39;</span>, <span style="color: #BA2121">f&#39;</span><span style="color: #A45A77; font-weight: bold">{</span>output_mtl_file<span style="color: #666">.</span>id<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">.mtl&#39;</span>, line) <span style="color: #008000; font-weight: bold">for</span> line <span style="color: #A2F; font-weight: bold">in</span> obj_lines]
+    <span style="color: #3D7B7B; font-style: italic"># - Save the fixed version:</span>
+    <span style="color: #008000; font-weight: bold">with</span> <span style="color: #008000">open</span>(output_file<span style="color: #666">.</span>path(), <span style="color: #BA2121">&quot;w&quot;</span>) <span style="color: #008000; font-weight: bold">as</span> f:
+        f<span style="color: #666">.</span>writelines(fixed_obj_lines)
+
+    <span style="color: #3D7B7B; font-style: italic"># - Export &#39;angles&#39; and &#39;internodes&#39; as metadata of the OBJ file:</span>
+    measures <span style="color: #666">=</span> {}
+    <span style="color: #008000; font-weight: bold">for</span> m <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">self</span><span style="color: #666">.</span>metadata:
+        m_val <span style="color: #666">=</span> lsystem<span style="color: #666">.</span>context()<span style="color: #666">.</span>globals()[m]
+        <span style="color: #008000; font-weight: bold">if</span> m <span style="color: #A2F; font-weight: bold">in</span> [<span style="color: #BA2121">&quot;angles&quot;</span>, <span style="color: #BA2121">&quot;internodes&quot;</span>]:
+            measures[m] <span style="color: #666">=</span> m_val
+        output_file<span style="color: #666">.</span>set_metadata(m, m_val)
+
+    <span style="color: #3D7B7B; font-style: italic"># - Export &#39;angles&#39; and &#39;internodes&#39; to a &#39;measures.json&#39; file (to match manual measurements method):</span>
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">plantdb.fsdb</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> _scan_measures_path
+    measures_json <span style="color: #666">=</span> _scan_measures_path(output_file<span style="color: #666">.</span>get_scan())
+    <span style="color: #008000; font-weight: bold">with</span> <span style="color: #008000">open</span>(measures_json, <span style="color: #BA2121">&#39;w&#39;</span>) <span style="color: #008000; font-weight: bold">as</span> f:
+        f<span style="color: #666">.</span>write(json<span style="color: #666">.</span>dumps(measures, indent<span style="color: #666">=4</span>))
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
 </div>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">Link</a></h2>
-<p>Using a browser to send HTTP requests is not too convenient.
-Instead, you may use <a href="https://httpie.org/">httpie</a> to send HTTP commands from a terminal.</p>
-<p>To easily adapt to other configurations, we define the <code>$VPI_HOST</code> &amp; <code>$VPI_PORT</code> variables.
-For example, matching the example given above, we define:
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #008000">export</span><span style="color: #BBB"> </span><span style="color: #19177C">VPI_HOST</span><span style="color: #666">=</span><span style="color: #BA2121">&#39;172.17.0.2&#39;</span>
-<span style="color: #008000">export</span><span style="color: #BBB"> </span><span style="color: #19177C">VPI_PORT</span><span style="color: #666">=</span><span style="color: #BA2121">&#39;9001&#39;</span>
-</code></pre></div></p>
-<h3 id="setup-camera">Setup camera<a class="headerlink" href="#setup-camera" title="Permanent link">Link</a></h3>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>http<span style="color: #BBB"> </span>-f<span style="color: #BBB"> </span>post<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;http://</span><span style="color: #19177C">$VPI_HOST</span><span style="color: #BA2121">:</span><span style="color: #19177C">$VPI_PORT</span><span style="color: #BA2121">/camera_intrinsics width=1920 height=1080 focal=35&quot;</span>
-</code></pre></div>
-<h3 id="load-arabidopsis_0-obj">Load <code>arabidopsis_0</code> OBJ<a class="headerlink" href="#load-arabidopsis_0-obj" title="Permanent link">Link</a></h3>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>http<span style="color: #BBB"> </span>get<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;http://</span><span style="color: #19177C">$VPI_HOST</span><span style="color: #BA2121">:</span><span style="color: #19177C">$VPI_PORT</span><span style="color: #BA2121">/load_object/arabidopsis_0.obj?dx=10&amp;dy=20&amp;dz=1&quot;</span>
-</code></pre></div>
-<h3 id="load-old-tree-in-the-park-background">Load "old tree in the park" background<a class="headerlink" href="#load-old-tree-in-the-park-background" title="Permanent link">Link</a></h3>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>http<span style="color: #BBB"> </span>get<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;http://127.0.0.1:</span><span style="color: #19177C">$VPI_PORT</span><span style="color: #BA2121">/load_background/old_tree_in_city_park_8k.hdr&quot;</span>
-</code></pre></div>
-<h3 id="move-camera">Move camera<a class="headerlink" href="#move-camera" title="Permanent link">Link</a></h3>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>http<span style="color: #BBB"> </span>-f<span style="color: #BBB"> </span>post<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;http://</span><span style="color: #19177C">$VPI_HOST</span><span style="color: #BA2121">:</span><span style="color: #19177C">$VPI_PORT</span><span style="color: #BA2121">/camera_pose tx=-60 ty=0 tz=50 rx=60 ry=0 rz=-90&quot;</span>
-</code></pre></div>
-<h3 id="render-scene-and-download-image">Render scene and download image<a class="headerlink" href="#render-scene-and-download-image" title="Permanent link">Link</a></h3>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>http<span style="color: #BBB"> </span>--download<span style="color: #BBB"> </span>get<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;http://</span><span style="color: #19177C">$VPI_HOST</span><span style="color: #BA2121">:</span><span style="color: #19177C">$VPI_PORT</span><span style="color: #BA2121">/render&quot;</span>
-</code></pre></div>
-<h3 id="render-only-leaves">Render only leaves<a class="headerlink" href="#render-only-leaves" title="Permanent link">Link</a></h3>
-<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>http<span style="color: #BBB"> </span>--download<span style="color: #BBB"> </span>get<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;http://</span><span style="color: #19177C">$VPI_HOST</span><span style="color: #BA2121">:</span><span style="color: #19177C">$VPI_PORT</span><span style="color: #BA2121">/render_class/Color_7&quot;</span>
-</code></pre></div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -1873,12 +1930,12 @@ For example, matching the example given above, we define:
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.c8b220af.min.js"></script>
       
-        <script src="../assets/_markdown_exec_pyodide.js"></script>
+        <script src="../../../../assets/_markdown_exec_pyodide.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
       
