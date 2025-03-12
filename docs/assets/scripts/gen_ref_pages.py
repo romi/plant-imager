@@ -34,11 +34,19 @@ Notes
 - Changing the location of the script (from `docs/assets/scripts`) requires to update the `src` variable.
 """
 
-
+import logging
+import mkdocs_gen_files
 from pathlib import Path
 
-import mkdocs_gen_files
-import logging
+# Files to exclude from the documentation
+# WARNING: do NOT exclude __init__.py files as they are needed to build the navigation tree
+EXCLUDED_FILES = [
+    "__main__.py"  # skip any __main__.py files as they shouldn't be included in the docs
+]
+EXCLUDED_DIRS = [
+    "tests",
+    "webui"
+]
 
 # Create an object to manage the navigation structure of the documentation
 nav = mkdocs_gen_files.Nav()
@@ -53,6 +61,11 @@ logger.info(f"Browsing source code in {src}...")
 
 # Recursively scan all Python files in the source directory
 for path in sorted(src.rglob("*.py")):
+    # Skip excluded directories
+    if any(d in path.parts for d in EXCLUDED_DIRS) or path.name in EXCLUDED_FILES:
+        logger.info(f"Skipping {Path(path).relative_to(src)}...")
+        continue
+
     logger.info(f"Processing {Path(path).relative_to(src)}...")
     # Get the module path (relative path without file extension)
     module_path = path.relative_to(src).with_suffix("")
@@ -71,7 +84,8 @@ for path in sorted(src.rglob("*.py")):
         full_doc_path = full_doc_path.with_name("index.md")
 
     # Skip any __main__.py files as they shouldn't be included in the docs
-    elif parts[-1] == "__main__":
+    elif parts[-1] in EXCLUDED_FILES:
+        logger.info(f"Skipping {Path(path).relative_to(src)}...")
         continue
 
     # Add the module to the navigation structure, converting to a POSIX path
