@@ -29,7 +29,7 @@ import random
 
 import luigi
 
-from plantdb import io
+from plantdb.commons import io
 from plantimager import path
 from plantimager.configs.lpy import VirtualPlantConfig
 from plantimager.configs.scan import ScanPath

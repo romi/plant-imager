@@ -35,7 +35,7 @@ from plantimager.units import deg
 from plantimager.units import length_mm
 from tqdm import tqdm
 
-from plantdb import io
+from plantdb.commons import io
 
 logger = configure_logger(__name__)
 

@@ -37,9 +37,9 @@ import numpy as np
 import psutil
 import requests
 
-from plantdb.db import File
-from plantdb.utils import fsdb_file_from_local_file
-from plantdb.utils import to_file
+from plantdb.commons.db import File
+from plantdb.commons.utils import fsdb_file_from_local_file
+from plantdb.commons.utils import to_file
 from plantimager import path
 from plantimager.hal import AbstractScanner
 from plantimager.hal import DataItem
