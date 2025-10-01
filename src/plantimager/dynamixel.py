@@ -40,12 +40,12 @@ STEPS_PER_TURN = 4096
 
 
 class Gimbal(AbstractGimbal):
-    def __init__(self, dev: str = "/dev/ttyUSB1", baud_rate: int = 1000000,
+    def __init__(self, dev: str = "/dev/ttyUSB1", baudrate: int = 1000000,
                  pan_id: int = 1, tilt_id: int = 2, pan0: int = 0, tilt0: int = 1024):
-        self.baud_rate = baud_rate
+        self.baudrate = baudrate
         self.dev = dev
         self.port = xl430.USB2Dynamixel(dev)
-        self.port.start(baud_rate)  # Start USB serial connection
+        self.port.start(baudrate)  # Start USB serial connection
         self.pan_zero = pan0
         self.tilt_zero = tilt0
         self.pan_id = pan_id
@@ -54,7 +54,7 @@ class Gimbal(AbstractGimbal):
         atexit.register(self.stop)
 
     def start(self) -> None:
-        self.port.start(self.baud_rate)  # Start USB serial connection
+        self.port.start(self.baudrate)  # Start USB serial connection
         self.pan = xl430.Actuator(self.port, self.pan_id)
         self.tilt = xl430.Actuator(self.port, self.tilt_id)
         self.pan.set_torque_enable(False)
@@ -111,29 +111,29 @@ class Gimbal(AbstractGimbal):
         return (steps - self.tilt_zero) * 360. / STEPS_PER_TURN
 
 
-def set_baud_rate(rate, dev="/dev/ttyUSB1"):
+def set_baudrate(rate, dev="/dev/ttyUSB1"):
     usb = xl430.USB2Dynamixel(dev)
     usb.start()  # Start USB serial connection
 
     pan = xl430.Actuator(usb, 1)  # get the motor with id 1
     pan.set_torque_enable(False)  # deactivate motor
-    print("baud rate %d" % pan.get_baud_rate())
-    pan.set_baud_rate(rate)
+    print("baud rate %d" % pan.get_baudrate())
+    pan.set_baudrate(rate)
 
     tilt = xl430.Actuator(usb, 2)  # get the motor with id 2
     tilt.set_torque_enable(False)  # deactivate motor
-    print("baud rate %d" % tilt.get_baud_rate())
-    tilt.set_baud_rate(rate)
+    print("baud rate %d" % tilt.get_baudrate())
+    tilt.set_baudrate(rate)
 
 
-def get_baud_rate(rate, dev="/dev/ttyUSB1"):
+def get_baudrate(rate, dev="/dev/ttyUSB1"):
     usb = xl430.USB2Dynamixel(dev)
     usb.start(1000000)
 
     pan = xl430.Actuator(usb, 1)  # get the motor with id 1
     pan.set_torque_enable(False)  # deactivate motor
-    print("baud rate (pan): %d" % pan.get_baud_rate())
+    print("baud rate (pan): %d" % pan.get_baudrate())
 
     tilt = xl430.Actuator(usb, 2)  # get the motor with id 2
     tilt.set_torque_enable(False)  # deactivate motor
-    print("baud rate (tilt): %d" % tilt.get_baud_rate())
+    print("baud rate (tilt): %d" % tilt.get_baudrate())
