@@ -261,7 +261,7 @@ class Circle(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset):
+    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset=0):
         """Initializes an object by generating a circular arrangement of points in 3D space.
 
         Each path element is defined by the combination of the 2D circle
@@ -283,7 +283,7 @@ class Circle(Path):
             The radius (in millimeters) of the circle.
         n_points : int
             The number of points to generate around the circle.
-        start_offset : float
+        start_offset : float, optional
             The angular offset (in degrees) to shift the starting position
             along the circle. Measured counter-clockwise from the positive x-axis.
         """
