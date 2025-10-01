@@ -43,7 +43,7 @@ module = "plantimager.grbl"  # plant imager hardware v2
 
 [Scan.scanner.cnc.kwargs]
 port = "/dev/ttyACM0"
-baud_rate = 115200
+baudrate = 115200
 homing = true
 
 [Scan.metadata.object]

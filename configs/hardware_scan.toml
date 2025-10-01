@@ -29,7 +29,7 @@ module = "plantimager.grbl"
 
 [Scan.scanner.cnc.kwargs]
 port = "/dev/ttyACM0"
-baud_rate = 115200
+baudrate = 115200
 homing = true
 
 [Scan.metadata.workspace]
