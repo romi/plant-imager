@@ -112,7 +112,7 @@ You may now proceed to install the python requirements and packages:
 ```shell
 conda activate plant_imager # Don't forget to activate the environment!
 # Install `plantdb` from sub-modules:
-python -m pip install -e ./plantdb/
+python -m pip install -e ./plantdb/src/commons/
 # Install `romitask` from sub-modules:
 python -m pip install -e ./romitask/
 # Install `plant-imager`:
@@ -197,9 +197,9 @@ From the `plant-imager` root directory, using the `plant_imager` conda environme
 # Don't forget to activate the environment!
 conda activate plant_imager
 # Install `plantdb` from sub-modules:
-python -m pip install -e plantdb/
+python -m pip install -e ./plantdb/src/commons/
 # Install `romitask` from sub-modules:
-python -m pip install -e romitask/
+python -m pip install -e ./romitask/
 # Install `plant-imager`:
 python -m pip install -e .
 ```
