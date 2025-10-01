@@ -37,10 +37,10 @@ from plantimager.log import configure_logger
 from plantimager.scanner import Scanner
 from plantimager.tasks.lpy import VirtualPlant
 from plantimager.vscan import VirtualScanner
-from romitask import DatabaseConfig
 from romitask import FilesetTarget
 from romitask import RomiTask
 from romitask.task import FilesetExists
+from romitask.task import ScanConfiguration
 
 logger = configure_logger(__name__)
 
@@ -165,7 +165,7 @@ class Scan(RomiTask):
 
     def output(self):
         """The output fileset associated to a ``Scan`` task is an 'images' dataset."""
-        return FilesetTarget(DatabaseConfig().scan, "images")
+        return FilesetTarget(ScanConfiguration().scan, "images")
 
     def get_path(self) -> path.Path:
         """Load the ``ScanPath`` module & get the configuration from the TOML config file."""
