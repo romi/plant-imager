@@ -222,18 +222,22 @@ def circle(center_x, center_y, radius, n_points, offset_angle=0, clockwise=True)
      (-1.5450849718747361, 4.755282581475768, 198.0)]
     """
     x, y, p = [], [], []
-    dir = 1 if clockwise else -1
     # Convert starting_angle to radians for computation
     start_rad = math.radians(offset_angle)
 
+    # Counter-clockwise rotation path:
     for i in range(n_points):
         rad = 2 * i * math.pi / n_points + start_rad
-        x.append(center_x + dir * radius * math.cos(rad))
-        y.append(center_y + dir * radius * math.sin(rad))
+        x.append(center_x - radius * math.cos(rad))
+        y.append(center_y - radius * math.sin(rad))
         deg = math.degrees(rad)
         p.append(deg % 360)
 
-    return _round(x), _round(y), _round(p)
+    if clockwise:
+        x, y, p = _round(x)[::-1], _round(y)[::-1], _round(p)[::-1]
+        return [x[0]]+x[1:][::-1], [y[0]]+y[1:][::-1], [p[0]]+p[1:][::-1]
+    else:
+        return _round(x), _round(y), _round(p)
 
 
 class Circle(Path):
