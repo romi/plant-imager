@@ -269,7 +269,7 @@ class Scan(RomiTask):
         metadata["acquisition_date"] = now()
 
         # Get (create) the output 'images' fileset:
-        output_fileset = self.output().get()
+        output_fileset = self.output().create()
         # Scan with the plant imager:
         scanner.scan(path, output_fileset)
         if isinstance(scanner, Scanner):
