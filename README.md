@@ -22,7 +22,7 @@ git submodule update
 ```
 
 ## Docker
-Obviously you first have to follow the [getting started](#getting-started) instructions.
+Obviously, you first have to follow the [getting started](#getting-started) instructions.
 
 
 ### PlantImager docker image
@@ -55,7 +55,7 @@ For example, to generate a new _plant scan dataset_, here named `my_scan`, simpl
   -c "romi_run_task Scan /myapp/db/my_scan --config plant-imager/config/hardware_scan_rx0.toml"
 ```
 
-For more information have a look at the ROMI [documentation](https://docs.romi-project.eu/plant_imager/).
+For more information, have a look at the ROMI [documentation](https://docs.romi-project.eu/plant_imager/).
 
 
 ### VirtualPlantImager docker image
@@ -87,7 +87,7 @@ For example, to generate a new _virtual plant scan dataset_, named `vplant_test`
 ./docker/virtualplantimager/run.sh --test
 ```
 
-For more information have a look at the ROMI [documentation](https://docs.romi-project.eu/plant_imager/).
+For more information, have a look at the ROMI [documentation](https://docs.romi-project.eu/plant_imager/).
 
 
 ## Install from sources
@@ -122,6 +122,22 @@ python -m pip install -e .
 > :information_source:
 > The `-e` option install the source in _editable_ mode.
 > Detailed explanations can be found [here](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
+
+#### Enable Serial Access
+
+The user needs to belong to the `dialout` group to communicate with the _Plant Imager_.
+
+1. Check in what groups you are with:
+   ```shell
+   groups ${USER}
+   ```
+
+2. If you are not in the `dialout` group:
+   ```shell
+   sudo gpasswd --add ${USER} dialout
+   ```
+
+3. Then log out and back in to see changes!
 
 ### Install from sources to use the _VirtualPlantImager_
 First follows the instructions [here](#getting-started) to clone the sources, if not done yet.
