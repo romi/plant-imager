@@ -2056,7 +2056,7 @@ In conjunction with a 3-axis CNC, that gives a total of 5 degrees of freedom and
 
 
 <a href="#plantimager.blgimbal.Gimbal" class="headerlink" title="Permanent link">Link</a></h3>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Gimbal(port<span style="color: #666">=</span><span style="color: #BA2121">&#39;/dev/ttyUSB0&#39;</span>, baudrate<span style="color: #666">=115200</span>, has_tilt<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, steps_per_turn<span style="color: #666">=360</span>, zero_pan<span style="color: #666">=0</span>, zero_tilt<span style="color: #666">=0</span>, invert_rotation<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Gimbal(port<span style="color: #666">=</span><span style="color: #BA2121">&#39;/dev/ttyUSB0&#39;</span>, baudrate<span style="color: #666">=115200</span>, has_tilt<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, steps_per_turn<span style="color: #666">=360</span>, zero_pan<span style="color: #666">=90</span>, zero_tilt<span style="color: #666">=0</span>, invert_rotation<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2294,11 +2294,11 @@ Defaults to <code>360</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>Indicate the origin position of the Gimbal for the pan-axis.
-Defaults to <code>0.</code>.</p>
+Defaults to <code>90.</code>.</p>
               </div>
             </td>
             <td>
-                  <code>0</code>
+                  <code>90</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2389,7 +2389,7 @@ Defaults to <code>False</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">127</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">128</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, port<span style="color: #666">=</span><span style="color: #BA2121">&quot;/dev/ttyUSB0&quot;</span>, baudrate<span style="color: #666">=115200</span>, has_tilt<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, steps_per_turn<span style="color: #666">=360</span>,
-             zero_pan<span style="color: #666">=0</span>, zero_tilt<span style="color: #666">=0</span>, invert_rotation<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>):
+             zero_pan<span style="color: #666">=90</span>, zero_tilt<span style="color: #666">=0</span>, invert_rotation<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Constructor.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2408,7 +2408,7 @@ Defaults to <code>False</code>.</p>
 <span style="color: #BA2121; font-style: italic">        Defaults to ``360``.</span>
 <span style="color: #BA2121; font-style: italic">    zero_pan : float, optional</span>
 <span style="color: #BA2121; font-style: italic">        Indicate the origin position of the Gimbal for the pan-axis.</span>
-<span style="color: #BA2121; font-style: italic">        Defaults to ``0.``.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``90.``.</span>
 <span style="color: #BA2121; font-style: italic">    zero_tilt : float, optional</span>
 <span style="color: #BA2121; font-style: italic">        Indicate the origin position of the Gimbal for the tilt-axis.</span>
 <span style="color: #BA2121; font-style: italic">        Defaults to ``0.``.</span>
