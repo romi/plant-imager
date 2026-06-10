@@ -170,7 +170,12 @@ class Path(list):
         super().__init__()
 
 
-def circle(center_x, center_y, radius, n_points, offset_angle=0):
+def _round(x, dec=2):
+    import numpy as np
+    return list(map(float, np.round(x, decimals=dec)))
+
+
+def circle(center_x, center_y, radius, n_points, offset_angle=0, clockwise=True):
     """Generates the 2D coordinates and angles for points evenly distributed on a circle, facing the central point.
 
     This function computes the x and y coordinates of `n_points` evenly distributed
@@ -191,6 +196,9 @@ def circle(center_x, center_y, radius, n_points, offset_angle=0):
         The number of points to generate along the circle's circumference.
     offset_angle : float, optional
         The angle offset in degrees for the start of the point distribution. Defaults to 0.
+    clockwise : bool, optional
+        Boolean flag controlling the rotation direction.
+        ``True`` for clockwise rotation, ``False`` for counter-clockwise.
 
     Returns
     -------
@@ -214,17 +222,18 @@ def circle(center_x, center_y, radius, n_points, offset_angle=0):
      (-1.5450849718747361, 4.755282581475768, 198.0)]
     """
     x, y, p = [], [], []
+    dir = 1 if clockwise else -1
     # Convert starting_angle to radians for computation
-    starting_angle_rad = math.radians(offset_angle)
+    start_rad = math.radians(offset_angle)
 
     for i in range(n_points):
-        pan = 2 * i * math.pi / n_points + starting_angle_rad
-        x.append(center_x - radius * math.cos(pan))
-        y.append(center_y - radius * math.sin(pan))
-        pan = pan * 180 / math.pi
-        p.append((pan - 90) % 360)
+        rad = 2 * i * math.pi / n_points + start_rad
+        x.append(center_x + dir * radius * math.cos(rad))
+        y.append(center_y + dir * radius * math.sin(rad))
+        deg = math.degrees(rad)
+        p.append(deg % 360)
 
-    return x, y, p
+    return _round(x), _round(y), _round(p)
 
 
 class Circle(Path):
@@ -261,7 +270,7 @@ class Circle(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset=0):
+    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset=0, clockwwise=True):
         """Initializes an object by generating a circular arrangement of points in 3D space.
 
         Each path element is defined by the combination of the 2D circle
@@ -286,9 +295,12 @@ class Circle(Path):
         start_offset : float, optional
             The angular offset (in degrees) to shift the starting position
             along the circle. Measured counter-clockwise from the positive x-axis.
+        clockwise : bool, optional
+            Boolean flag controlling the rotation direction.
+            ``True`` for clockwise rotation, ``False`` for counter-clockwise.
         """
         super().__init__()
-        x, y, pan = circle(center_x, center_y, radius, n_points, start_offset)
+        x, y, pan = circle(center_x, center_y, radius, n_points, start_offset, clockwwise)
 
         if not isinstance(tilt, Iterable):
             tilt = [tilt]
@@ -333,7 +345,7 @@ class Cylinder(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, n_circles=2, aligned=True):
+    def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, clockwwise=True, n_circles=2, aligned=True):
         """Initialization of a cylinder-like structure composed of multiple circles at different heights within a z-range.
 
         This class constructor generates `n_circles` at varying heights within a
@@ -355,6 +367,9 @@ class Cylinder(Path):
             The radius (in millimeters) of each circle forming the cylinder.
         n_points : int
             The number of evenly spaced points that define each circle.
+        clockwise : bool, optional
+            Boolean flag controlling the rotation direction.
+            ``True`` for clockwise rotation, ``False`` for counter-clockwise.
         n_circles : int, optional
             The total number of circles that make up the cylindrical structure.
             Defaults to 2.
@@ -389,7 +404,8 @@ class Cylinder(Path):
         # Calculate and iterate over `n_circles` evenly spaced heights in the z-range
         for circle_idx, z_circle in enumerate(np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles - 1))):
             # For each height, create a 2D circular path (Circle) and offset it if required
-            self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points, start_offset*circle_idx))
+            self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points,
+                               start_offset * circle_idx, clockwwise))
 
 
 def line_1d(start, stop, n_points):
