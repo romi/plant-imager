@@ -234,7 +234,7 @@ def circle(center_x, center_y, radius, n_points, offset_angle=0, clockwise=True)
         p.append(deg % 360)
 
     if clockwise:
-        x, y, p = _round(x)[::-1], _round(y)[::-1], _round(p)[::-1]
+        x, y, p = _round(x), _round(y), _round(p)
         return [x[0]]+x[1:][::-1], [y[0]]+y[1:][::-1], [p[0]]+p[1:][::-1]
     else:
         return _round(x), _round(y), _round(p)
