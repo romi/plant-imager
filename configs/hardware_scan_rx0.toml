@@ -16,7 +16,7 @@ z = 90
 tilt = 0
 radius = 375
 n_points = 36
-clockwise = false
+clockwise = false  # counter-clockwise rotation in the XY plane
 
 [Scan.scanner.camera]
 module = "plantimager.sony"  # Sony RX-0 camera
@@ -26,29 +26,29 @@ module = "plantimager.sony"  # Sony RX-0 camera
 #url = "http://myflashair"
 device_ip = "192.168.122.1"
 api_port = "10000"
-postview = true
+postview = true  # RX0 preview mode
 use_flashair = false
-rotation = 270
+rotation = 270  # rotation to apply to the image (valid for RX0)
 
 [Scan.scanner.gimbal]
 module = "plantimager.blgimbal"  # plant imager hardware v2
 
 [Scan.scanner.gimbal.kwargs]
-port = "/dev/ttyACM1"
+port = "Feather"  # automatically detect serial port with a 'Feather' board connected
 has_tilt = false
-zero_pan = 90
-invert_rotation = true
+zero_pan = 90  # rotation offset for pan motor to look foerward along the x-axis
+invert_rotation = true  # pan motor rotation direction
 
 [Scan.scanner.cnc]
 module = "plantimager.grbl"  # plant imager hardware v2
 
 [Scan.scanner.cnc.kwargs]
-port = "/dev/ttyACM0"
+port = "Arduino"  # automatically detect serial port with an 'Arduino' board connected
 baudrate = 115200
 homing = true
-invert_x_dir = true
-invert_y_dir = true
-invert_z_dir = true
+invert_x_dir = true  # plant imager hardware v2
+invert_y_dir = true  # plant imager hardware v2
+invert_z_dir = true  # plant imager hardware v2
 
 [Scan.metadata.object]
 species = "Arabidopsis thaliana"  # the species of the biological object analysed;
