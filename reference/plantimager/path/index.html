@@ -2246,11 +2246,7 @@ Else, will be set from the min/max of the path to calibrate on the y-axis.</p>
 
                   <details class="quote">
                     <summary>Source code in <code>plantimager/path.py</code></summary>
-                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">594</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">595</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">596</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">597</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">598</span>
+                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">598</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">599</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">600</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">601</span>
@@ -2309,7 +2305,11 @@ Else, will be set from the min/max of the path to calibrate on the y-axis.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">654</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">655</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">656</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">657</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, path, n_points_line<span style="color: #666">=11</span>, x_lims<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>, y_lims<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">657</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">658</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">659</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">660</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">661</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, path, n_points_line<span style="color: #666">=11</span>, x_lims<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>, y_lims<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;</span>
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
 <span style="color: #BA2121; font-style: italic">    ----------</span>
@@ -2608,11 +2608,7 @@ along the circle. Measured counter-clockwise from the positive x-axis.</p>
 
                   <details class="quote">
                     <summary>Source code in <code>plantimager/path.py</code></summary>
-                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">273</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
+                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
@@ -2645,7 +2641,11 @@ along the circle. Measured counter-clockwise from the positive x-axis.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">308</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">309</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z, tilt, radius, n_points, start_offset<span style="color: #666">=0</span>, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">311</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">312</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">313</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">314</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z, tilt, radius, n_points, start_offset<span style="color: #666">=0</span>, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Initializes an object by generating a circular arrangement of points in 3D space.</span>
 
 <span style="color: #BA2121; font-style: italic">    Each path element is defined by the combination of the 2D circle</span>
@@ -2959,11 +2959,7 @@ are required to form a cylinder-like structure.</p>
 
                   <details class="quote">
                     <summary>Source code in <code>plantimager/path.py</code></summary>
-                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">348</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">349</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">350</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">351</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">352</span>
+                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">352</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">353</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">354</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">355</span>
@@ -3019,7 +3015,11 @@ are required to form a cylinder-like structure.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">405</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">406</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">407</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z_range, tilt, radius, n_points, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, n_circles<span style="color: #666">=2</span>, aligned<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">409</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z_range, tilt, radius, n_points, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, n_circles<span style="color: #666">=2</span>, aligned<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Initialization of a cylinder-like structure composed of multiple circles at different heights within a z-range.</span>
 
 <span style="color: #BA2121; font-style: italic">    This class constructor generates `n_circles` at varying heights within a</span>
@@ -3346,11 +3346,7 @@ If an iterable is provided, each tilt value will be used in conjunction with the
 
                   <details class="quote">
                     <summary>Source code in <code>plantimager/path.py</code></summary>
-                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">498</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">499</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">500</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
+                    <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">504</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">505</span>
@@ -3396,7 +3392,11 @@ If an iterable is provided, each tilt value will be used in conjunction with the
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">545</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">546</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">547</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">548</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, x_start, y_start, z_start, x_stop, y_stop, z_stop, pan, tilt, n_points):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">548</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">549</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">550</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">551</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">552</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, x_start, y_start, z_start, x_stop, y_stop, z_stop, pan, tilt, n_points):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Initializes an object by generating a linear arrangement of points in 3D space.</span>
 
 <span style="color: #BA2121; font-style: italic">    This class generates a linear sequence of points in 3D space, with each point</span>
@@ -4495,7 +4495,11 @@ with respect to the vertical axis.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">233</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">234</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">235</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">236</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">circle</span>(center_x, center_y, radius, n_points, offset_angle<span style="color: #666">=0</span>, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">236</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">237</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">238</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">239</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">240</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">circle</span>(center_x, center_y, radius, n_points, offset_angle<span style="color: #666">=0</span>, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Generates the 2D coordinates and angles for points evenly distributed on a circle, facing the central point.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function computes the x and y coordinates of `n_points` evenly distributed</span>
@@ -4542,18 +4546,22 @@ with respect to the vertical axis.</p>
 <span style="color: #BA2121; font-style: italic">     (-1.5450849718747361, 4.755282581475768, 198.0)]</span>
 <span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
     x, y, p <span style="color: #666">=</span> [], [], []
-    <span style="color: #008000">dir</span> <span style="color: #666">=</span> <span style="color: #666">1</span> <span style="color: #008000; font-weight: bold">if</span> clockwise <span style="color: #008000; font-weight: bold">else</span> <span style="color: #666">-1</span>
     <span style="color: #3D7B7B; font-style: italic"># Convert starting_angle to radians for computation</span>
     start_rad <span style="color: #666">=</span> math<span style="color: #666">.</span>radians(offset_angle)
 
+    <span style="color: #3D7B7B; font-style: italic"># Counter-clockwise rotation path:</span>
     <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">range</span>(n_points):
         rad <span style="color: #666">=</span> <span style="color: #666">2</span> <span style="color: #666">*</span> i <span style="color: #666">*</span> math<span style="color: #666">.</span>pi <span style="color: #666">/</span> n_points <span style="color: #666">+</span> start_rad
-        x<span style="color: #666">.</span>append(center_x <span style="color: #666">+</span> <span style="color: #008000">dir</span> <span style="color: #666">*</span> radius <span style="color: #666">*</span> math<span style="color: #666">.</span>cos(rad))
-        y<span style="color: #666">.</span>append(center_y <span style="color: #666">+</span> <span style="color: #008000">dir</span> <span style="color: #666">*</span> radius <span style="color: #666">*</span> math<span style="color: #666">.</span>sin(rad))
+        x<span style="color: #666">.</span>append(center_x <span style="color: #666">-</span> radius <span style="color: #666">*</span> math<span style="color: #666">.</span>cos(rad))
+        y<span style="color: #666">.</span>append(center_y <span style="color: #666">-</span> radius <span style="color: #666">*</span> math<span style="color: #666">.</span>sin(rad))
         deg <span style="color: #666">=</span> math<span style="color: #666">.</span>degrees(rad)
         p<span style="color: #666">.</span>append(deg <span style="color: #666">%</span> <span style="color: #666">360</span>)
 
-    <span style="color: #008000; font-weight: bold">return</span> _round(x), _round(y), _round(p)
+    <span style="color: #008000; font-weight: bold">if</span> clockwise:
+        x, y, p <span style="color: #666">=</span> _round(x)[::<span style="color: #666">-1</span>], _round(y)[::<span style="color: #666">-1</span>], _round(p)[::<span style="color: #666">-1</span>]
+        <span style="color: #008000; font-weight: bold">return</span> [x[<span style="color: #666">0</span>]]<span style="color: #666">+</span>x[<span style="color: #666">1</span>:][::<span style="color: #666">-1</span>], [y[<span style="color: #666">0</span>]]<span style="color: #666">+</span>y[<span style="color: #666">1</span>:][::<span style="color: #666">-1</span>], [p[<span style="color: #666">0</span>]]<span style="color: #666">+</span>p[<span style="color: #666">1</span>:][::<span style="color: #666">-1</span>]
+    <span style="color: #008000; font-weight: bold">else</span>:
+        <span style="color: #008000; font-weight: bold">return</span> _round(x), _round(y), _round(p)
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4672,11 +4680,7 @@ with respect to the vertical axis.</p>
 
             <details class="quote">
               <summary>Source code in <code>plantimager/path.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">418</span>
@@ -4697,7 +4701,11 @@ with respect to the vertical axis.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">433</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">434</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">435</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">436</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">line_1d</span>(start, stop, n_points):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">436</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">437</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">438</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">439</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">line_1d</span>(start, stop, n_points):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Generates a 1D linearly spaced sequence of values between `start` and `stop`, inclusive.</span>
 
 <span style="color: #BA2121; font-style: italic">    The returned sequence contains `n_points` values equally spaced between these boundary values.</span>
@@ -4911,11 +4919,7 @@ spaced values between the respective start and stop coordinates.</p>
 
             <details class="quote">
               <summary>Source code in <code>plantimager/path.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">439</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">441</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">442</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">444</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">445</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">446</span>
@@ -4950,7 +4954,11 @@ spaced values between the respective start and stop coordinates.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">475</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">476</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">477</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">478</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">line_3d</span>(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">478</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">479</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">480</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">481</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">482</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">line_3d</span>(x_start, y_start, z_start, x_stop, y_stop, z_stop, n_points):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Generates coordinates of a 3D line given start and stop points and the number of intermediate points.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function computes the coordinates of a 3D line by generating intermediate</span>
