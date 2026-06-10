@@ -291,7 +291,8 @@ class AbstractScanner(metaclass=ABCMeta):
         if exact_pose:
             metadata = {**metadata, "pose": [pose.x, pose.y, pose.z, pose.pan, pose.tilt]}
         else:
-            metadata = {**metadata, "approximate_pose": [pose.x, pose.y, pose.z, pose.pan, pose.tilt]}
+            # PlantImager move downward with positive z values
+            metadata = {**metadata, "approximate_pose": [pose.x, pose.y, -pose.z, pose.pan, pose.tilt]}
         logger.debug(f"with metadata: {metadata}")
         self.set_position(pose)
         return self.grab(self.inc_count(), metadata=metadata)
