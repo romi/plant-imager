@@ -12,10 +12,11 @@ class_name = "Circle"
 [ScanPath.kwargs]
 center_x = 375
 center_y = 375
-z = 0
+z = 90
 tilt = 0
 radius = 375
 n_points = 36
+clockwwise = false
 
 [Scan.scanner.camera]
 module = "plantimager.sony"  # Sony RX-0 camera
@@ -35,7 +36,7 @@ module = "plantimager.blgimbal"  # plant imager hardware v2
 [Scan.scanner.gimbal.kwargs]
 port = "/dev/ttyACM1"
 has_tilt = false
-zero_pan = 0
+zero_pan = 90
 invert_rotation = true
 
 [Scan.scanner.cnc]
@@ -45,6 +46,9 @@ module = "plantimager.grbl"  # plant imager hardware v2
 port = "/dev/ttyACM0"
 baudrate = 115200
 homing = true
+invert_x_dir = true
+invert_y_dir = true
+invert_z_dir = true
 
 [Scan.metadata.object]
 species = "Arabidopsis thaliana"  # the species of the biological object analysed;
