@@ -4558,7 +4558,7 @@ with respect to the vertical axis.</p>
         p<span style="color: #666">.</span>append(deg <span style="color: #666">%</span> <span style="color: #666">360</span>)
 
     <span style="color: #008000; font-weight: bold">if</span> clockwise:
-        x, y, p <span style="color: #666">=</span> _round(x)[::<span style="color: #666">-1</span>], _round(y)[::<span style="color: #666">-1</span>], _round(p)[::<span style="color: #666">-1</span>]
+        x, y, p <span style="color: #666">=</span> _round(x), _round(y), _round(p)
         <span style="color: #008000; font-weight: bold">return</span> [x[<span style="color: #666">0</span>]]<span style="color: #666">+</span>x[<span style="color: #666">1</span>:][::<span style="color: #666">-1</span>], [y[<span style="color: #666">0</span>]]<span style="color: #666">+</span>y[<span style="color: #666">1</span>:][::<span style="color: #666">-1</span>], [p[<span style="color: #666">0</span>]]<span style="color: #666">+</span>p[<span style="color: #666">1</span>:][::<span style="color: #666">-1</span>]
     <span style="color: #008000; font-weight: bold">else</span>:
         <span style="color: #008000; font-weight: bold">return</span> _round(x), _round(y), _round(p)
