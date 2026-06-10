@@ -103,11 +103,11 @@ class CNC(AbstractCNC):
         The current position, in millimeter, of the CNC arm on the Y-axis.
     z : int
         The current position, in millimeter, of the CNC arm on the Z-axis.
-    invert_x : bool
+    invert_x_dir : bool
         If ``True``, "mirror" the coordinates direction respectively to 0.
-    invert_y : bool
+    invert_y_dir : bool
         If ``True``, "mirror" the coordinates direction respectively to 0.
-    invert_z : bool
+    invert_z_dir : bool
         If ``True``, "mirror" the coordinates direction respectively to 0.
 
     References
@@ -127,7 +127,8 @@ class CNC(AbstractCNC):
     """
 
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200, homing=True, safe_start=True,
-                 x_lims=None, y_lims=None, z_lims=None, invert_x=True, invert_y=True, invert_z=True):
+                 x_lims=None, y_lims=None, z_lims=None,
+                 invert_x_dir=True, invert_y_dir=True, invert_z_dir=True):
         """Constructor.
 
         Parameters
@@ -148,11 +149,11 @@ class CNC(AbstractCNC):
             The allowed range of Y-axis positions, if `None` (default) use the settings from Grbl ("$131", see GRBL_SETTINGS).
         z_lims : (int, int), optional
             The allowed range of Z-axis positions, if `None` (default) use the settings from Grbl ("$132", see GRBL_SETTINGS).
-        invert_x : bool, optional
+        invert_x_dir : bool, optional
             If `True` (default), "mirror" the coordinates direction respectively to 0.
-        invert_y : bool, optional
+        invert_y_dir : bool, optional
             If `True` (default), "mirror" the coordinates direction respectively to 0.
-        invert_z : bool, optional
+        invert_z_dir : bool, optional
             If `True` (default), "mirror" the coordinates direction respectively to 0.
 
         Examples
@@ -173,9 +174,9 @@ class CNC(AbstractCNC):
         self.x_lims = x_lims
         self.y_lims = y_lims
         self.z_lims = z_lims
-        self.invert_x = invert_x
-        self.invert_y = invert_y
-        self.invert_z = invert_z
+        self.invert_x_dir = invert_x_dir
+        self.invert_y_dir = invert_y_dir
+        self.invert_z_dir = invert_z_dir
         self.serial_port = None
         self.x = 0
         self.y = 0
@@ -349,9 +350,9 @@ class CNC(AbstractCNC):
         http://linuxcnc.org/docs/html/gcode/g-code.html#gcode:g0
 
         """
-        x = int(-x) if self.invert_x else int(x)
-        y = int(-y) if self.invert_y else int(y)
-        z = int(-z) if self.invert_z else int(z)
+        x = int(-x) if self.invert_x_dir else int(x)
+        y = int(-y) if self.invert_y_dir else int(y)
+        z = int(-z) if self.invert_z_dir else int(z)
         self.send_cmd(f"g0 x{x} y{y} z{z}")
         self.x, self.y, self.z = x, y, z
         time.sleep(0.1)  # Add a little sleep between calls
