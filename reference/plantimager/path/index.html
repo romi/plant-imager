@@ -2406,7 +2406,7 @@ Else, will be set from the min/max of the path to calibrate on the y-axis.</p>
 
 
 <a href="#plantimager.path.Circle" class="headerlink" title="Permanent link">Link</a></h3>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Circle(center_x, center_y, z, tilt, radius, n_points, start_offset<span style="color: #666">=0</span>, clockwwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Circle(center_x, center_y, z, tilt, radius, n_points, start_offset<span style="color: #666">=0</span>, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2593,7 +2593,7 @@ along the circle. Measured counter-clockwise from the positive x-axis.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>True</code>
             </td>
           </tr>
       </tbody>
@@ -2645,7 +2645,7 @@ along the circle. Measured counter-clockwise from the positive x-axis.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">308</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">309</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z, tilt, radius, n_points, start_offset<span style="color: #666">=0</span>, clockwwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z, tilt, radius, n_points, start_offset<span style="color: #666">=0</span>, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Initializes an object by generating a circular arrangement of points in 3D space.</span>
 
 <span style="color: #BA2121; font-style: italic">    Each path element is defined by the combination of the 2D circle</span>
@@ -2675,7 +2675,7 @@ along the circle. Measured counter-clockwise from the positive x-axis.</p>
 <span style="color: #BA2121; font-style: italic">        ``True`` for clockwise rotation, ``False`` for counter-clockwise.</span>
 <span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
     <span style="color: #008000">super</span>()<span style="color: #666">.</span><span style="color: #00F">__init__</span>()
-    x, y, pan <span style="color: #666">=</span> circle(center_x, center_y, radius, n_points, start_offset, clockwwise)
+    x, y, pan <span style="color: #666">=</span> circle(center_x, center_y, radius, n_points, start_offset, clockwise)
 
     <span style="color: #008000; font-weight: bold">if</span> <span style="color: #A2F; font-weight: bold">not</span> <span style="color: #008000">isinstance</span>(tilt, Iterable):
         tilt <span style="color: #666">=</span> [tilt]
@@ -2716,7 +2716,7 @@ along the circle. Measured counter-clockwise from the positive x-axis.</p>
 
 
 <a href="#plantimager.path.Cylinder" class="headerlink" title="Permanent link">Link</a></h3>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Cylinder(center_x, center_y, z_range, tilt, radius, n_points, clockwwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, n_circles<span style="color: #666">=2</span>, aligned<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Cylinder(center_x, center_y, z_range, tilt, radius, n_points, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, n_circles<span style="color: #666">=2</span>, aligned<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2886,7 +2886,7 @@ orientation to the XY-plane.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>True</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -3019,7 +3019,7 @@ are required to form a cylinder-like structure.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">405</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">406</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">407</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z_range, tilt, radius, n_points, clockwwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, n_circles<span style="color: #666">=2</span>, aligned<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">__init__</span>(<span style="color: #008000">self</span>, center_x, center_y, z_range, tilt, radius, n_points, clockwise<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, n_circles<span style="color: #666">=2</span>, aligned<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Initialization of a cylinder-like structure composed of multiple circles at different heights within a z-range.</span>
 
 <span style="color: #BA2121; font-style: italic">    This class constructor generates `n_circles` at varying heights within a</span>
@@ -3079,7 +3079,7 @@ are required to form a cylinder-like structure.</p>
     <span style="color: #008000; font-weight: bold">for</span> circle_idx, z_circle <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">enumerate</span>(np<span style="color: #666">.</span>arange(min_z, max_z <span style="color: #666">+</span> <span style="color: #666">1</span>, (max_z <span style="color: #666">-</span> min_z) <span style="color: #666">/</span> <span style="color: #008000">float</span>(n_circles <span style="color: #666">-</span> <span style="color: #666">1</span>))):
         <span style="color: #3D7B7B; font-style: italic"># For each height, create a 2D circular path (Circle) and offset it if required</span>
         <span style="color: #008000">self</span><span style="color: #666">.</span>extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points,
-                           start_offset <span style="color: #666">*</span> circle_idx, clockwwise))
+                           start_offset <span style="color: #666">*</span> circle_idx, clockwise))
 </code></pre></div></td></tr></table></div>
                   </details>
 
