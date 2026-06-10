@@ -131,8 +131,10 @@ class ScannerToCenter(RomiTask):
         hw_scanner = Scan().load_scanner()
         cx = ScanPath().kwargs["center_x"]
         cy = ScanPath().kwargs["center_y"]
-        hw_scanner.cnc.moveto(cx, cy, 0.)
-        logger.info(f"Moved to X:{cx}mm, Y:{cy}mm!")
+        z = ScanPath().kwargs["z"]
+        hw_scanner.cnc.moveto(cx, cy, z)
+        logger.info(f"Moved to X:{cx}mm, Y:{cy}mm, Z:{z}mm!")
+
         return
 
 
