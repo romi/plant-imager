@@ -16,7 +16,7 @@ z = 90
 tilt = 0
 radius = 375
 n_points = 36
-clockwwise = false
+clockwise = false
 
 [Scan.scanner.camera]
 module = "plantimager.sony"  # Sony RX-0 camera

@@ -270,7 +270,7 @@ class Circle(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset=0, clockwwise=True):
+    def __init__(self, center_x, center_y, z, tilt, radius, n_points, start_offset=0, clockwise=True):
         """Initializes an object by generating a circular arrangement of points in 3D space.
 
         Each path element is defined by the combination of the 2D circle
@@ -300,7 +300,7 @@ class Circle(Path):
             ``True`` for clockwise rotation, ``False`` for counter-clockwise.
         """
         super().__init__()
-        x, y, pan = circle(center_x, center_y, radius, n_points, start_offset, clockwwise)
+        x, y, pan = circle(center_x, center_y, radius, n_points, start_offset, clockwise)
 
         if not isinstance(tilt, Iterable):
             tilt = [tilt]
@@ -345,7 +345,7 @@ class Cylinder(Path):
 
     """
 
-    def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, clockwwise=True, n_circles=2, aligned=True):
+    def __init__(self, center_x, center_y, z_range, tilt, radius, n_points, clockwise=True, n_circles=2, aligned=True):
         """Initialization of a cylinder-like structure composed of multiple circles at different heights within a z-range.
 
         This class constructor generates `n_circles` at varying heights within a
@@ -405,7 +405,7 @@ class Cylinder(Path):
         for circle_idx, z_circle in enumerate(np.arange(min_z, max_z + 1, (max_z - min_z) / float(n_circles - 1))):
             # For each height, create a 2D circular path (Circle) and offset it if required
             self.extend(Circle(center_x, center_y, z_circle, tilt, radius, n_points,
-                               start_offset * circle_idx, clockwwise))
+                               start_offset * circle_idx, clockwise))
 
 
 def line_1d(start, stop, n_points):
