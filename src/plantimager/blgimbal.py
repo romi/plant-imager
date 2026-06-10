@@ -86,7 +86,7 @@ class Gimbal(AbstractGimbal):
     """
 
     def __init__(self, port="/dev/ttyUSB0", baudrate=115200, has_tilt=True, steps_per_turn=360,
-                 zero_pan=0, zero_tilt=0, invert_rotation=False):
+                 zero_pan=90, zero_tilt=0, invert_rotation=False):
         """Constructor.
 
         Parameters
@@ -105,7 +105,7 @@ class Gimbal(AbstractGimbal):
             Defaults to ``360``.
         zero_pan : float, optional
             Indicate the origin position of the Gimbal for the pan-axis.
-            Defaults to ``0.``.
+            Defaults to ``90.``.
         zero_tilt : float, optional
             Indicate the origin position of the Gimbal for the tilt-axis.
             Defaults to ``0.``.
