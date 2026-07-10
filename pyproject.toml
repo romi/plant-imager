@@ -20,7 +20,7 @@ dependencies = [
 ]
 description = "ROMI library controlling the PlantImager (hardware) or the VirtualPlantImager (Blender) to acquire images of (virtual) single potted plants."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
     { name = "Nabil Ait Taleb", email = "mohamednabil.aittaleb@sony.com" },
