@@ -41,6 +41,7 @@ from romitask import FilesetTarget
 from romitask import RomiTask
 from romitask.task import FilesetExists
 from romitask.task import ScanConfiguration
+from romitask.utils import get_version
 
 logger = configure_logger(__name__)
 
@@ -242,6 +243,7 @@ class Scan(RomiTask):
             metadata["hardware"]['x_lims'] = getattr(scanner.cnc, "x_lims", None)
             metadata["hardware"]['y_lims'] = getattr(scanner.cnc, "y_lims", None)
             metadata["hardware"]['z_lims'] = getattr(scanner.cnc, "z_lims", None)
+            metadata["hardware"]['version'] = get_version().get('plantimager', 'N/A')
         elif isinstance(scanner, VirtualScanner):
             # Import software info from the ``plantimager.vscan.VirtualScanner`` instance & add them to the metadata:
             metadata["software"] = scanner.request_get_dict('info')
