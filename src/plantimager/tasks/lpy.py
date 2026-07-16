@@ -47,7 +47,7 @@ class VirtualPlant(RomiTask):
     upstream_task : plantimager.lpy.LpyFileset
         The fileset specific to LPY model.
     lpy_file_id : luigi.Parameter
-        Name of the LPY file used as model.
+        Name of the LPY file used as a model.
         Should exist in the `LpyFileset`.
     metadata : list
         The list of metadata to export with the model.
@@ -119,7 +119,7 @@ class VirtualPlant(RomiTask):
             output_file.set_metadata(m, m_val)
 
         # - Export 'angles' and 'internodes' to a 'measures.json' file (to match manual measurements method):
-        from plantdb.fsdb import _scan_measures_path
+        from plantdb.commons.fsdb.path_helpers import _scan_measures_path
         measures_json = _scan_measures_path(output_file.get_scan())
         with open(measures_json, 'w') as f:
             f.write(json.dumps(measures, indent=4))
