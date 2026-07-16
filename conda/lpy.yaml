@@ -2,7 +2,7 @@ name: lpyEnv
 channels:
   - defaults
   - conda-forge
-  - fredboudon
+  - fredboudon  # a newer alternative is 'openalea3'
 dependencies:
   - python ==3.9.2
   - flask
